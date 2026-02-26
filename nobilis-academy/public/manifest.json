@@ -1,7 +1,6 @@
 {
-  "short_name": "Nobilis",
-  "name": "Nobilis Academy",
-  "description": "Образовательная платформа профориентации",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",
@@ -21,8 +20,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#1a3a32",
-  "background_color": "#ffffff",
-  "orientation": "portrait-primary",
-  "lang": "ru"
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
 }
