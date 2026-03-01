@@ -9,7 +9,7 @@ const ROLE_LABELS = {
   teacher: 'Преподаватель'
 };
 
-const Sidebar = ({ user, view, navItems, onNavigate, onLogout, isOpen, onToggle }) => (
+const Sidebar = ({ user, view, navItems, onNavigate, onLogout, isOpen, onToggle, onAvatarClick }) => (
   <>
     {/* Mobile overlay */}
     {isOpen && (
@@ -48,10 +48,11 @@ const Sidebar = ({ user, view, navItems, onNavigate, onLogout, isOpen, onToggle 
       <div className="p-4 border-t">
         <div className="flex items-center gap-3 mb-4 px-2">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold"
-            style={{ background: 'linear-gradient(135deg, #c9a227 0%, #a68620 100%)' }}
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer overflow-hidden hover:ring-2 hover:ring-[#c9a227] transition-all"
+            style={{ background: user.avatar ? 'transparent' : 'linear-gradient(135deg, #c9a227 0%, #a68620 100%)' }}
+            onClick={onAvatarClick}
           >
-            {getInitials(user.name)}
+            {user.avatar ? <img src={user.avatar} alt="" className="w-full h-full object-cover" /> : getInitials(user.name)}
           </div>
           <div className="flex-1 min-w-0">
             <div className="font-medium text-sm truncate text-gray-800">{user.name}</div>

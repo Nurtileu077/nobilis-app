@@ -110,6 +110,34 @@ export default function useAppData() {
     addHistory(studentId, freeze ? 'Пакет заморожен' : 'Пакет разморожен');
   };
 
+  // ---- FREEZE STUDENT ----
+  const freezeStudent = (studentId, freezeData) => {
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      const freezes = [...(student.freezes || []), { id: genId(), ...freezeData, createdAt: new Date().toISOString() }];
+      updStudent(studentId, { freezes, status: 'paused' });
+      addHistory(studentId, `Студент заморожен: ${freezeData.reason || 'По заявлению'}`);
+    }
+  };
+  const unfreezeStudent = (studentId, freezeId) => {
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      const freezes = (student.freezes || []).map(f => f.id === freezeId ? { ...f, endDate: new Date().toISOString().split('T')[0], active: false } : f);
+      updStudent(studentId, { freezes, status: 'active' });
+      addHistory(studentId, 'Студент разморожен');
+    }
+  };
+
+  // ---- AVATAR ----
+  const setAvatar = (role, id, avatarData) => {
+    if (role === 'student') updStudent(id, { avatar: avatarData });
+    else if (role === 'teacher') updTeacher(id, { avatar: avatarData });
+    else if (role === 'curator') {
+      // Store curator avatar in data
+      upd('curatorAvatar', avatarData);
+    }
+  };
+
   // ---- TASKS CRUD ----
   const addTask = (studentId, task) => {
     const student = data.students.find(s => s.id === studentId);
@@ -335,6 +363,7 @@ export default function useAppData() {
     addPackage, updPackage, freezePackage,
     addTask, toggleTask,
     addComment, addHistory, addLessonLog,
+    freezeStudent, unfreezeStudent, setAvatar,
     // Helpers
     generateLogin, generatePassword,
   };

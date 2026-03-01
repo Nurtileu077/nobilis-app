@@ -16,34 +16,44 @@ const CuratorSalary = ({ teachers, onConfirmLesson }) => {
 
       <div className="bg-gradient-to-r from-[#1a3a32] to-[#2d5a4a] rounded-2xl p-6 text-white">
         <div className="text-sm text-white/70">Общий фонд за месяц</div>
-        <div className="text-3xl font-bold">{total.toLocaleString()} \u20B8</div>
+        <div className="text-3xl font-bold">{total.toLocaleString()} тг</div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="text-left p-4">Преподаватель</th>
-              <th className="text-right p-4">Ставка</th>
-              <th className="text-right p-4">Часы (подтв.)</th>
-              <th className="text-right p-4">К выплате</th>
-            </tr>
-          </thead>
-          <tbody>
-            {teachers.map(t => {
-              const conf = t.lessons?.filter(l => l.confirmed && l.status === 'conducted').reduce((s, l) => s + (l.hours || 0), 0) || 0;
-              const pend = t.lessons?.filter(l => !l.confirmed && l.status === 'conducted').reduce((s, l) => s + (l.hours || 0), 0) || 0;
-              return (
-                <tr key={t.id} className="border-t hover:bg-gray-50 transition-colors">
-                  <td className="p-4"><div className="font-medium">{t.name}</div><div className="text-sm text-gray-500">{t.subject}</div></td>
-                  <td className="p-4 text-right">{t.hourlyRate} \u20B8</td>
-                  <td className="p-4 text-right">{conf} ч {pend > 0 && <span className="text-yellow-600">(+{pend} ожид.)</span>}</td>
-                  <td className="p-4 text-right font-bold text-[#1a3a32]">{(conf * t.hourlyRate).toLocaleString()} \u20B8</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      {/* Teacher salary cards */}
+      <div className="space-y-3">
+        {teachers.map(t => {
+          const conf = t.lessons?.filter(l => l.confirmed && l.status === 'conducted').reduce((s, l) => s + (l.hours || 0), 0) || 0;
+          const pend = t.lessons?.filter(l => !l.confirmed && l.status === 'conducted').reduce((s, l) => s + (l.hours || 0), 0) || 0;
+          return (
+            <div key={t.id} className="bg-white rounded-2xl p-4 shadow-sm border">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-gray-800 truncate">{t.name}</div>
+                  <div className="text-sm text-gray-500">{t.subject}</div>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <div className="text-lg font-bold text-[#1a3a32]">{(conf * t.hourlyRate).toLocaleString()} тг</div>
+                  <div className="text-xs text-gray-400">к выплате</div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-3 text-sm">
+                <div className="bg-gray-50 px-3 py-1.5 rounded-lg">
+                  <span className="text-gray-500">Ставка: </span>
+                  <span className="font-medium">{t.hourlyRate} тг/ч</span>
+                </div>
+                <div className="bg-gray-50 px-3 py-1.5 rounded-lg">
+                  <span className="text-gray-500">Подтв: </span>
+                  <span className="font-medium">{conf} ч</span>
+                </div>
+                {pend > 0 && (
+                  <div className="bg-yellow-50 px-3 py-1.5 rounded-lg text-yellow-700">
+                    +{pend} ч ожид.
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {pending.length > 0 && (
@@ -51,13 +61,13 @@ const CuratorSalary = ({ teachers, onConfirmLesson }) => {
           <h3 className="text-lg font-semibold mb-4">На подтверждение</h3>
           <div className="space-y-2">
             {pending.map(l => (
-              <div key={l.id} className="flex justify-between p-3 bg-yellow-50 rounded-xl">
-                <div>
-                  <div className="font-medium">{l.teacher.name}</div>
-                  <div className="text-sm text-gray-500">{formatDate(l.date)} &bull; {l.hours} ч</div>
+              <div key={l.id} className="flex items-center justify-between p-3 bg-yellow-50 rounded-xl gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate">{l.teacher.name}</div>
+                  <div className="text-sm text-gray-500">{formatDate(l.date)} - {l.hours} ч</div>
                 </div>
                 <button onClick={() => onConfirmLesson(l.teacher.id, l.id)}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">Подтвердить</button>
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex-shrink-0 text-sm">Подтвердить</button>
               </div>
             ))}
           </div>

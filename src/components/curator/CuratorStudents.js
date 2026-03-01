@@ -1,11 +1,11 @@
 import React from 'react';
 import I from '../common/Icons';
-import { getInitials, getAttendancePercent, getPackageProgress } from '../../data/utils';
+import { getInitials, getAttendancePercent, getPackageProgress, daysUntil } from '../../data/utils';
 import { STUDENT_STATUSES, PACKAGE_TYPES, SUPPORT_STAGES } from '../../data/constants';
 
 const CuratorStudents = ({
   students, search, onSetSearch, onSetModal, onSetForm, onSetSelected,
-  cityFilter, statusFilter, onSetCityFilter, onSetStatusFilter
+  cityFilter, statusFilter, onSetCityFilter, onSetStatusFilter, onOpenStudentPage
 }) => {
   // Get unique cities
   const cities = [...new Set(students.map(s => s.city).filter(Boolean))].sort();
@@ -33,7 +33,7 @@ const CuratorStudents = ({
       <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-800">Студенты ({filtered.length})</h1>
         <button onClick={() => {
-          onSetForm({ name: '', email: '', phone: '', age: '', grade: '', parentName: '', parentPhone: '', contractEndDate: '', targetIelts: '', targetSat: '', city: '', status: 'active', graduationYear: '' });
+          onSetForm({ name: '', email: '', phone: '', age: '', grade: '', parentName: '', parentPhone: '', targetIelts: '', targetSat: '', city: '', status: 'active', graduationYear: '', packages: [] });
           onSetModal('addStudent');
         }} className="px-4 py-2 btn-primary text-white rounded-xl flex items-center gap-2 self-start">
           <I.Plus /><span>Добавить</span>
@@ -71,42 +71,57 @@ const CuratorStudents = ({
                 {statusInfo.name} ({groups[statusKey].length})
               </span>
             </div>
-            <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-              {groups[statusKey].map(s => (
-                <div key={s.id}
-                  className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 border-b hover:bg-gray-50 cursor-pointer transition-all"
-                  onClick={() => { onSetSelected(s); onSetModal('studentDetail'); }}>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-[#1a3a32] to-[#2d5a4a] flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm">
-                    {getInitials(s.name)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{s.name}</div>
-                    <div className="text-sm text-gray-500 truncate">
-                      {s.grade}{s.city ? ` \u2022 ${s.city}` : ''}{s.email ? ` \u2022 ${s.email}` : ''}
-                    </div>
-                    {/* Package progress pills */}
-                    {s.packages?.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {s.packages.map(pkg => {
-                          const typeInfo = PACKAGE_TYPES[pkg.type] || {};
-                          const prog = getPackageProgress(pkg, SUPPORT_STAGES);
-                          return (
-                            <span key={pkg.id} className="text-xs px-2 py-0.5 rounded-full text-white"
-                              style={{ backgroundColor: typeInfo.color || '#6b7280' }}>
-                              {typeInfo.name || pkg.type} {prog.percent}%
-                            </span>
-                          );
-                        })}
+            <div className="space-y-3">
+              {groups[statusKey].map(s => {
+                // Check expiring packages
+                const hasExpiring = (s.packages || []).some(pkg => !pkg.frozen && daysUntil(pkg.endDate) > 0 && daysUntil(pkg.endDate) <= 14);
+                return (
+                  <div key={s.id} className="bg-white rounded-xl shadow-sm border p-4 hover:shadow-md transition-all">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-[#1a3a32] to-[#2d5a4a] flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm overflow-hidden">
+                        {s.avatar ? <img src={s.avatar} alt="" className="w-full h-full object-cover" /> : getInitials(s.name)}
                       </div>
-                    )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-medium">{s.name}</span>
+                          {hasExpiring && <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Истекает!</span>}
+                          {s.status === 'paused' && <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Заморожен</span>}
+                        </div>
+                        <div className="text-sm text-gray-500 truncate">
+                          {s.grade}{s.city ? ` - ${s.city}` : ''} - {getAttendancePercent(s.attendance)}% посещ.
+                        </div>
+                        {/* Package progress pills */}
+                        {s.packages?.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {s.packages.map(pkg => {
+                              const typeInfo = PACKAGE_TYPES[pkg.type] || {};
+                              const prog = getPackageProgress(pkg, SUPPORT_STAGES);
+                              return (
+                                <span key={pkg.id} className="text-xs px-2 py-0.5 rounded-full text-white"
+                                  style={{ backgroundColor: typeInfo.color || '#6b7280' }}>
+                                  {typeInfo.name || pkg.type} {prog.percent}%
+                                  {pkg.frozen ? ' (заморож.)' : ''}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {/* Action buttons */}
+                    <div className="flex gap-2 mt-3 pt-3 border-t">
+                      <button onClick={() => { onSetSelected(s); onSetModal('studentPreview'); }}
+                        className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+                        Быстрый просмотр
+                      </button>
+                      <button onClick={() => onOpenStudentPage(s.id)}
+                        className="flex-1 py-2 bg-[#1a3a32] text-white rounded-lg text-sm hover:bg-[#2d5a4a] transition-colors">
+                        Подробнее
+                      </button>
+                    </div>
                   </div>
-                  <div className="text-right flex-shrink-0 hidden sm:block">
-                    <div className="text-sm font-medium">{getAttendancePercent(s.attendance)}% посещ.</div>
-                    <div className="text-sm text-gray-500 truncate max-w-[140px]">{s.testResult || 'Тест не пройден'}</div>
-                  </div>
-                  <I.Right />
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         );
