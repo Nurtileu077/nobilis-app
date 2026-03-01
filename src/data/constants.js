@@ -51,6 +51,14 @@ export const CAREER_PROFILES = {
   "Технический Специалист": { cats: ["technical"], color: "#EF4444", desc: "Техническая подкованность.", careers: ["Инженер", "IT-специалист"], unis: ["TU Munich", "KAIST"], countries: ["Германия", "Корея"] }
 };
 
+export const PACKAGE_TYPES = {
+  ielts: { label: 'IELTS', color: 'bg-blue-100 text-blue-700', border: 'border-blue-200' },
+  sat: { label: 'SAT', color: 'bg-purple-100 text-purple-700', border: 'border-purple-200' },
+  support: { label: 'Сопровождение', color: 'bg-green-100 text-green-700', border: 'border-green-200' },
+  toefl: { label: 'TOEFL', color: 'bg-orange-100 text-orange-700', border: 'border-orange-200' },
+  portfolio: { label: 'Портфолио', color: 'bg-pink-100 text-pink-700', border: 'border-pink-200' },
+};
+
 export const DAYS_ORDER = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
 
 export const DAYS_RU = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];

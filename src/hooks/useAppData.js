@@ -57,6 +57,9 @@ export default function useAppData() {
       joinDate: new Date().toISOString().split('T')[0],
       testResult: null, examResults: [],
       attendance: { total: 0, attended: 0 },
+      packages: d.packages || [],
+      freeze: null,
+      avatar: null,
       documents: [{ id: Date.now().toString(), type: 'contract', name: 'Договор', date: new Date().toISOString().split('T')[0] }],
       letters: [], internships: []
     };
@@ -66,9 +69,36 @@ export default function useAppData() {
   const updStudent = (id, u) => upd('students', data.students.map(s => s.id === id ? { ...s, ...u } : s));
   const delStudent = (id) => upd('students', data.students.filter(s => s.id !== id));
 
+  // ---- PACKAGES ----
+  const addPackage = (studentId, pkg) => {
+    const s = data.students.find(x => x.id === studentId);
+    if (s) {
+      const newPkg = { id: Date.now().toString(), ...pkg, completedLessons: 0 };
+      updStudent(studentId, { packages: [...(s.packages || []), newPkg] });
+    }
+  };
+  const removePackage = (studentId, pkgId) => {
+    const s = data.students.find(x => x.id === studentId);
+    if (s) updStudent(studentId, { packages: (s.packages || []).filter(p => p.id !== pkgId) });
+  };
+
+  // ---- FREEZE ----
+  const freezeStudent = (studentId, freezeData) => {
+    updStudent(studentId, { freeze: { ...freezeData, createdAt: new Date().toISOString() } });
+  };
+  const unfreezeStudent = (studentId) => {
+    updStudent(studentId, { freeze: null });
+  };
+
+  // ---- AVATAR ----
+  const setAvatar = (role, id, avatarData) => {
+    if (role === 'student') updStudent(id, { avatar: avatarData });
+    else if (role === 'teacher') updTeacher(id, { avatar: avatarData });
+  };
+
   // ---- TEACHERS CRUD ----
   const addTeacher = (d) => {
-    const n = { id: Date.now().toString(), ...d, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] };
+    const n = { id: Date.now().toString(), ...d, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [], avatar: null };
     upd('teachers', [...data.teachers, n]);
     return n;
   };
@@ -148,13 +178,17 @@ export default function useAppData() {
       updTeacher(tid, { lessons, hoursWorked: hrs, totalLessons: confirmedConducted.length });
     }
   };
+  const updLesson = (tid, lid, updates) => {
+    const t = data.teachers.find(x => x.id === tid);
+    if (t) updTeacher(tid, { lessons: t.lessons.map(l => l.id === lid ? { ...l, ...updates } : l) });
+  };
 
   // ---- INTERNSHIP APPLY ----
   const applyInternship = (sid, iid) =>
     upd('students', data.students.map(s => s.id === sid ? { ...s, internships: [...s.internships, { internshipId: iid, status: 'applied', appliedDate: new Date().toISOString().split('T')[0] }] } : s));
 
   // ---- SUPPORT ----
-  const resolveTicket = (id) => upd('supportTickets', data.supportTickets.map(t => t.id === id ? { ...t, status: 'resolved' } : t));
+  const resolveTicket = (id) => upd('supportTickets', data.supportTickets.map(t => t.id === id ? { ...t, status: 'resolved', resolvedDate: new Date().toISOString() } : t));
   const addTicket = (sid, msg) => {
     const s = data.students.find(x => x.id === sid);
     upd('supportTickets', [...data.supportTickets, {
@@ -203,9 +237,15 @@ export default function useAppData() {
     addDoc, delDoc,
     addLetter, updLetter, delLetter,
     addSyllabus, updSyllabus, delSyllabus,
-    markAtt, markLesson, confirmLesson,
+    markAtt, markLesson, confirmLesson, updLesson,
     applyInternship, resolveTicket, addTicket,
     submitTest, resetTest,
+    // Packages
+    addPackage, removePackage,
+    // Freeze
+    freezeStudent, unfreezeStudent,
+    // Avatar
+    setAvatar,
     // Helpers
     generateLogin, generatePassword,
   };

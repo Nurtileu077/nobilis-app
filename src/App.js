@@ -1,6 +1,6 @@
 import React from 'react';
 import useAppData from './hooks/useAppData';
-import { DOCUMENT_TYPES } from './data/constants';
+import { DOCUMENT_TYPES, PACKAGE_TYPES } from './data/constants';
 import { formatDate } from './data/utils';
 
 // Common components
@@ -22,6 +22,7 @@ import StudentDocuments from './components/student/StudentDocuments';
 // Curator views
 import CuratorDashboard from './components/curator/CuratorDashboard';
 import CuratorStudents from './components/curator/CuratorStudents';
+import CuratorStudentDetail from './components/curator/CuratorStudentDetail';
 import CuratorAttendance from './components/curator/CuratorAttendance';
 import CuratorSchedule from './components/curator/CuratorSchedule';
 import CuratorMockTests from './components/curator/CuratorMockTests';
@@ -89,9 +90,12 @@ export default function NobilisAcademy() {
     addInternship, updInternship, delInternship,
     addDoc, delDoc, addLetter, updLetter, delLetter,
     addSyllabus, updSyllabus, delSyllabus,
-    markAtt, markLesson, confirmLesson,
+    markAtt, markLesson, confirmLesson, updLesson,
     applyInternship, resolveTicket, addTicket,
     submitTest, resetTest,
+    addPackage, removePackage,
+    freezeStudent, unfreezeStudent,
+    setAvatar,
     generateLogin: genLogin, generatePassword: genPassword,
   } = app;
 
@@ -120,9 +124,30 @@ export default function NobilisAcademy() {
 
     // CURATOR
     if (user.role === 'curator') {
+      // Student full page view
+      if (view === 'studentPage' && selected) {
+        const freshStudent = data.students.find(s => s.id === selected.id) || selected;
+        return <CuratorStudentDetail
+          student={freshStudent}
+          schedule={data.schedule}
+          teachers={data.teachers}
+          onBack={() => { setView('students'); setSelected(null); }}
+          onSetModal={setModal}
+          onSetForm={setForm}
+          onSetSelected={setSelected}
+          onDelStudent={delStudent}
+          onAddPackage={addPackage}
+          onRemovePackage={removePackage}
+          onFreezeStudent={freezeStudent}
+          onUnfreezeStudent={unfreezeStudent}
+          onUpdStudent={updStudent}
+          onSetAvatar={setAvatar}
+        />;
+      }
+
       switch (view) {
         case 'dashboard': return <CuratorDashboard data={data} onResolveTicket={resolveTicket} onSetModal={setModal} onSetForm={setForm} />;
-        case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
+        case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onSetView={setView} />;
         case 'attendance': return <CuratorAttendance data={data} attDate={attDate} attSchedule={attSchedule} onSetAttDate={setAttDate} onSetAttSchedule={setAttSchedule} onMarkAtt={markAtt} />;
         case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
         case 'mockTests': return <CuratorMockTests mockTests={data.mockTests} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelMockTest={delMockTest} />;
@@ -142,7 +167,7 @@ export default function NobilisAcademy() {
         case 'schedule': return <TeacherSchedule teacher={t} schedule={data.schedule} students={data.students} onSetSelected={setSelected} onSetModal={setModal} />;
         case 'students': return <TeacherStudents teacher={t} schedule={data.schedule} students={data.students} onSetSelected={setSelected} onSetModal={setModal} />;
         case 'syllabus': return <TeacherSyllabus teacher={t} students={data.students} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onSetSylSearch={setSylSearch} onDelSyllabus={(sid) => delSyllabus(t.id, sid)} />;
-        case 'lessons': return <TeacherLessons teacher={t} schedule={data.schedule} onSetModal={setModal} onSetForm={setForm} />;
+        case 'lessons': return <TeacherLessons teacher={t} schedule={data.schedule} students={data.students} onSetModal={setModal} onSetForm={setForm} onUpdLesson={updLesson} />;
         default: break;
       }
     }
@@ -153,6 +178,74 @@ export default function NobilisAcademy() {
   // ---- MODAL RENDERER ----
   const renderModal = () => {
     if (!modal) return null;
+
+    // STUDENT PREVIEW (compact modal for curator)
+    if (modal === 'studentPreview' && selected) {
+      const s = data.students.find(st => st.id === selected.id) || selected;
+      return (
+        <Modal title={s.name} onClose={() => { setModal(null); setSelected(null); }}>
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              {s.avatar ? (
+                <img src={s.avatar} alt="" className="w-16 h-16 rounded-full object-cover" />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1a3a32] to-[#2d5a4a] flex items-center justify-center text-white text-xl font-bold">
+                  {s.name.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                </div>
+              )}
+              <div>
+                <div className="font-semibold text-lg">{s.name}</div>
+                <div className="text-sm text-gray-500">{s.grade} | {s.city || '—'}</div>
+                <div className="text-sm text-gray-500">{s.email} | {s.phone}</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-gray-50 rounded-xl text-center">
+                <div className="text-xl font-bold text-[#1a3a32]">{s.attendance?.total > 0 ? Math.round(s.attendance.attended / s.attendance.total * 100) : 0}%</div>
+                <div className="text-xs text-gray-500">Посещаемость</div>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-xl text-center">
+                <div className="text-xl font-bold text-[#c9a227]">{s.packages?.length || 0}</div>
+                <div className="text-xs text-gray-500">Пакетов</div>
+              </div>
+            </div>
+
+            {s.packages?.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {s.packages.map(pkg => {
+                  const type = PACKAGE_TYPES[pkg.type] || { label: pkg.type, color: 'bg-gray-100 text-gray-700' };
+                  const remaining = pkg.totalLessons - pkg.completedLessons;
+                  return (
+                    <span key={pkg.id} className={`px-3 py-1 rounded-full text-sm ${type.color}`}>
+                      {type.label}: {remaining}/{pkg.totalLessons} ост.
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              {s.targetIelts && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">IELTS: {s.targetIelts}</span>}
+              {s.targetSat && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">SAT: {s.targetSat}</span>}
+            </div>
+
+            {s.freeze && (
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
+                Заморожен {s.freeze.dateTo ? `до ${formatDate(s.freeze.dateTo)}` : 'на неопр. срок'}
+              </div>
+            )}
+
+            <button
+              onClick={() => { setModal(null); setView('studentPage'); }}
+              className="w-full py-3 btn-primary text-white rounded-xl flex items-center justify-center gap-2"
+            >
+              <I.Open /><span>Открыть подробно</span>
+            </button>
+          </div>
+        </Modal>
+      );
+    }
 
     // SCHEDULE DETAIL
     if (modal === 'scheduleDetail' && selected) {
@@ -199,7 +292,7 @@ export default function NobilisAcademy() {
               <div><div className="text-sm text-gray-500">Длительность</div><div className="font-medium">{s.duration} мин</div></div>
               <div><div className="text-sm text-gray-500">Кабинет</div><div className="font-medium">{s.room}</div></div>
             </div>
-            <div><div className="text-sm text-gray-500 mb-2">Преподаватель</div><div className="font-medium">{t?.name || (s.isCurator ? 'Куратор' : '\u2014')}</div></div>
+            <div><div className="text-sm text-gray-500 mb-2">Преподаватель</div><div className="font-medium">{t?.name || (s.isCurator ? 'Куратор' : '—')}</div></div>
             <div><div className="text-sm text-gray-500 mb-2">Студенты ({students.length})</div><div className="flex flex-wrap gap-2">{students.map(st => <span key={st.id} className="px-3 py-1 bg-gray-100 rounded-full text-sm">{st.name}</span>)}</div></div>
           </div>
         </Modal>
@@ -227,18 +320,60 @@ export default function NobilisAcademy() {
     // DOCUMENT DETAIL
     if (modal === 'documentDetail' && selected) {
       const d = selected;
-      return <Modal title={DOCUMENT_TYPES[d.type]?.label || 'Документ'} onClose={() => { setModal(null); setSelected(null); }}><div className="space-y-4"><div className="text-center text-6xl mb-4">{DOCUMENT_TYPES[d.type]?.icon || '\u{1F4C4}'}</div><div><div className="text-sm text-gray-500">Название</div><div className="font-medium">{d.name}</div></div><div><div className="text-sm text-gray-500">Дата</div><div className="font-medium">{formatDate(d.date)}</div></div>{d.score && <div><div className="text-sm text-gray-500">Балл</div><div className="font-medium text-2xl text-[#1a3a32]">{d.score}</div></div>}<div className="flex gap-3"><button className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"><I.Download /><span>Скачать</span></button>{user?.role === 'curator' && <button onClick={() => { if (window.confirm('Удалить?')) { delDoc(d.studentId, d.id); setModal(null); setSelected(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors"><I.Trash /></button>}</div></div></Modal>;
+      return <Modal title={DOCUMENT_TYPES[d.type]?.label || 'Документ'} onClose={() => { setModal(null); setSelected(null); }}><div className="space-y-4"><div><div className="text-sm text-gray-500">Название</div><div className="font-medium">{d.name}</div></div><div><div className="text-sm text-gray-500">Дата</div><div className="font-medium">{formatDate(d.date)}</div></div>{d.score && <div><div className="text-sm text-gray-500">Балл</div><div className="font-medium text-2xl text-[#1a3a32]">{d.score}</div></div>}{d.fileData && <div className="p-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700 flex items-center gap-2"><I.Check /><span>Файл загружен: {d.fileName}</span></div>}<div className="flex gap-3"><button className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"><I.Download /><span>Скачать</span></button>{user?.role === 'curator' && <button onClick={() => { if (window.confirm('Удалить?')) { delDoc(d.studentId, d.id); setModal(null); setSelected(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors"><I.Trash /></button>}</div></div></Modal>;
     }
 
     // ADD STUDENT
     if (modal === 'addStudent') {
-      return <Modal title="Добавить студента" onClose={() => setModal(null)}><div className="space-y-4"><div><label className="block text-sm text-gray-600 mb-1">ФИО *</label><input type="text" value={form.name || ''} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Иванов Иван Иванович" /></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm text-gray-600 mb-1">Email</label><input type="email" value={form.email || ''} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div><label className="block text-sm text-gray-600 mb-1">Телефон</label><input type="tel" value={form.phone || ''} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm text-gray-600 mb-1">Возраст</label><input type="number" value={form.age || ''} onChange={e => setForm(p => ({ ...p, age: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div><label className="block text-sm text-gray-600 mb-1">Класс</label><input type="text" value={form.grade || ''} onChange={e => setForm(p => ({ ...p, grade: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="10 класс" /></div></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm text-gray-600 mb-1">Родитель</label><input type="text" value={form.parentName || ''} onChange={e => setForm(p => ({ ...p, parentName: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div><label className="block text-sm text-gray-600 mb-1">Телефон родителя</label><input type="tel" value={form.parentPhone || ''} onChange={e => setForm(p => ({ ...p, parentPhone: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div></div><div><label className="block text-sm text-gray-600 mb-1">Конец договора</label><input type="date" value={form.contractEndDate || ''} onChange={e => setForm(p => ({ ...p, contractEndDate: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm text-gray-600 mb-1">Цель IELTS</label><input type="text" value={form.targetIelts || ''} onChange={e => setForm(p => ({ ...p, targetIelts: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="7.5" /></div><div><label className="block text-sm text-gray-600 mb-1">Цель SAT</label><input type="text" value={form.targetSat || ''} onChange={e => setForm(p => ({ ...p, targetSat: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="1500" /></div></div><button onClick={() => { if (!form.name) { alert('Введите ФИО'); return; } const login = genLogin(form.name); const password = genPassword(); addStudent({ ...form, login, password, age: parseInt(form.age) || 0 }); alert(`Студент создан!\nЛогин: ${login}\nПароль: ${password}`); setModal(null); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl">Создать</button></div></Modal>;
+      const pkgs = form.packages || [];
+      return <Modal title="Добавить студента" onClose={() => { setModal(null); setForm({}); }} size="lg"><div className="space-y-4">
+        <div><label className="block text-sm text-gray-600 mb-1">ФИО *</label><input type="text" value={form.name || ''} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Иванов Иван Иванович" /></div>
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="block text-sm text-gray-600 mb-1">Email</label><input type="email" value={form.email || ''} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+          <div><label className="block text-sm text-gray-600 mb-1">Телефон</label><input type="tel" value={form.phone || ''} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div><label className="block text-sm text-gray-600 mb-1">Возраст</label><input type="number" value={form.age || ''} onChange={e => setForm(p => ({ ...p, age: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+          <div><label className="block text-sm text-gray-600 mb-1">Класс</label><input type="text" value={form.grade || ''} onChange={e => setForm(p => ({ ...p, grade: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="10 класс" /></div>
+          <div><label className="block text-sm text-gray-600 mb-1">Город</label><input type="text" value={form.city || ''} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Алматы" /></div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="block text-sm text-gray-600 mb-1">Родитель</label><input type="text" value={form.parentName || ''} onChange={e => setForm(p => ({ ...p, parentName: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+          <div><label className="block text-sm text-gray-600 mb-1">Телефон родителя</label><input type="tel" value={form.parentPhone || ''} onChange={e => setForm(p => ({ ...p, parentPhone: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="block text-sm text-gray-600 mb-1">Цель IELTS</label><input type="text" value={form.targetIelts || ''} onChange={e => setForm(p => ({ ...p, targetIelts: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="7.5" /></div>
+          <div><label className="block text-sm text-gray-600 mb-1">Цель SAT</label><input type="text" value={form.targetSat || ''} onChange={e => setForm(p => ({ ...p, targetSat: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="1500" /></div>
+        </div>
+        <div className="border-t pt-4">
+          <div className="flex justify-between items-center mb-3">
+            <label className="text-sm font-medium text-gray-700">Пакеты услуг</label>
+            <button type="button" onClick={() => { setForm(p => ({ ...p, packages: [...(p.packages || []), { id: Date.now().toString(), type: 'ielts', dateFrom: '', dateTo: '', totalLessons: '' }] })); }} className="px-3 py-1 bg-[#1a3a32] text-white rounded-lg text-sm hover:bg-[#2d5a4a] transition-colors flex items-center gap-1"><I.Plus /><span>Добавить пакет</span></button>
+          </div>
+          {pkgs.map((pkg, idx) => (
+            <div key={pkg.id || idx} className="p-3 bg-gray-50 rounded-xl mb-2 space-y-2">
+              <div className="flex items-center gap-2">
+                <select value={pkg.type || 'ielts'} onChange={e => { const updated = [...pkgs]; updated[idx] = { ...updated[idx], type: e.target.value }; setForm(p => ({ ...p, packages: updated })); }} className="flex-1 p-2 border rounded-lg input-focus text-sm">
+                  {Object.entries(PACKAGE_TYPES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+                </select>
+                <input type="number" value={pkg.totalLessons || ''} onChange={e => { const updated = [...pkgs]; updated[idx] = { ...updated[idx], totalLessons: parseInt(e.target.value) || 0 }; setForm(p => ({ ...p, packages: updated })); }} className="w-24 p-2 border rounded-lg input-focus text-sm" placeholder="Кол-во" />
+                <button type="button" onClick={() => { setForm(p => ({ ...p, packages: pkgs.filter((_, i) => i !== idx) })); }} className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"><I.Trash /></button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div><label className="text-xs text-gray-500">С</label><input type="date" value={pkg.dateFrom || ''} onChange={e => { const updated = [...pkgs]; updated[idx] = { ...updated[idx], dateFrom: e.target.value }; setForm(p => ({ ...p, packages: updated })); }} className="w-full p-2 border rounded-lg input-focus text-sm" /></div>
+                <div><label className="text-xs text-gray-500">До</label><input type="date" value={pkg.dateTo || ''} onChange={e => { const updated = [...pkgs]; updated[idx] = { ...updated[idx], dateTo: e.target.value }; setForm(p => ({ ...p, packages: updated })); }} className="w-full p-2 border rounded-lg input-focus text-sm" /></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button onClick={() => { if (!form.name) { alert('Введите ФИО'); return; } const login = genLogin(form.name); const password = genPassword(); addStudent({ ...form, login, password, age: parseInt(form.age) || 0, packages: (form.packages || []).map(p => ({ ...p, completedLessons: 0 })) }); alert(`Студент создан!\nЛогин: ${login}\nПароль: ${password}`); setModal(null); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl">Создать</button>
+      </div></Modal>;
     }
 
     // ADD/EDIT TEACHER
     if (modal === 'addTeacher' || modal === 'editTeacher') {
       const isEdit = modal === 'editTeacher';
-      return <Modal title={isEdit ? 'Редактировать преподавателя' : 'Добавить преподавателя'} onClose={() => { setModal(null); setSelected(null); }}><div className="space-y-4"><div><label className="block text-sm text-gray-600 mb-1">ФИО *</label><input type="text" value={form.name || ''} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm text-gray-600 mb-1">Email</label><input type="email" value={form.email || ''} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div><label className="block text-sm text-gray-600 mb-1">Телефон</label><input type="tel" value={form.phone || ''} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div></div><div><label className="block text-sm text-gray-600 mb-1">Предмет *</label><input type="text" value={form.subject || ''} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Английский / IELTS" /></div><div><label className="block text-sm text-gray-600 mb-1">Ставка (\u20B8/час)</label><input type="number" value={form.hourlyRate || 2500} onChange={e => setForm(p => ({ ...p, hourlyRate: parseInt(e.target.value) }))} className="w-full p-3 border rounded-xl input-focus" /></div><button onClick={() => { if (!form.name || !form.subject) { alert('Заполните поля'); return; } if (isEdit) { updTeacher(selected.id, form); } else { const login = genLogin(form.name); const password = genPassword(); addTeacher({ ...form, login, password }); alert(`Преподаватель создан!\nЛогин: ${login}\nПароль: ${password}`); } setModal(null); setSelected(null); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl">{isEdit ? 'Сохранить' : 'Создать'}</button></div></Modal>;
+      return <Modal title={isEdit ? 'Редактировать преподавателя' : 'Добавить преподавателя'} onClose={() => { setModal(null); setSelected(null); }}><div className="space-y-4"><div><label className="block text-sm text-gray-600 mb-1">ФИО *</label><input type="text" value={form.name || ''} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div className="grid grid-cols-2 gap-4"><div><label className="block text-sm text-gray-600 mb-1">Email</label><input type="email" value={form.email || ''} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div><label className="block text-sm text-gray-600 mb-1">Телефон</label><input type="tel" value={form.phone || ''} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div></div><div><label className="block text-sm text-gray-600 mb-1">Предмет *</label><input type="text" value={form.subject || ''} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Английский / IELTS" /></div><div><label className="block text-sm text-gray-600 mb-1">Ставка (тг/час)</label><input type="number" value={form.hourlyRate || 2500} onChange={e => setForm(p => ({ ...p, hourlyRate: parseInt(e.target.value) }))} className="w-full p-3 border rounded-xl input-focus" /></div><button onClick={() => { if (!form.name || !form.subject) { alert('Заполните поля'); return; } if (isEdit) { updTeacher(selected.id, form); } else { const login = genLogin(form.name); const password = genPassword(); addTeacher({ ...form, login, password }); alert(`Преподаватель создан!\nЛогин: ${login}\nПароль: ${password}`); } setModal(null); setSelected(null); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl">{isEdit ? 'Сохранить' : 'Создать'}</button></div></Modal>;
     }
 
     // ADD/EDIT SCHEDULE
@@ -268,7 +403,7 @@ export default function NobilisAcademy() {
     // ADD LESSON
     if (modal === 'addLesson') {
       const t = getTeacher(); const mySchedule = data.schedule.filter(s => s.teacherId === t.id);
-      return <Modal title="Отметить урок" onClose={() => setModal(null)}><div className="space-y-4"><div><label className="block text-sm text-gray-600 mb-1">Дата *</label><input type="date" value={form.date || ''} onChange={e => setForm(p => ({ ...p, date: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div><label className="block text-sm text-gray-600 mb-1">Занятие</label><select value={form.scheduleId || ''} onChange={e => setForm(p => ({ ...p, scheduleId: e.target.value }))} className="w-full p-3 border rounded-xl input-focus"><option value="">— Выберите —</option>{mySchedule.map(s => <option key={s.id} value={s.id}>{s.day} {s.time} — {s.subject}</option>)}</select></div><div><label className="block text-sm text-gray-600 mb-1">Статус *</label><select value={form.status || 'conducted'} onChange={e => setForm(p => ({ ...p, status: e.target.value }))} className="w-full p-3 border rounded-xl input-focus"><option value="conducted">Проведён</option><option value="cancelled">Отменён</option><option value="rescheduled">Перенесён</option></select></div>{form.status === 'conducted' && <div><label className="block text-sm text-gray-600 mb-1">Часы</label><input type="number" step="0.5" value={form.hours || 1.5} onChange={e => setForm(p => ({ ...p, hours: parseFloat(e.target.value) }))} className="w-full p-3 border rounded-xl input-focus" /></div>}<div><label className="block text-sm text-gray-600 mb-1">Примечание</label><input type="text" value={form.note || ''} onChange={e => setForm(p => ({ ...p, note: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Причина отмены..." /></div><button onClick={() => { if (!form.date) { alert('Выберите дату'); return; } markLesson(t.id, { ...form, hours: form.status === 'conducted' ? (form.hours || 1.5) : 0 }); setModal(null); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl">Сохранить</button></div></Modal>;
+      return <Modal title="Отметить урок" onClose={() => setModal(null)}><div className="space-y-4"><div><label className="block text-sm text-gray-600 mb-1">Дата *</label><input type="date" value={form.date || ''} onChange={e => setForm(p => ({ ...p, date: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div><label className="block text-sm text-gray-600 mb-1">Занятие</label><select value={form.scheduleId || ''} onChange={e => setForm(p => ({ ...p, scheduleId: e.target.value }))} className="w-full p-3 border rounded-xl input-focus"><option value="">— Выберите —</option>{mySchedule.map(s => <option key={s.id} value={s.id}>{s.day} {s.time} — {s.subject}</option>)}</select></div><div><label className="block text-sm text-gray-600 mb-1">Статус *</label><select value={form.status || 'conducted'} onChange={e => setForm(p => ({ ...p, status: e.target.value }))} className="w-full p-3 border rounded-xl input-focus"><option value="conducted">Проведён</option><option value="cancelled">Отменён</option><option value="rescheduled">Перенесён</option></select></div>{form.status === 'conducted' && <div><label className="block text-sm text-gray-600 mb-1">Часы</label><input type="number" step="0.5" value={form.hours || 1.5} onChange={e => setForm(p => ({ ...p, hours: parseFloat(e.target.value) }))} className="w-full p-3 border rounded-xl input-focus" /></div>}<div><label className="block text-sm text-gray-600 mb-1">Домашнее задание</label><textarea value={form.homework || ''} onChange={e => setForm(p => ({ ...p, homework: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" rows={2} placeholder="ДЗ для студентов..." /></div><div><label className="block text-sm text-gray-600 mb-1">Комментарий</label><textarea value={form.comment || ''} onChange={e => setForm(p => ({ ...p, comment: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" rows={2} placeholder="Комментарий по уроку..." /></div><div><label className="block text-sm text-gray-600 mb-1">Примечание</label><input type="text" value={form.note || ''} onChange={e => setForm(p => ({ ...p, note: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Причина отмены..." /></div><button onClick={() => { if (!form.date) { alert('Выберите дату'); return; } markLesson(t.id, { ...form, hours: form.status === 'conducted' ? (form.hours || 1.5) : 0, homework: form.homework || '', comment: form.comment || '', studentAttendance: {} }); setModal(null); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl">Сохранить</button></div></Modal>;
     }
 
     // SUPPORT TICKET
@@ -290,18 +425,120 @@ export default function NobilisAcademy() {
     // STUDENT DETAIL (curator)
     if (modal === 'studentDetail' && selected) {
       const s = selected;
-      return <Modal title={s.name} onClose={() => { setModal(null); setSelected(null); }} size="lg"><div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><div className="text-sm text-gray-500">Логин</div><div className="font-medium">{s.login}</div></div><div><div className="text-sm text-gray-500">Пароль</div><div className="font-medium">{s.password}</div></div><div><div className="text-sm text-gray-500">Email</div><div className="font-medium">{s.email}</div></div><div><div className="text-sm text-gray-500">Телефон</div><div className="font-medium">{s.phone}</div></div><div><div className="text-sm text-gray-500">Класс</div><div className="font-medium">{s.grade}</div></div><div><div className="text-sm text-gray-500">Возраст</div><div className="font-medium">{s.age}</div></div><div><div className="text-sm text-gray-500">Родитель</div><div className="font-medium">{s.parentName}</div></div><div><div className="text-sm text-gray-500">Тел. родителя</div><div className="font-medium">{s.parentPhone}</div></div></div><div><div className="text-sm text-gray-500 mb-2">Цели</div><div className="flex gap-4">{s.targetIelts && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">IELTS: {s.targetIelts}</span>}{s.targetSat && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">SAT: {s.targetSat}</span>}</div></div><div className="flex gap-3"><button onClick={() => { setForm({ type: 'contract', name: '', score: '' }); setModal('addDocument'); }} className="flex-1 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">+ Документ</button><button onClick={() => { if (window.confirm('Удалить студента?')) { delStudent(s.id); setModal(null); setSelected(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors">Удалить</button></div></div></Modal>;
+      return (
+        <Modal title={s.name} onClose={() => { setModal(null); setSelected(null); }} size="lg">
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div><div className="text-sm text-gray-500">Логин</div><div className="font-medium">{s.login}</div></div>
+              <div><div className="text-sm text-gray-500">Пароль</div><div className="font-medium">{s.password}</div></div>
+              <div><div className="text-sm text-gray-500">Email</div><div className="font-medium">{s.email}</div></div>
+              <div><div className="text-sm text-gray-500">Телефон</div><div className="font-medium">{s.phone}</div></div>
+              <div><div className="text-sm text-gray-500">Класс</div><div className="font-medium">{s.grade}</div></div>
+              <div><div className="text-sm text-gray-500">Город</div><div className="font-medium">{s.city || '—'}</div></div>
+            </div>
+            {s.packages?.length > 0 && (
+              <div>
+                <div className="text-sm text-gray-500 mb-2">Пакеты</div>
+                <div className="flex flex-wrap gap-2">
+                  {s.packages.map(pkg => {
+                    const type = PACKAGE_TYPES[pkg.type] || { label: pkg.type, color: 'bg-gray-100 text-gray-700' };
+                    return <span key={pkg.id} className={`px-3 py-1 rounded-full text-sm ${type.color}`}>{type.label}: {pkg.totalLessons - pkg.completedLessons} ост.</span>;
+                  })}
+                </div>
+              </div>
+            )}
+            <div><div className="text-sm text-gray-500 mb-2">Цели</div><div className="flex gap-4">{s.targetIelts && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">IELTS: {s.targetIelts}</span>}{s.targetSat && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">SAT: {s.targetSat}</span>}</div></div>
+            <div className="flex gap-3">
+              <button onClick={() => { setModal(null); setView('studentPage'); }} className="flex-1 py-2 bg-[#1a3a32] text-white rounded-xl hover:bg-[#2d5a4a] transition-colors flex items-center justify-center gap-2"><I.Open /><span>Открыть подробно</span></button>
+              <button onClick={() => { setForm({ type: 'contract', name: '', score: '' }); setModal('addDocument'); }} className="flex-1 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">+ Документ</button>
+              <button onClick={() => { if (window.confirm('Удалить студента?')) { delStudent(s.id); setModal(null); setSelected(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors">Удалить</button>
+            </div>
+          </div>
+        </Modal>
+      );
     }
 
-    // ADD DOCUMENT
+    // ADD DOCUMENT (with file upload)
     if (modal === 'addDocument' && selected) {
-      return <Modal title="Добавить документ" onClose={() => { setModal('studentDetail'); setForm({}); }}><div className="space-y-4"><div><label className="block text-sm text-gray-600 mb-1">Тип *</label><select value={form.type || 'contract'} onChange={e => setForm(p => ({ ...p, type: e.target.value }))} className="w-full p-3 border rounded-xl input-focus">{Object.entries(DOCUMENT_TYPES).map(([k, v]) => <option key={k} value={k}>{v.icon} {v.label}</option>)}</select></div><div><label className="block text-sm text-gray-600 mb-1">Название</label><input type="text" value={form.name || ''} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>{DOCUMENT_TYPES[form.type]?.isExam && <div><label className="block text-sm text-gray-600 mb-1">Балл</label><input type="text" value={form.score || ''} onChange={e => setForm(p => ({ ...p, score: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="7.5" /></div>}<button onClick={() => { addDoc(selected.id, { ...form, name: form.name || DOCUMENT_TYPES[form.type]?.label || 'Документ' }); setModal('studentDetail'); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl">Добавить</button></div></Modal>;
+      return <Modal title="Добавить документ" onClose={() => { setModal('studentDetail'); setForm({}); }}><div className="space-y-4">
+        <div><label className="block text-sm text-gray-600 mb-1">Тип *</label><select value={form.type || 'contract'} onChange={e => setForm(p => ({ ...p, type: e.target.value }))} className="w-full p-3 border rounded-xl input-focus">{Object.entries(DOCUMENT_TYPES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select></div>
+        <div><label className="block text-sm text-gray-600 mb-1">Название</label><input type="text" value={form.name || ''} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+        {DOCUMENT_TYPES[form.type]?.isExam && <div><label className="block text-sm text-gray-600 mb-1">Балл</label><input type="text" value={form.score || ''} onChange={e => setForm(p => ({ ...p, score: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="7.5" /></div>}
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">Файл</label>
+          <label className="flex items-center gap-3 p-4 border-2 border-dashed rounded-xl cursor-pointer hover:border-[#c9a227] hover:bg-gray-50 transition-all">
+            <I.Upload />
+            <div><div className="text-sm font-medium">{form.fileName || 'Выберите файл'}</div><div className="text-xs text-gray-400">Загрузите с компьютера или телефона</div></div>
+            <input type="file" className="hidden" onChange={e => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (ev) => { setForm(p => ({ ...p, fileData: ev.target.result, fileName: file.name })); }; reader.readAsDataURL(file); }} />
+          </label>
+          {form.fileName && <div className="mt-2 text-sm text-green-600 flex items-center gap-1"><I.Check /><span>{form.fileName}</span></div>}
+        </div>
+        <button onClick={() => { addDoc(selected.id, { ...form, name: form.name || DOCUMENT_TYPES[form.type]?.label || 'Документ' }); setModal('studentDetail'); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl">Добавить</button>
+      </div></Modal>;
+    }
+
+    // ADD PACKAGE
+    if (modal === 'addPackage' && selected) {
+      return <Modal title="Добавить пакет" onClose={() => { setModal(null); setForm({}); }}><div className="space-y-4">
+        <div><label className="block text-sm text-gray-600 mb-1">Тип пакета *</label><select value={form.type || 'ielts'} onChange={e => setForm(p => ({ ...p, type: e.target.value }))} className="w-full p-3 border rounded-xl input-focus">{Object.entries(PACKAGE_TYPES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select></div>
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="block text-sm text-gray-600 mb-1">Дата начала *</label><input type="date" value={form.dateFrom || ''} onChange={e => setForm(p => ({ ...p, dateFrom: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+          <div><label className="block text-sm text-gray-600 mb-1">Дата окончания *</label><input type="date" value={form.dateTo || ''} onChange={e => setForm(p => ({ ...p, dateTo: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+        </div>
+        <div><label className="block text-sm text-gray-600 mb-1">Количество занятий *</label><input type="number" value={form.totalLessons || ''} onChange={e => setForm(p => ({ ...p, totalLessons: parseInt(e.target.value) || 0 }))} className="w-full p-3 border rounded-xl input-focus" placeholder="48" /></div>
+        <button onClick={() => { if (!form.dateFrom || !form.dateTo || !form.totalLessons) { alert('Заполните все поля'); return; } addPackage(selected.id, form); setModal(null); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl">Добавить пакет</button>
+      </div></Modal>;
+    }
+
+    // FREEZE STUDENT
+    if (modal === 'freezeStudent' && selected) {
+      return <Modal title="Заморозить студента" onClose={() => { setModal(null); setForm({}); }}><div className="space-y-4">
+        <p className="text-gray-600 text-sm">Укажите период заморозки. Оставьте дату окончания пустой для неопределенного срока.</p>
+        <div className="grid grid-cols-2 gap-4">
+          <div><label className="block text-sm text-gray-600 mb-1">С даты *</label><input type="date" value={form.dateFrom || ''} onChange={e => setForm(p => ({ ...p, dateFrom: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+          <div><label className="block text-sm text-gray-600 mb-1">До даты</label><input type="date" value={form.dateTo || ''} onChange={e => setForm(p => ({ ...p, dateTo: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+        </div>
+        <div><label className="block text-sm text-gray-600 mb-1">Причина</label><textarea value={form.reason || ''} onChange={e => setForm(p => ({ ...p, reason: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" rows={3} placeholder="Уважительная причина..." /></div>
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">Документ-основание</label>
+          <label className="flex items-center gap-3 p-4 border-2 border-dashed rounded-xl cursor-pointer hover:border-[#c9a227] hover:bg-gray-50 transition-all">
+            <I.Upload />
+            <div><div className="text-sm font-medium">{form.docName || 'Прикрепить документ'}</div><div className="text-xs text-gray-400">Заявление, справка и т.д.</div></div>
+            <input type="file" className="hidden" onChange={e => { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (ev) => { setForm(p => ({ ...p, docData: ev.target.result, docName: file.name })); }; reader.readAsDataURL(file); }} />
+          </label>
+          {form.docName && <div className="mt-2 text-sm text-green-600 flex items-center gap-1"><I.Check /><span>{form.docName}</span></div>}
+        </div>
+        <button onClick={() => { if (!form.dateFrom) { alert('Укажите дату начала'); return; } freezeStudent(selected.id, { dateFrom: form.dateFrom, dateTo: form.dateTo || null, reason: form.reason || '', document: form.docName || null }); setModal(null); setForm({}); }} className="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">Заморозить</button>
+      </div></Modal>;
     }
 
     // STUDENT DETAIL (teacher view)
     if (modal === 'studentDetailTeacher' && selected) {
       const s = selected; const mocks = s.examResults?.filter(e => e.type.startsWith('mock_')).sort((a, b) => new Date(b.date) - new Date(a.date)) || [];
-      return <Modal title={s.name} onClose={() => { setModal(null); setSelected(null); }} size="lg"><div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><div className="text-sm text-gray-500">Класс</div><div className="font-medium">{s.grade}</div></div><div><div className="text-sm text-gray-500">Посещаемость</div><div className="font-medium">{s.attendance?.total > 0 ? Math.round(s.attendance.attended / s.attendance.total * 100) : 0}%</div></div></div><div><div className="text-sm text-gray-500 mb-2">Цели</div><div className="flex gap-4">{s.targetIelts && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">IELTS: {s.targetIelts}</span>}{s.targetSat && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">SAT: {s.targetSat}</span>}</div></div><div><div className="text-sm text-gray-500 mb-2">История пробных тестов</div>{mocks.length > 0 ? <div className="space-y-2">{mocks.map(e => <div key={e.id} className="flex justify-between p-3 bg-gray-50 rounded-xl"><div><div className="font-medium">{e.name}</div><div className="text-sm text-gray-500">{formatDate(e.date)}</div></div><div className="text-xl font-bold text-[#c9a227]">{e.score}</div></div>)}</div> : <p className="text-gray-500">Нет результатов</p>}</div></div></Modal>;
+      return <Modal title={s.name} onClose={() => { setModal(null); setSelected(null); }} size="lg"><div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div><div className="text-sm text-gray-500">Класс</div><div className="font-medium">{s.grade}</div></div>
+          <div><div className="text-sm text-gray-500">Посещаемость</div><div className="font-medium">{s.attendance?.total > 0 ? Math.round(s.attendance.attended / s.attendance.total * 100) : 0}%</div></div>
+        </div>
+        {s.packages?.length > 0 && (
+          <div>
+            <div className="text-sm text-gray-500 mb-2">Пакеты</div>
+            <div className="space-y-2">
+              {s.packages.map(pkg => {
+                const type = PACKAGE_TYPES[pkg.type] || { label: pkg.type, color: 'bg-gray-100 text-gray-700' };
+                return (
+                  <div key={pkg.id} className={`p-3 rounded-xl ${type.color} flex justify-between items-center`}>
+                    <div><div className="font-medium">{type.label}</div><div className="text-xs opacity-75">{formatDate(pkg.dateFrom)} - {formatDate(pkg.dateTo)}</div></div>
+                    <div className="text-right"><div className="font-bold">{pkg.totalLessons - pkg.completedLessons}/{pkg.totalLessons}</div><div className="text-xs opacity-75">осталось</div></div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        <div><div className="text-sm text-gray-500 mb-2">Цели</div><div className="flex gap-4">{s.targetIelts && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">IELTS: {s.targetIelts}</span>}{s.targetSat && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">SAT: {s.targetSat}</span>}</div></div>
+        <div><div className="text-sm text-gray-500 mb-2">История пробных тестов</div>{mocks.length > 0 ? <div className="space-y-2">{mocks.map(e => <div key={e.id} className="flex justify-between p-3 bg-gray-50 rounded-xl"><div><div className="font-medium">{e.name}</div><div className="text-sm text-gray-500">{formatDate(e.date)}</div></div><div className="text-xl font-bold text-[#c9a227]">{e.score}</div></div>)}</div> : <p className="text-gray-500">Нет результатов</p>}</div>
+      </div></Modal>;
     }
 
     return null;
@@ -312,7 +549,7 @@ export default function NobilisAcademy() {
   // ============================================================
   return (
     <div className="flex h-screen bg-[#f8faf9]">
-      <Sidebar user={user} view={view} navItems={navItems} onNavigate={setView} onLogout={logout} />
+      <Sidebar user={user} view={view === 'studentPage' ? 'students' : view} navItems={navItems} onNavigate={(v) => { setView(v); setSelected(null); setModal(null); }} onLogout={logout} />
       <main className="flex-1 overflow-y-auto p-6 md:p-8">
         {renderContent()}
       </main>

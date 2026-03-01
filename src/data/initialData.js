@@ -14,13 +14,19 @@ export const getInitialData = () => {
       {
         id: '1', name: "Алексей Петров", login: "alexey.pet47", password: "Nobilis2024!",
         email: "alex@mail.com", phone: "+7 999 123-45-67", age: 16, grade: "10 класс",
-        joinDate: "2024-09-15", contractEndDate: "2025-09-15",
+        joinDate: "2024-09-15", city: "Алматы",
         parentName: "Петров Игорь", parentPhone: "+7 999 765-43-21",
         testResult: null, testScores: null,
         targetIelts: "7.5", targetSat: "1500",
         selectedCountries: ["США", "Германия"],
         targetUniversities: ["MIT", "TU Munich"],
         deadlines: { ielts: "2025-03-01", sat: "2025-04-15" },
+        packages: [
+          { id: 'pkg1', type: 'ielts', dateFrom: '2024-09-15', dateTo: '2025-06-15', totalLessons: 48, completedLessons: 22 },
+          { id: 'pkg2', type: 'sat', dateFrom: '2024-10-01', dateTo: '2025-05-01', totalLessons: 32, completedLessons: 14 }
+        ],
+        freeze: null,
+        avatar: null,
         examResults: [
           { id: 'e1', type: "ielts", name: "IELTS", score: "7.0", date: "2024-11-20", breakdown: { listening: 7.5, reading: 7.0, writing: 6.5, speaking: 7.0 } },
           { id: 'e2', type: "mock_ielts", name: "Пробный IELTS #1", score: "6.5", date: "2024-09-20" }
@@ -36,13 +42,19 @@ export const getInitialData = () => {
       {
         id: '2', name: "Мария Иванова", login: "maria.iva23", password: "Nobilis2024@",
         email: "maria@mail.com", phone: "+7 999 234-56-78", age: 17, grade: "11 класс",
-        joinDate: "2024-08-01", contractEndDate: "2025-08-01",
+        joinDate: "2024-08-01", city: "Астана",
         parentName: "Иванова Елена", parentPhone: "+7 999 876-54-32",
         testResult: "Творческий Визионер", testScores: { creative: 28, social: 18 },
         targetIelts: "7.5", targetSat: null,
         selectedCountries: ["Нидерланды"],
         targetUniversities: ["TU Delft"],
         deadlines: { ielts: "2025-02-15" },
+        packages: [
+          { id: 'pkg3', type: 'ielts', dateFrom: '2024-08-01', dateTo: '2025-04-01', totalLessons: 40, completedLessons: 29 },
+          { id: 'pkg4', type: 'support', dateFrom: '2024-08-01', dateTo: '2025-08-01', totalLessons: 24, completedLessons: 12 }
+        ],
+        freeze: null,
+        avatar: null,
         examResults: [
           { id: 'e4', type: "ielts", name: "IELTS", score: "7.5", date: "2024-10-10", breakdown: { listening: 8.0, reading: 7.5, writing: 7.0, speaking: 7.5 } }
         ],
@@ -54,12 +66,17 @@ export const getInitialData = () => {
       {
         id: '3', name: "Дмитрий Козлов", login: "dmitry.koz15", password: "Nobilis2024#",
         email: "dmitry@mail.com", phone: "+7 999 345-67-89", age: 15, grade: "9 класс",
-        joinDate: "2024-12-01", contractEndDate: "2026-06-01",
+        joinDate: "2024-12-01", city: "Шымкент",
         parentName: "Козлов Андрей", parentPhone: "+7 999 987-65-43",
         testResult: null, testScores: null,
         targetIelts: "7.0", targetSat: "1400",
         selectedCountries: [], targetUniversities: [],
         deadlines: { ielts: "2025-12-01" },
+        packages: [
+          { id: 'pkg5', type: 'ielts', dateFrom: '2024-12-01', dateTo: '2025-12-01', totalLessons: 60, completedLessons: 10 }
+        ],
+        freeze: null,
+        avatar: null,
         examResults: [{ id: 'e5', type: "mock_ielts", name: "Пробный IELTS", score: "5.0", date: "2024-10-25" }],
         attendance: { total: 12, attended: 10 },
         documents: [{ id: 'd5', type: "contract", name: "Договор", date: "2024-10-01" }],
@@ -69,24 +86,24 @@ export const getInitialData = () => {
     teachers: [
       {
         id: '1', name: "Смирнова Анна Владимировна", login: "smirnova.ann", password: "Teacher2024!",
-        email: "smirnova@nobilis.edu", phone: "+7 999 111-22-33",
+        email: "smirnova@nobilis.edu", phone: "+7 999 111-22-33", avatar: null,
         subject: "Английский / IELTS", hourlyRate: 2500, hoursWorked: 48, totalLessons: 32,
         lessons: [
-          { id: 'tl1', date: "2024-12-09", scheduleId: '1', status: "conducted", hours: 1.5, confirmed: true },
-          { id: 'tl2', date: "2024-12-12", scheduleId: '1', status: "cancelled", hours: 0, note: "Больничный", confirmed: false }
+          { id: 'tl1', date: "2024-12-09", scheduleId: '1', status: "conducted", hours: 1.5, confirmed: true, homework: 'Написать эссе на тему Education', comment: 'Хороший урок, все студенты активны', studentAttendance: { '1': true, '2': true } },
+          { id: 'tl2', date: "2024-12-12", scheduleId: '1', status: "cancelled", hours: 0, note: "Больничный", confirmed: false, homework: '', comment: '', studentAttendance: {} }
         ],
         syllabus: [{ id: 's1', course: "IELTS Prep", weeks: 12, topics: ["Listening", "Reading", "Writing", "Speaking"], progress: 75, students: ['1', '2'] }]
       },
       {
         id: '2', name: "Петров Иван Константинович", login: "petrov.iva", password: "Teacher2024@",
-        email: "petrov@nobilis.edu", phone: "+7 999 222-33-44",
+        email: "petrov@nobilis.edu", phone: "+7 999 222-33-44", avatar: null,
         subject: "Математика / SAT", hourlyRate: 2800, hoursWorked: 36, totalLessons: 24,
-        lessons: [{ id: 'tl4', date: "2024-12-13", scheduleId: '3', status: "conducted", hours: 1.5, confirmed: true }],
+        lessons: [{ id: 'tl4', date: "2024-12-13", scheduleId: '3', status: "conducted", hours: 1.5, confirmed: true, homework: 'Решить задачи 1-20 из сборника', comment: '', studentAttendance: { '1': true, '3': true } }],
         syllabus: [{ id: 's3', course: "SAT Math", weeks: 16, topics: ["Algebra", "Geometry", "Statistics"], progress: 60, students: ['1', '3'] }]
       },
       {
         id: '3', name: "Дизайнова Анна Сергеевна", login: "anna.dsgn", password: "Teacher2024#",
-        email: "anna@nobilis.edu", phone: "+7 999 333-44-55",
+        email: "anna@nobilis.edu", phone: "+7 999 333-44-55", avatar: null,
         subject: "Портфолио / Дизайн", hourlyRate: 3000, hoursWorked: 24, totalLessons: 12,
         lessons: [],
         syllabus: [{ id: 's4', course: "Portfolio", weeks: 10, topics: ["Concept", "Execution"], progress: 40, students: ['2'] }]
@@ -109,7 +126,8 @@ export const getInitialData = () => {
       { id: '3', name: "Design Week Milan", country: "Италия", type: "Дизайн", requirements: "Portfolio", deadline: "2025-02-28", link: "https://designweek.it", description: "Стажировка на неделе дизайна" }
     ],
     supportTickets: [
-      { id: '1', studentId: '3', studentName: "Дмитрий Козлов", message: "Не могу зайти в ЛК", priority: "high", created: "2024-12-10T10:30:00", deadline: "2024-12-12T10:30:00", status: "open" }
+      { id: '1', studentId: '3', studentName: "Дмитрий Козлов", message: "Не могу зайти в ЛК", priority: "high", created: "2024-12-10T10:30:00", deadline: "2024-12-12T10:30:00", status: "open" },
+      { id: '2', studentId: '1', studentName: "Алексей Петров", message: "Нужна справка для визы", priority: "normal", created: "2024-11-20T14:00:00", deadline: "2024-11-22T14:00:00", status: "resolved", resolvedDate: "2024-11-21T10:00:00" }
     ],
     attendance: {}
   };
