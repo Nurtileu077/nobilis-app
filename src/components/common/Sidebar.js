@@ -9,7 +9,7 @@ const ROLE_LABELS = {
   teacher: 'Преподаватель'
 };
 
-const Sidebar = ({ user, view, navItems, onNavigate, onLogout, isOpen, onToggle, onAvatarClick }) => (
+const Sidebar = ({ user, view, navItems, onNavigate, onLogout, isOpen, onToggle, onAvatarClick, taskCount }) => (
   <>
     {/* Mobile overlay */}
     {isOpen && (
@@ -39,7 +39,12 @@ const Sidebar = ({ user, view, navItems, onNavigate, onLogout, isOpen, onToggle,
               style={view === item.id ? { background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a4a 100%)' } : {}}
             >
               <item.icon />
-              <span className="font-medium text-sm">{item.label}</span>
+              <span className="font-medium text-sm flex-1">{item.label}</span>
+              {item.id === 'tasks' && taskCount > 0 && (
+                <span className={`px-2 py-0.5 rounded-full text-xs font-bold min-w-[20px] text-center ${
+                  view === item.id ? 'bg-white/20 text-white' : 'bg-red-500 text-white'
+                }`}>{taskCount}</span>
+              )}
             </button>
           ))}
         </div>

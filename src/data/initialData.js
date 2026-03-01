@@ -184,6 +184,13 @@ export const getInitialData = () => {
       { id: '1', studentId: '3', studentName: "Дмитрий Козлов", message: "Не могу зайти в ЛК", priority: "high", created: "2024-12-10T10:30:00", deadline: "2024-12-12T10:30:00", status: "open" }
     ],
     attendance: {},
-    lessonLog: []
+    lessonLog: [],
+    globalTasks: [
+      { id: 'gt1', title: 'Подготовить отчет по успеваемости', description: 'Составить сводный отчет по всем студентам за январь. Включить посещаемость, результаты тестов и прогресс по пакетам.', assigneeId: 'curator', assigneeName: 'Куратор Мария', deadline: '2025-02-15', urgent: false, done: false, created: '2025-01-20T10:00:00', createdBy: 'Куратор Мария' },
+      { id: 'gt2', title: 'Обновить силлабус IELTS', description: 'Добавить новые темы по Writing Task 2 и обновить материалы по Speaking.', assigneeId: 'teacher_1', assigneeName: 'Смирнова Анна Владимировна', deadline: '2025-02-10', urgent: true, done: false, created: '2025-01-18T14:30:00', createdBy: 'Куратор Мария' },
+      { id: 'gt3', title: 'Сдать транскрипт оценок', description: 'Принести оригинал транскрипта в офис для заверения.', assigneeId: 'student_1', assigneeName: 'Алексей Петров', deadline: '2025-02-01', urgent: false, done: true, created: '2025-01-15T09:00:00', createdBy: 'Куратор Мария', doneDate: '2025-01-28T16:00:00' },
+      { id: 'gt4', title: 'Проверить документы для подачи', description: 'Проверить полноту пакета документов Анны Сидоровой для Cambridge.', assigneeId: 'curator', assigneeName: 'Куратор Мария', deadline: '2025-01-30', urgent: true, done: false, created: '2025-01-25T11:00:00', createdBy: 'Куратор Мария' },
+      { id: 'gt5', title: 'Провести пробный IELTS Speaking', description: '', assigneeId: 'teacher_1', assigneeName: 'Смирнова Анна Владимировна', deadline: '2025-02-05', urgent: false, done: false, created: '2025-01-22T15:00:00', createdBy: 'Куратор Мария' },
+    ]
   };
 };

@@ -18,6 +18,7 @@ import StudentMockTests from './components/student/StudentMockTests';
 import StudentLetters from './components/student/StudentLetters';
 import StudentInternships from './components/student/StudentInternships';
 import StudentDocuments from './components/student/StudentDocuments';
+import StudentEnglishTest from './components/student/StudentEnglishTest';
 
 // Curator views
 import CuratorDashboard from './components/curator/CuratorDashboard';
@@ -29,6 +30,7 @@ import CuratorTeachers from './components/curator/CuratorTeachers';
 import CuratorSalary from './components/curator/CuratorSalary';
 import CuratorSupport from './components/curator/CuratorSupport';
 import CuratorInternships from './components/curator/CuratorInternships';
+import CuratorTasks from './components/curator/CuratorTasks';
 
 // Teacher views
 import TeacherDashboard from './components/teacher/TeacherDashboard';
@@ -44,6 +46,7 @@ const getNavItems = (role) => {
   if (role === 'student') return [
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
     { id: 'schedule', label: 'Расписание', icon: I.Calendar },
+    { id: 'englishTest', label: 'Тест English', icon: I.Globe },
     { id: 'test', label: 'Профориентация', icon: I.Test },
     { id: 'results', label: 'Результаты', icon: I.Results },
     { id: 'mockTests', label: 'Пробные тесты', icon: I.MockTest },
@@ -53,6 +56,7 @@ const getNavItems = (role) => {
   ];
   if (role === 'curator') return [
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'tasks', label: 'Задачи', icon: I.Tasks },
     { id: 'students', label: 'Студенты', icon: I.Users },
     { id: 'attendance', label: 'Посещаемость', icon: I.Check },
     { id: 'schedule', label: 'Расписание', icon: I.Calendar },
@@ -98,6 +102,8 @@ export default function NobilisAcademy() {
     addPackage, freezePackage,
     addTask, toggleTask, addComment,
     freezeStudent, unfreezeStudent, setAvatar,
+    submitEnglishTest, resetEnglishTest,
+    addGlobalTask, toggleGlobalTask, deleteGlobalTask,
     generateLogin: genLogin, generatePassword: genPassword,
   } = app;
   const [detailTab, setDetailTab] = useState('info');
@@ -115,6 +121,7 @@ export default function NobilisAcademy() {
       switch (view) {
         case 'dashboard': return <StudentDashboard student={s} schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
         case 'schedule': return <StudentSchedule student={s} schedule={data.schedule} teachers={data.teachers} onSetSelected={setSelected} onSetModal={setModal} />;
+        case 'englishTest': return <StudentEnglishTest student={s} onSubmitEnglishTest={submitEnglishTest} onResetEnglishTest={resetEnglishTest} />;
         case 'test': return <StudentTest student={s} testAnswers={testAnswers} testQ={testQ} onSetTestAnswers={setTestAnswers} onSetTestQ={setTestQ} onSubmitTest={submitTest} onResetTest={resetTest} />;
         case 'results': return <StudentResults student={s} onSetSelected={setSelected} onSetModal={setModal} />;
         case 'mockTests': return <StudentMockTests student={s} mockTests={data.mockTests} onSetSelected={setSelected} onSetModal={setModal} />;
@@ -134,6 +141,7 @@ export default function NobilisAcademy() {
       }
       switch (view) {
         case 'dashboard': return <CuratorDashboard data={data} onResolveTicket={resolveTicket} onSetModal={setModal} onSetForm={setForm} />;
+        case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
         case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} cityFilter={cityFilter} statusFilter={statusFilter} onSetCityFilter={setCityFilter} onSetStatusFilter={setStatusFilter} onOpenStudentPage={(id) => setStudentPage(id)} />;
         case 'attendance': return <CuratorAttendance data={data} attDate={attDate} attSchedule={attSchedule} onSetAttDate={setAttDate} onSetAttSchedule={setAttSchedule} onMarkAtt={markAtt} />;
         case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
@@ -941,7 +949,7 @@ export default function NobilisAcademy() {
   // ============================================================
   return (
     <div className="flex h-screen bg-[#f8faf9]">
-      <Sidebar user={{...user, avatar: user.role === 'curator' ? data.curatorAvatar : user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : (data.teachers.find(x => x.id === user.id)?.avatar)}} view={view} navItems={navItems} onNavigate={(v) => { setView(v); setStudentPage(null); }} onLogout={logout} isOpen={sidebarOpen} onToggle={() => setSidebarOpen(false)} onAvatarClick={() => { setForm({ avatarTargetRole: user.role, avatarTargetId: user.id, avatarPreview: user.role === 'curator' ? data.curatorAvatar : null }); setModal('avatarUpload'); }} />
+      <Sidebar user={{...user, avatar: user.role === 'curator' ? data.curatorAvatar : user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : (data.teachers.find(x => x.id === user.id)?.avatar)}} view={view} navItems={navItems} onNavigate={(v) => { setView(v); setStudentPage(null); }} onLogout={logout} isOpen={sidebarOpen} onToggle={() => setSidebarOpen(false)} onAvatarClick={() => { setForm({ avatarTargetRole: user.role, avatarTargetId: user.id, avatarPreview: user.role === 'curator' ? data.curatorAvatar : null }); setModal('avatarUpload'); }} taskCount={(data.globalTasks || []).filter(t => !t.done).length} />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile header */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b shadow-sm">

@@ -334,6 +334,38 @@ export default function useAppData() {
     setUser(prev => ({ ...prev, testResult: null, testScores: null }));
   };
 
+  // ---- ENGLISH TEST ----
+  const submitEnglishTest = (studentId, result) => {
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      const prevResults = student.englishTestHistory || [];
+      updStudent(studentId, {
+        englishTestResult: result,
+        englishTestHistory: [...prevResults, result],
+      });
+      addHistory(studentId, `Прошел тест на знание английского: ${result.levelName} (${result.score}/${result.total})`);
+    }
+  };
+
+  const resetEnglishTest = (studentId) => {
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      updStudent(studentId, { englishTestResult: null });
+    }
+  };
+
+  // ---- GLOBAL TASKS (Bitrix-style) ----
+  const addGlobalTask = (task) => {
+    const newTask = { id: genId(), ...task };
+    upd('globalTasks', [...(data.globalTasks || []), newTask]);
+  };
+  const toggleGlobalTask = (taskId) => {
+    upd('globalTasks', (data.globalTasks || []).map(t => t.id === taskId ? { ...t, done: !t.done, doneDate: !t.done ? new Date().toISOString() : null } : t));
+  };
+  const deleteGlobalTask = (taskId) => {
+    upd('globalTasks', (data.globalTasks || []).filter(t => t.id !== taskId));
+  };
+
   return {
     // State
     data, user, view, modal, selected, search, form,
@@ -364,6 +396,10 @@ export default function useAppData() {
     addTask, toggleTask,
     addComment, addHistory, addLessonLog,
     freezeStudent, unfreezeStudent, setAvatar,
+    // English test
+    submitEnglishTest, resetEnglishTest,
+    // Global tasks (Bitrix-style)
+    addGlobalTask, toggleGlobalTask, deleteGlobalTask,
     // Helpers
     generateLogin, generatePassword,
   };
