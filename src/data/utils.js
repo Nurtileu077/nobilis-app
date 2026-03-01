@@ -1,5 +1,5 @@
 // =============================================
-// NOBILIS ACADEMY - UTILITIES
+// NOBILIS ACADEMY - UTILITIES v3
 // =============================================
 
 const TRANSLIT_MAP = {
@@ -25,10 +25,16 @@ export const generateLogin = (name) => {
   return transliterate(parts[0]) + '.' + transliterate(parts[1] || '').slice(0, 3) + Math.floor(Math.random() * 100);
 };
 
+export const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
+
 export const formatDate = (d) => d ? new Date(d).toLocaleDateString('ru-RU') : '';
+
+export const formatDateTime = (d) => d ? new Date(d).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
 
 export const daysBetween = (d1, d2) =>
   Math.ceil((new Date(d2) - new Date(d1)) / 86400000);
+
+export const daysUntil = (d) => d ? Math.ceil((new Date(d) - new Date()) / 86400000) : 0;
 
 export const calculateTestResult = (testAnswers, gallupQuestions, careerProfiles) => {
   const scores = {};
@@ -49,7 +55,23 @@ export const calculateTestResult = (testAnswers, gallupQuestions, careerProfiles
 };
 
 export const getInitials = (name) =>
-  name.split(' ').map(n => n[0]).slice(0, 2).join('');
+  name ? name.split(' ').map(n => n[0]).slice(0, 2).join('') : '?';
 
 export const getAttendancePercent = (attendance) =>
   attendance?.total > 0 ? Math.round(attendance.attended / attendance.total * 100) : 0;
+
+// Package progress calculation
+export const getPackageProgress = (pkg, stages) => {
+  if (!pkg) return { percent: 0, text: '' };
+  const pkgType = pkg.type;
+  if (pkgType === 'support') {
+    const stage = stages?.find(s => s.id === pkg.currentStage) || stages?.[0];
+    return { percent: stage?.percent || 0, text: stage?.name || '', isStages: true };
+  }
+  const total = pkg.totalLessons || 1;
+  const done = pkg.completedLessons || 0;
+  const missed = pkg.missedLessons || 0;
+  const remaining = total - done - missed;
+  const pct = Math.round((done / total) * 100);
+  return { percent: pct, text: `\u2713${done} \u2717${missed} \u23F3${remaining}`, done, missed, remaining, total };
+};

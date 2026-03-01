@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useAppData from './hooks/useAppData';
-import { DOCUMENT_TYPES } from './data/constants';
-import { formatDate } from './data/utils';
+import { DOCUMENT_TYPES, PACKAGE_TYPES, SUPPORT_STAGES, COUNTRIES, STUDENT_STATUSES } from './data/constants';
+import { formatDate, formatDateTime, daysUntil, getPackageProgress, getInitials, getAttendancePercent } from './data/utils';
 
 // Common components
 import LoginScreen from './components/common/LoginScreen';
@@ -56,6 +56,7 @@ const getNavItems = (role) => {
     { id: 'students', label: 'Студенты', icon: I.Users },
     { id: 'attendance', label: 'Посещаемость', icon: I.Check },
     { id: 'schedule', label: 'Расписание', icon: I.Calendar },
+    { id: 'countries', label: 'Страны', icon: I.Globe },
     { id: 'mockTests', label: 'Пробные тесты', icon: I.MockTest },
     { id: 'teachers', label: 'Преподаватели', icon: I.Users },
     { id: 'salary', label: 'Зарплаты', icon: I.Money },
@@ -79,10 +80,12 @@ export default function NobilisAcademy() {
   const {
     data, user, view, modal, selected, search, form,
     testAnswers, testQ, attDate, attSchedule, sylSearch,
+    sidebarOpen, cityFilter, statusFilter,
     setView, setModal, setSelected, setSearch, setForm,
     setTestAnswers, setTestQ, setAttDate, setAttSchedule, setSylSearch,
+    setSidebarOpen, setCityFilter, setStatusFilter,
     handleLogin, logout, getStudent, getTeacher,
-    addStudent, updStudent, delStudent,
+    addStudent, delStudent,
     addTeacher, updTeacher, delTeacher,
     addSchedule, updSchedule, delSchedule,
     addMockTest, updMockTest, delMockTest,
@@ -92,8 +95,11 @@ export default function NobilisAcademy() {
     markAtt, markLesson, confirmLesson,
     applyInternship, resolveTicket, addTicket,
     submitTest, resetTest,
+    addPackage, freezePackage,
+    addTask, toggleTask, addComment,
     generateLogin: genLogin, generatePassword: genPassword,
   } = app;
+  const [detailTab, setDetailTab] = useState('info');
 
   // ---- LOGIN SCREEN ----
   if (!user) return <LoginScreen onLogin={handleLogin} />;
@@ -122,13 +128,14 @@ export default function NobilisAcademy() {
     if (user.role === 'curator') {
       switch (view) {
         case 'dashboard': return <CuratorDashboard data={data} onResolveTicket={resolveTicket} onSetModal={setModal} onSetForm={setForm} />;
-        case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
+        case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} cityFilter={cityFilter} statusFilter={statusFilter} onSetCityFilter={setCityFilter} onSetStatusFilter={setStatusFilter} />;
         case 'attendance': return <CuratorAttendance data={data} attDate={attDate} attSchedule={attSchedule} onSetAttDate={setAttDate} onSetAttSchedule={setAttSchedule} onMarkAtt={markAtt} />;
         case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
         case 'mockTests': return <CuratorMockTests mockTests={data.mockTests} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelMockTest={delMockTest} />;
         case 'teachers': return <CuratorTeachers teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelTeacher={delTeacher} />;
         case 'salary': return <CuratorSalary teachers={data.teachers} onConfirmLesson={confirmLesson} />;
         case 'support': return <CuratorSupport tickets={data.supportTickets} onResolveTicket={resolveTicket} />;
+        case 'countries': return <CountriesView students={data.students} />;
         case 'internships': return <CuratorInternships internships={data.internships} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelInternship={delInternship} />;
         default: break;
       }
@@ -287,10 +294,175 @@ export default function NobilisAcademy() {
       return <Modal title="Редактировать письмо" onClose={() => { setModal(null); setSelected(null); }} size="lg"><div className="space-y-4"><div><label className="block text-sm text-gray-600 mb-1">Университет</label><input type="text" value={form.university || ''} onChange={e => setForm(p => ({ ...p, university: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div><div><label className="block text-sm text-gray-600 mb-1">Статус</label><select value={form.status || 'draft'} onChange={e => setForm(p => ({ ...p, status: e.target.value }))} className="w-full p-3 border rounded-xl input-focus"><option value="draft">Черновик</option><option value="completed">Готово</option></select></div><div><label className="block text-sm text-gray-600 mb-1">Содержание</label><textarea value={form.content || ''} onChange={e => setForm(p => ({ ...p, content: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" rows={12}></textarea></div><button onClick={() => { updLetter(getStudent().id, selected.id, form); setModal(null); setSelected(null); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl flex items-center justify-center gap-2"><I.Save /><span>Сохранить</span></button></div></Modal>;
     }
 
-    // STUDENT DETAIL (curator)
+    // STUDENT DETAIL (curator) - Tabbed Bitrix-style
     if (modal === 'studentDetail' && selected) {
-      const s = selected;
-      return <Modal title={s.name} onClose={() => { setModal(null); setSelected(null); }} size="lg"><div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><div className="text-sm text-gray-500">Логин</div><div className="font-medium">{s.login}</div></div><div><div className="text-sm text-gray-500">Пароль</div><div className="font-medium">{s.password}</div></div><div><div className="text-sm text-gray-500">Email</div><div className="font-medium">{s.email}</div></div><div><div className="text-sm text-gray-500">Телефон</div><div className="font-medium">{s.phone}</div></div><div><div className="text-sm text-gray-500">Класс</div><div className="font-medium">{s.grade}</div></div><div><div className="text-sm text-gray-500">Возраст</div><div className="font-medium">{s.age}</div></div><div><div className="text-sm text-gray-500">Родитель</div><div className="font-medium">{s.parentName}</div></div><div><div className="text-sm text-gray-500">Тел. родителя</div><div className="font-medium">{s.parentPhone}</div></div></div><div><div className="text-sm text-gray-500 mb-2">Цели</div><div className="flex gap-4">{s.targetIelts && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">IELTS: {s.targetIelts}</span>}{s.targetSat && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">SAT: {s.targetSat}</span>}</div></div><div className="flex gap-3"><button onClick={() => { setForm({ type: 'contract', name: '', score: '' }); setModal('addDocument'); }} className="flex-1 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">+ Документ</button><button onClick={() => { if (window.confirm('Удалить студента?')) { delStudent(s.id); setModal(null); setSelected(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors">Удалить</button></div></div></Modal>;
+      const s = data.students.find(x => x.id === selected.id) || selected;
+      const statusInfo = STUDENT_STATUSES[s.status] || STUDENT_STATUSES.active;
+      const tabs = [
+        { id: 'info', label: 'Инфо' },
+        { id: 'packages', label: 'Пакеты' },
+        { id: 'tasks', label: 'Задачи' },
+        { id: 'docs', label: 'Документы' },
+        { id: 'invitations', label: 'Приглашения' },
+        { id: 'history', label: 'История' },
+      ];
+      return (
+        <Modal title={s.name} onClose={() => { setModal(null); setSelected(null); setDetailTab('info'); }} size="lg">
+          <div>
+            {/* Status badge + attendance */}
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className="px-3 py-1 rounded-full text-sm font-medium" style={{ backgroundColor: statusInfo.bg, color: statusInfo.color }}>{statusInfo.name}</span>
+              <span className="text-sm text-gray-500">{getAttendancePercent(s.attendance)}% посещ.</span>
+              {s.city && <span className="text-sm text-gray-500">{s.city}</span>}
+            </div>
+            {/* Tabs */}
+            <div className="flex flex-wrap gap-1 mb-4 border-b pb-2">
+              {tabs.map(t => (
+                <button key={t.id} onClick={() => setDetailTab(t.id)}
+                  className={`px-3 py-1.5 rounded-lg text-sm transition-all ${detailTab === t.id ? 'bg-[#1a3a32] text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            {/* Tab content */}
+            {detailTab === 'info' && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div><div className="text-xs text-gray-500">Логин</div><div className="font-medium text-sm">{s.login}</div></div>
+                  <div><div className="text-xs text-gray-500">Пароль</div><div className="font-medium text-sm">{s.password}</div></div>
+                  <div><div className="text-xs text-gray-500">Email</div><div className="font-medium text-sm">{s.email}</div></div>
+                  <div><div className="text-xs text-gray-500">Телефон</div><div className="font-medium text-sm">{s.phone}</div></div>
+                  <div><div className="text-xs text-gray-500">Класс</div><div className="font-medium text-sm">{s.grade}</div></div>
+                  <div><div className="text-xs text-gray-500">Возраст</div><div className="font-medium text-sm">{s.age}</div></div>
+                  <div><div className="text-xs text-gray-500">Родитель</div><div className="font-medium text-sm">{s.parentName}</div></div>
+                  <div><div className="text-xs text-gray-500">Тел. родителя</div><div className="font-medium text-sm">{s.parentPhone}</div></div>
+                  <div><div className="text-xs text-gray-500">Дата начала</div><div className="font-medium text-sm">{formatDate(s.joinDate)}</div></div>
+                  <div><div className="text-xs text-gray-500">Конец договора</div><div className="font-medium text-sm">{formatDate(s.contractEndDate)}{s.contractEndDate && ` (${daysUntil(s.contractEndDate)} дн.)`}</div></div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Цели</div>
+                  <div className="flex flex-wrap gap-2">{s.targetIelts && <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-sm">IELTS: {s.targetIelts}</span>}{s.targetSat && <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-sm">SAT: {s.targetSat}</span>}</div>
+                </div>
+                {s.selectedCountries?.length > 0 && <div><div className="text-xs text-gray-500 mb-1">Страны</div><div className="text-sm">{s.selectedCountries.join(', ')}</div></div>}
+                {s.targetUniversities?.length > 0 && <div><div className="text-xs text-gray-500 mb-1">Университеты</div><div className="text-sm">{s.targetUniversities.join(', ')}</div></div>}
+                {s.initialResults && <div><div className="text-xs text-gray-500 mb-1">Начальные результаты</div><div className="flex gap-2">{s.initialResults.ielts && <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">IELTS: {s.initialResults.ielts}</span>}{s.initialResults.sat && <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">SAT: {s.initialResults.sat}</span>}</div></div>}
+                <div className="flex gap-2 pt-2">
+                  <button onClick={() => { setForm({ type: 'contract', name: '', score: '' }); setModal('addDocument'); }} className="flex-1 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 text-sm">+ Документ</button>
+                  <button onClick={() => { if (window.confirm('Удалить студента?')) { delStudent(s.id); setModal(null); setSelected(null); setDetailTab('info'); } }} className="px-3 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 text-sm">Удалить</button>
+                </div>
+              </div>
+            )}
+            {detailTab === 'packages' && (
+              <div className="space-y-3">
+                {(s.packages || []).map(pkg => {
+                  const typeInfo = PACKAGE_TYPES[pkg.type] || {};
+                  const prog = getPackageProgress(pkg, SUPPORT_STAGES);
+                  return (
+                    <div key={pkg.id} className="p-3 border rounded-xl">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-full text-white text-xs" style={{ backgroundColor: typeInfo.color }}>{typeInfo.name || pkg.type}</span>
+                          {pkg.frozen && <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Заморожен</span>}
+                        </div>
+                        <button onClick={() => freezePackage(s.id, pkg.id, !pkg.frozen)} className="text-xs text-gray-500 hover:text-gray-700">
+                          {pkg.frozen ? 'Разморозить' : 'Заморозить'}
+                        </button>
+                      </div>
+                      <div className="h-2 bg-gray-200 rounded-full mb-1">
+                        <div className="h-2 rounded-full transition-all" style={{ width: `${prog.percent}%`, backgroundColor: typeInfo.color }} />
+                      </div>
+                      <div className="flex justify-between text-xs text-gray-500">
+                        <span>{prog.text}</span>
+                        <span>{prog.percent}%</span>
+                      </div>
+                      <div className="text-xs text-gray-400 mt-1">{formatDate(pkg.startDate)} - {formatDate(pkg.endDate)}</div>
+                    </div>
+                  );
+                })}
+                {(!s.packages || s.packages.length === 0) && <p className="text-gray-500 text-sm">Нет пакетов</p>}
+                <button onClick={() => { setForm({ type: 'ielts', totalLessons: 48, startDate: '', endDate: '' }); setModal('addPackage'); }} className="w-full py-2 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#1a3a32] hover:text-[#1a3a32] text-sm transition-colors">+ Добавить пакет</button>
+              </div>
+            )}
+            {detailTab === 'tasks' && (
+              <div className="space-y-3">
+                {(s.tasks || []).map(t => (
+                  <div key={t.id} className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg">
+                    <input type="checkbox" checked={t.done} onChange={() => toggleTask(s.id, t.id)} className="mt-1 w-4 h-4" />
+                    <div className="flex-1">
+                      <div className={`text-sm ${t.done ? 'line-through text-gray-400' : ''}`}>{t.text}</div>
+                      <div className="text-xs text-gray-400">{t.deadline && `До: ${formatDate(t.deadline)}`} {t.assignee === 'curator' ? '(Куратор)' : ''}</div>
+                    </div>
+                  </div>
+                ))}
+                <div className="flex gap-2">
+                  <input type="text" placeholder="Новая задача..." value={form.taskText || ''} onChange={e => setForm(p => ({ ...p, taskText: e.target.value }))} className="flex-1 p-2 border rounded-lg text-sm input-focus" />
+                  <button onClick={() => { if (form.taskText) { addTask(s.id, { text: form.taskText, assignee: 'curator' }); setForm(p => ({ ...p, taskText: '' })); } }} className="px-3 py-2 bg-[#1a3a32] text-white rounded-lg text-sm">+</button>
+                </div>
+              </div>
+            )}
+            {detailTab === 'docs' && (
+              <div className="space-y-2">
+                {(s.documents || []).map(d => (
+                  <div key={d.id} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" onClick={() => { setSelected({...d, studentId: s.id}); setModal('documentDetail'); }}>
+                    <span className="text-xl">{DOCUMENT_TYPES[d.type]?.icon || '\u{1F4C4}'}</span>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">{d.name}</div>
+                      <div className="text-xs text-gray-500">{formatDate(d.date)}</div>
+                    </div>
+                    {d.score && <span className="text-sm font-bold text-[#c9a227]">{d.score}</span>}
+                  </div>
+                ))}
+                <button onClick={() => { setForm({ type: 'contract', name: '', score: '' }); setModal('addDocument'); }} className="w-full py-2 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#1a3a32] hover:text-[#1a3a32] text-sm transition-colors">+ Добавить документ</button>
+              </div>
+            )}
+            {detailTab === 'invitations' && (
+              <div className="space-y-2">
+                {(s.invitations || []).map(inv => (
+                  <div key={inv.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <div className="text-sm font-medium">{inv.university}</div>
+                      <div className="text-xs text-gray-500">{formatDate(inv.date)}</div>
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full ${inv.status === 'accepted' ? 'bg-green-100 text-green-700' : inv.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      {inv.status === 'accepted' ? 'Принято' : inv.status === 'rejected' ? 'Отклонено' : 'Ожидание'}
+                    </span>
+                  </div>
+                ))}
+                {(!s.invitations || s.invitations.length === 0) && <p className="text-gray-500 text-sm">Нет приглашений</p>}
+              </div>
+            )}
+            {detailTab === 'history' && (
+              <div className="space-y-2">
+                {/* Comment form */}
+                <div className="flex gap-2 mb-3">
+                  <input type="text" placeholder="Добавить комментарий..." value={form.commentText || ''} onChange={e => setForm(p => ({ ...p, commentText: e.target.value }))} className="flex-1 p-2 border rounded-lg text-sm input-focus" />
+                  <button onClick={() => { if (form.commentText) { addComment(s.id, form.commentText); setForm(p => ({ ...p, commentText: '' })); } }} className="px-3 py-2 bg-[#1a3a32] text-white rounded-lg text-sm">Отправить</button>
+                </div>
+                {/* Comments */}
+                {(s.comments || []).slice().reverse().map(c => (
+                  <div key={c.id} className="p-2 bg-blue-50 rounded-lg">
+                    <div className="text-sm">{c.text}</div>
+                    <div className="text-xs text-gray-400 mt-1">{c.author} - {formatDateTime(c.date)}</div>
+                  </div>
+                ))}
+                {/* Timeline */}
+                <div className="border-t pt-2 mt-2">
+                  <div className="text-xs text-gray-500 font-medium mb-2">Таймлайн</div>
+                  {(s.history || []).slice().reverse().map((h, i) => (
+                    <div key={i} className="flex gap-2 py-1">
+                      <div className={`w-2 h-2 rounded-full mt-1.5 ${h.type === 'achievement' ? 'bg-[#c9a227]' : h.type === 'invitation' ? 'bg-green-500' : 'bg-gray-400'}`} />
+                      <div>
+                        <div className="text-sm">{h.text}</div>
+                        <div className="text-xs text-gray-400">{formatDate(h.date)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </Modal>
+      );
     }
 
     // ADD DOCUMENT
@@ -304,18 +476,104 @@ export default function NobilisAcademy() {
       return <Modal title={s.name} onClose={() => { setModal(null); setSelected(null); }} size="lg"><div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><div className="text-sm text-gray-500">Класс</div><div className="font-medium">{s.grade}</div></div><div><div className="text-sm text-gray-500">Посещаемость</div><div className="font-medium">{s.attendance?.total > 0 ? Math.round(s.attendance.attended / s.attendance.total * 100) : 0}%</div></div></div><div><div className="text-sm text-gray-500 mb-2">Цели</div><div className="flex gap-4">{s.targetIelts && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">IELTS: {s.targetIelts}</span>}{s.targetSat && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">SAT: {s.targetSat}</span>}</div></div><div><div className="text-sm text-gray-500 mb-2">История пробных тестов</div>{mocks.length > 0 ? <div className="space-y-2">{mocks.map(e => <div key={e.id} className="flex justify-between p-3 bg-gray-50 rounded-xl"><div><div className="font-medium">{e.name}</div><div className="text-sm text-gray-500">{formatDate(e.date)}</div></div><div className="text-xl font-bold text-[#c9a227]">{e.score}</div></div>)}</div> : <p className="text-gray-500">Нет результатов</p>}</div></div></Modal>;
     }
 
+    // ADD PACKAGE
+    if (modal === 'addPackage' && selected) {
+      return (
+        <Modal title="Добавить пакет" onClose={() => { setModal('studentDetail'); setForm({}); }}>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Тип *</label>
+              <select value={form.type || 'ielts'} onChange={e => setForm(p => ({ ...p, type: e.target.value }))} className="w-full p-3 border rounded-xl input-focus">
+                {Object.entries(PACKAGE_TYPES).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div><label className="block text-sm text-gray-600 mb-1">Начало</label><input type="date" value={form.startDate || ''} onChange={e => setForm(p => ({ ...p, startDate: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+              <div><label className="block text-sm text-gray-600 mb-1">Конец</label><input type="date" value={form.endDate || ''} onChange={e => setForm(p => ({ ...p, endDate: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+            </div>
+            {form.type !== 'support' && (
+              <div><label className="block text-sm text-gray-600 mb-1">Кол-во занятий</label><input type="number" value={form.totalLessons || 48} onChange={e => setForm(p => ({ ...p, totalLessons: parseInt(e.target.value) }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+            )}
+            <button onClick={() => { addPackage(selected.id, { type: form.type, startDate: form.startDate, endDate: form.endDate, totalLessons: form.totalLessons || 48 }); setModal('studentDetail'); setForm({}); }} className="w-full py-3 btn-primary text-white rounded-xl">Добавить</button>
+          </div>
+        </Modal>
+      );
+    }
+
     return null;
   };
+
+  // ============================================================
+  // COUNTRIES VIEW (inline)
+  // ============================================================
+  const CountriesView = ({ students }) => (
+    <div className="space-y-6 animate-fadeIn">
+      <h1 className="text-2xl font-bold text-gray-800">Страны и ВУЗы</h1>
+      <div className="grid md:grid-cols-2 gap-6">
+        {COUNTRIES.map(c => {
+          const countryStudents = students.filter(s => s.selectedCountries?.includes(c.name));
+          return (
+            <div key={c.id} className="bg-white rounded-2xl p-6 shadow-sm border card-hover">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-3xl">{c.flag}</span>
+                <div>
+                  <h3 className="text-lg font-semibold">{c.name}</h3>
+                  <p className="text-sm text-gray-500">{c.requirements}</p>
+                </div>
+              </div>
+              <div className="mb-3">
+                <div className="text-sm font-medium mb-2">Университеты:</div>
+                <div className="flex flex-wrap gap-1">
+                  {c.universities.map(u => <span key={u} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded">{u}</span>)}
+                </div>
+              </div>
+              <div className="mb-3">
+                <div className="text-sm font-medium mb-2">Документы:</div>
+                <div className="flex flex-wrap gap-1">
+                  {c.documents.map(d => <span key={d} className="text-xs bg-gray-100 px-2 py-1 rounded">{d}</span>)}
+                </div>
+              </div>
+              {countryStudents.length > 0 && (
+                <div className="border-t pt-3">
+                  <div className="text-sm font-medium mb-2">Студенты ({countryStudents.length}):</div>
+                  <div className="flex flex-wrap gap-1">
+                    {countryStudents.map(s => (
+                      <button key={s.id} onClick={() => { setSelected(s); setDetailTab('info'); setModal('studentDetail'); }}
+                        className="text-xs bg-[#1a3a32]/10 text-[#1a3a32] px-2 py-1 rounded hover:bg-[#1a3a32]/20 transition-colors cursor-pointer">
+                        {s.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   // ============================================================
   // LAYOUT
   // ============================================================
   return (
     <div className="flex h-screen bg-[#f8faf9]">
-      <Sidebar user={user} view={view} navItems={navItems} onNavigate={setView} onLogout={logout} />
-      <main className="flex-1 overflow-y-auto p-6 md:p-8">
-        {renderContent()}
-      </main>
+      <Sidebar user={user} view={view} navItems={navItems} onNavigate={setView} onLogout={logout} isOpen={sidebarOpen} onToggle={() => setSidebarOpen(false)} />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Mobile header */}
+        <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b shadow-sm">
+          <button onClick={() => setSidebarOpen(true)} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+            <I.Menu />
+          </button>
+          <div className="font-serif font-bold text-[#1a3a32]">NOBILIS</div>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold" style={{ background: 'linear-gradient(135deg, #c9a227 0%, #a68620 100%)' }}>
+            {getInitials(user.name)}
+          </div>
+        </header>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          {renderContent()}
+        </main>
+      </div>
       {renderModal()}
     </div>
   );

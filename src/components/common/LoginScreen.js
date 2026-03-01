@@ -54,7 +54,7 @@ const LoginScreen = ({ onLogin }) => {
               onChange={e => { setLoginForm(p => ({ ...p, login: e.target.value })); setLoginError(''); }}
               className="w-full p-4 bg-white/5 border border-[#c9a227]/30 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-[#c9a227] focus:bg-white/10 transition-all input-focus"
               placeholder="Введите логин"
-              autoComplete="off"
+              autoComplete="username"
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
             />
           </div>
@@ -66,7 +66,7 @@ const LoginScreen = ({ onLogin }) => {
               onChange={e => { setLoginForm(p => ({ ...p, password: e.target.value })); setLoginError(''); }}
               className="w-full p-4 bg-white/5 border border-[#c9a227]/30 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-[#c9a227] focus:bg-white/10 transition-all input-focus"
               placeholder="Введите пароль"
-              autoComplete="off"
+              autoComplete="current-password"
               onKeyDown={e => e.key === 'Enter' && handleLogin()}
             />
           </div>

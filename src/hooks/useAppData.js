@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getInitialData } from '../data/initialData';
-import { STORAGE_KEY, DOCUMENT_TYPES, GALLUP_QUESTIONS, CAREER_PROFILES } from '../data/constants';
-import { generateLogin, generatePassword, calculateTestResult } from '../data/utils';
+import { STORAGE_KEY, USER_KEY, DOCUMENT_TYPES, GALLUP_QUESTIONS, CAREER_PROFILES } from '../data/constants';
+import { generateLogin, generatePassword, calculateTestResult, genId } from '../data/utils';
 
 export default function useAppData() {
   const [data, setData] = useState(getInitialData);
-  const [user, setUser] = useState(null);
+  // Auth persistence: restore user from localStorage
+  const [user, setUser] = useState(() => {
+    try { const s = localStorage.getItem(USER_KEY); return s ? JSON.parse(s) : null; } catch { return null; }
+  });
   const [view, setView] = useState('dashboard');
   const [modal, setModal] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -16,11 +19,19 @@ export default function useAppData() {
   const [attDate, setAttDate] = useState(new Date().toISOString().split('T')[0]);
   const [attSchedule, setAttSchedule] = useState(null);
   const [sylSearch, setSylSearch] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [cityFilter, setCityFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [studentPage, setStudentPage] = useState(null);
+  const [calendarMode, setCalendarMode] = useState(false);
 
-  // Persist data to localStorage
+  // Persist data
+  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+  // Persist user session
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [data]);
+    if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
+    else localStorage.removeItem(USER_KEY);
+  }, [user]);
 
   const upd = useCallback((k, v) => setData(p => ({ ...p, [k]: v })), []);
 
@@ -44,6 +55,8 @@ export default function useAppData() {
     setSelected(null);
     setSearch('');
     setForm({});
+    setSidebarOpen(false);
+    setStudentPage(null);
   };
 
   // ---- GETTERS ----
@@ -53,22 +66,85 @@ export default function useAppData() {
   // ---- STUDENTS CRUD ----
   const addStudent = (d) => {
     const n = {
-      id: Date.now().toString(), ...d,
+      id: genId(), ...d,
       joinDate: new Date().toISOString().split('T')[0],
       testResult: null, examResults: [],
       attendance: { total: 0, attended: 0 },
-      documents: [{ id: Date.now().toString(), type: 'contract', name: 'Договор', date: new Date().toISOString().split('T')[0] }],
-      letters: [], internships: []
+      documents: [{ id: genId(), type: 'contract', name: 'Договор', date: new Date().toISOString().split('T')[0] }],
+      letters: [], internships: [], invitations: [],
+      packages: d.packages || [],
+      tasks: [], comments: [],
+      history: [{ date: new Date().toISOString(), text: 'Зачислен в академию', type: 'system' }],
+      initialResults: d.initialResults || {},
+      status: d.status || 'active',
+      city: d.city || '',
+      graduationYear: d.graduationYear || null,
     };
     upd('students', [...data.students, n]);
     return n;
   };
-  const updStudent = (id, u) => upd('students', data.students.map(s => s.id === id ? { ...s, ...u } : s));
+  const updStudent = useCallback((id, u) => {
+    upd('students', data.students.map(s => s.id === id ? { ...s, ...u } : s));
+  }, [data.students, upd]);
   const delStudent = (id) => upd('students', data.students.filter(s => s.id !== id));
+
+  // ---- PACKAGES CRUD ----
+  const addPackage = (studentId, pkg) => {
+    const newPkg = { id: genId(), ...pkg, completedLessons: 0, missedLessons: 0, currentStage: 1, stageNotes: {}, frozen: false, frozenDays: 0 };
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      const packages = [...(student.packages || []), newPkg];
+      updStudent(studentId, { packages });
+      addHistory(studentId, `Добавлен пакет: ${pkg.type?.toUpperCase()}`);
+    }
+  };
+  const updPackage = (studentId, pkgId, changes) => {
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      const packages = (student.packages || []).map(p => p.id === pkgId ? { ...p, ...changes } : p);
+      updStudent(studentId, { packages });
+    }
+  };
+  const freezePackage = (studentId, pkgId, freeze) => {
+    updPackage(studentId, pkgId, { frozen: freeze });
+    addHistory(studentId, freeze ? 'Пакет заморожен' : 'Пакет разморожен');
+  };
+
+  // ---- TASKS CRUD ----
+  const addTask = (studentId, task) => {
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      const newTask = { id: genId(), ...task, done: false, created: new Date().toISOString() };
+      updStudent(studentId, { tasks: [...(student.tasks || []), newTask] });
+    }
+  };
+  const toggleTask = (studentId, taskId) => {
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      updStudent(studentId, { tasks: (student.tasks || []).map(t => t.id === taskId ? { ...t, done: !t.done } : t) });
+    }
+  };
+
+  // ---- COMMENTS ----
+  const addComment = (studentId, text) => {
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      const newComment = { id: genId(), text, author: user?.name || 'Система', date: new Date().toISOString() };
+      updStudent(studentId, { comments: [...(student.comments || []), newComment] });
+    }
+  };
+
+  // ---- HISTORY ----
+  const addHistory = (studentId, text, type = 'action') => {
+    const student = data.students.find(s => s.id === studentId);
+    if (student) {
+      updStudent(studentId, { history: [...(student.history || []), { date: new Date().toISOString(), text, type }] });
+    }
+  };
 
   // ---- TEACHERS CRUD ----
   const addTeacher = (d) => {
-    const n = { id: Date.now().toString(), ...d, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] };
+    const n = { id: genId(), ...d, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] };
     upd('teachers', [...data.teachers, n]);
     return n;
   };
@@ -79,45 +155,59 @@ export default function useAppData() {
   };
 
   // ---- SCHEDULE CRUD ----
-  const addSchedule = (d) => { upd('schedule', [...data.schedule, { id: Date.now().toString(), ...d }]); };
+  const addSchedule = (d) => { upd('schedule', [...data.schedule, { id: genId(), ...d }]); };
   const updSchedule = (id, u) => upd('schedule', data.schedule.map(s => s.id === id ? { ...s, ...u } : s));
   const delSchedule = (id) => upd('schedule', data.schedule.filter(s => s.id !== id));
 
   // ---- MOCK TESTS CRUD ----
-  const addMockTest = (d) => { upd('mockTests', [...data.mockTests, { id: Date.now().toString(), ...d }]); };
+  const addMockTest = (d) => { upd('mockTests', [...data.mockTests, { id: genId(), ...d }]); };
   const updMockTest = (id, u) => upd('mockTests', data.mockTests.map(t => t.id === id ? { ...t, ...u } : t));
   const delMockTest = (id) => upd('mockTests', data.mockTests.filter(t => t.id !== id));
 
   // ---- INTERNSHIPS CRUD ----
-  const addInternship = (d) => { upd('internships', [...data.internships, { id: Date.now().toString(), ...d }]); };
+  const addInternship = (d) => { upd('internships', [...data.internships, { id: genId(), ...d }]); };
   const updInternship = (id, u) => upd('internships', data.internships.map(i => i.id === id ? { ...i, ...u } : i));
   const delInternship = (id) => upd('internships', data.internships.filter(i => i.id !== id));
 
   // ---- DOCUMENTS ----
   const addDoc = (sid, doc) => {
-    const d = { id: Date.now().toString(), date: new Date().toISOString().split('T')[0], ...doc };
-    upd('students', data.students.map(s => s.id === sid ? { ...s, documents: [...s.documents, d] } : s));
-    if (DOCUMENT_TYPES[doc.type]?.isExam && doc.score) {
-      const e = { id: (Date.now() + 1).toString(), type: doc.type, name: DOCUMENT_TYPES[doc.type].label, score: doc.score, date: d.date };
-      upd('students', data.students.map(s => s.id === sid ? { ...s, examResults: [...s.examResults, e] } : s));
+    const d = { id: genId(), date: new Date().toISOString().split('T')[0], ...doc };
+    const student = data.students.find(s => s.id === sid);
+    if (student) {
+      const documents = [...(student.documents || []), d];
+      const updates = { documents };
+      if (DOCUMENT_TYPES[doc.type]?.isExam && doc.score) {
+        const e = { id: genId(), type: doc.type, name: DOCUMENT_TYPES[doc.type].label, score: doc.score, date: d.date };
+        updates.examResults = [...(student.examResults || []), e];
+      }
+      updStudent(sid, updates);
+      addHistory(sid, `Загружен документ: ${d.name}`);
     }
   };
-  const delDoc = (sid, did) => upd('students', data.students.map(s => s.id === sid ? { ...s, documents: s.documents.filter(d => d.id !== did) } : s));
+  const delDoc = (sid, did) => {
+    const student = data.students.find(s => s.id === sid);
+    if (student) updStudent(sid, { documents: (student.documents || []).filter(d => d.id !== did) });
+  };
 
   // ---- LETTERS ----
   const addLetter = (sid, l) => {
-    const n = { id: Date.now().toString(), lastEdit: new Date().toISOString().split('T')[0], ...l };
-    upd('students', data.students.map(s => s.id === sid ? { ...s, letters: [...s.letters, n] } : s));
+    const n = { id: genId(), lastEdit: new Date().toISOString().split('T')[0], ...l };
+    const student = data.students.find(s => s.id === sid);
+    if (student) updStudent(sid, { letters: [...(student.letters || []), n] });
   };
-  const updLetter = (sid, lid, u) =>
-    upd('students', data.students.map(s => s.id === sid ? { ...s, letters: s.letters.map(l => l.id === lid ? { ...l, ...u, lastEdit: new Date().toISOString().split('T')[0] } : l) } : s));
-  const delLetter = (sid, lid) =>
-    upd('students', data.students.map(s => s.id === sid ? { ...s, letters: s.letters.filter(l => l.id !== lid) } : s));
+  const updLetter = (sid, lid, u) => {
+    const student = data.students.find(s => s.id === sid);
+    if (student) updStudent(sid, { letters: (student.letters || []).map(l => l.id === lid ? { ...l, ...u, lastEdit: new Date().toISOString().split('T')[0] } : l) });
+  };
+  const delLetter = (sid, lid) => {
+    const student = data.students.find(s => s.id === sid);
+    if (student) updStudent(sid, { letters: (student.letters || []).filter(l => l.id !== lid) });
+  };
 
   // ---- SYLLABUS ----
   const addSyllabus = (tid, syl) => {
     const t = data.teachers.find(x => x.id === tid);
-    if (t) updTeacher(tid, { syllabus: [...t.syllabus, { id: Date.now().toString(), progress: 0, students: [], ...syl }] });
+    if (t) updTeacher(tid, { syllabus: [...t.syllabus, { id: genId(), progress: 0, students: [], youtubeLinks: {}, ...syl }] });
   };
   const updSyllabus = (tid, sid, u) => {
     const t = data.teachers.find(x => x.id === tid);
@@ -128,16 +218,47 @@ export default function useAppData() {
     if (t) updTeacher(tid, { syllabus: t.syllabus.filter(s => s.id !== sid) });
   };
 
-  // ---- ATTENDANCE ----
-  const markAtt = (schId, stuId, date, status) => {
+  // ---- ATTENDANCE with homework ----
+  const markAtt = (schId, stuId, date, status, homework = null) => {
     const k = `${schId}_${date}`;
-    upd('attendance', { ...data.attendance, [k]: { ...(data.attendance[k] || {}), [stuId]: status } });
+    const prev = data.attendance[k] || {};
+    const entry = { ...(prev[stuId] || {}), status };
+    if (homework !== null) entry.homework = homework;
+    upd('attendance', { ...data.attendance, [k]: { ...prev, [stuId]: entry } });
+
+    // Auto-deduct: if absent without reason, count as service rendered (missedLessons++)
+    if (status === 'absent') {
+      const sc = data.schedule.find(s => s.id === schId);
+      if (sc) {
+        const student = data.students.find(s => s.id === stuId);
+        if (student) {
+          const pkg = (student.packages || []).find(p => !p.frozen && p.type !== 'support');
+          if (pkg) {
+            updPackage(stuId, pkg.id, { missedLessons: (pkg.missedLessons || 0) + 1 });
+          }
+        }
+      }
+    }
+    if (status === 'present') {
+      const student = data.students.find(s => s.id === stuId);
+      if (student) {
+        const pkg = (student.packages || []).find(p => !p.frozen && p.type !== 'support');
+        if (pkg) {
+          updPackage(stuId, pkg.id, { completedLessons: (pkg.completedLessons || 0) + 1 });
+        }
+      }
+    }
   };
 
-  // ---- LESSONS ----
+  // ---- LESSON LOG ----
+  const addLessonLog = (entry) => {
+    upd('lessonLog', [...(data.lessonLog || []), { id: genId(), ...entry, date: entry.date || new Date().toISOString().split('T')[0] }]);
+  };
+
+  // ---- LESSONS (teacher) ----
   const markLesson = (tid, lesson) => {
     const t = data.teachers.find(x => x.id === tid);
-    if (t) updTeacher(tid, { lessons: [...t.lessons, { id: Date.now().toString(), ...lesson, confirmed: false }] });
+    if (t) updTeacher(tid, { lessons: [...t.lessons, { id: genId(), ...lesson, confirmed: false }] });
   };
   const confirmLesson = (tid, lid) => {
     const t = data.teachers.find(x => x.id === tid);
@@ -150,15 +271,17 @@ export default function useAppData() {
   };
 
   // ---- INTERNSHIP APPLY ----
-  const applyInternship = (sid, iid) =>
-    upd('students', data.students.map(s => s.id === sid ? { ...s, internships: [...s.internships, { internshipId: iid, status: 'applied', appliedDate: new Date().toISOString().split('T')[0] }] } : s));
+  const applyInternship = (sid, iid) => {
+    const student = data.students.find(s => s.id === sid);
+    if (student) updStudent(sid, { internships: [...(student.internships || []), { internshipId: iid, status: 'applied', appliedDate: new Date().toISOString().split('T')[0] }] });
+  };
 
   // ---- SUPPORT ----
   const resolveTicket = (id) => upd('supportTickets', data.supportTickets.map(t => t.id === id ? { ...t, status: 'resolved' } : t));
   const addTicket = (sid, msg) => {
     const s = data.students.find(x => x.id === sid);
     upd('supportTickets', [...data.supportTickets, {
-      id: Date.now().toString(), studentId: sid, studentName: s?.name || '', message: msg,
+      id: genId(), studentId: sid, studentName: s?.name || '', message: msg,
       priority: 'normal', created: new Date().toISOString(),
       deadline: new Date(Date.now() + 48 * 3600000).toISOString(), status: 'open'
     }]);
@@ -187,11 +310,13 @@ export default function useAppData() {
     // State
     data, user, view, modal, selected, search, form,
     testAnswers, testQ, attDate, attSchedule, sylSearch,
+    sidebarOpen, cityFilter, statusFilter, studentPage, calendarMode,
     // Setters
     setView, setModal, setSelected, setSearch, setForm,
     setTestAnswers, setTestQ, setAttDate, setAttSchedule, setSylSearch,
+    setSidebarOpen, setCityFilter, setStatusFilter, setStudentPage, setCalendarMode,
     // Auth
-    handleLogin, logout,
+    handleLogin, logout, setUser,
     // Getters
     getStudent, getTeacher,
     // CRUD
@@ -206,6 +331,10 @@ export default function useAppData() {
     markAtt, markLesson, confirmLesson,
     applyInternship, resolveTicket, addTicket,
     submitTest, resetTest,
+    // New v3
+    addPackage, updPackage, freezePackage,
+    addTask, toggleTask,
+    addComment, addHistory, addLessonLog,
     // Helpers
     generateLogin, generatePassword,
   };
