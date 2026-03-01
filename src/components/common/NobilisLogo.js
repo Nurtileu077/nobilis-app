@@ -3,38 +3,36 @@ import React from 'react';
 const NobilisLogo = ({ size = 40 }) => (
   <svg viewBox="0 0 100 100" style={{ width: size, height: size }} aria-label="Nobilis Academy Logo">
     <defs>
-      <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <linearGradient id="nGold" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stopColor="#f0d861"/>
         <stop offset="50%" stopColor="#c9a227"/>
         <stop offset="100%" stopColor="#a68620"/>
       </linearGradient>
-      <linearGradient id="darkGreenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#2d5a4a"/>
-        <stop offset="100%" stopColor="#1a3a32"/>
-      </linearGradient>
-      <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <linearGradient id="nDark" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" stopColor="#1a3a32"/>
-        <stop offset="60%" stopColor="#0f2a22"/>
-        <stop offset="100%" stopColor="#1a3a32"/>
+        <stop offset="100%" stopColor="#0f2a22"/>
       </linearGradient>
     </defs>
-    {/* Shield shape */}
-    <path d="M50 4 L90 20 L90 55 Q90 80 50 96 Q10 80 10 55 L10 20 Z" fill="url(#shieldGrad)" stroke="url(#goldGrad)" strokeWidth="2.5"/>
-    {/* Inner shield border */}
-    <path d="M50 10 L84 24 L84 54 Q84 76 50 90 Q16 76 16 54 L16 24 Z" fill="none" stroke="url(#goldGrad)" strokeWidth="1" opacity="0.5"/>
-    {/* Horizontal divider */}
-    <line x1="22" y1="42" x2="78" y2="42" stroke="url(#goldGrad)" strokeWidth="1" opacity="0.6"/>
-    {/* Letter N */}
-    <text x="50" y="38" textAnchor="middle" fill="url(#goldGrad)" fontSize="30" fontFamily="Georgia, serif" fontWeight="bold" letterSpacing="2">N</text>
+    {/* Background circle */}
+    <circle cx="50" cy="50" r="49" fill="url(#nDark)"/>
+    {/* Gold oval border */}
+    <ellipse cx="50" cy="50" rx="36" ry="42" fill="none" stroke="url(#nGold)" strokeWidth="1.5"/>
+    <ellipse cx="50" cy="50" rx="33" ry="39" fill="none" stroke="url(#nGold)" strokeWidth="0.5" opacity="0.3"/>
+    {/* Profile head */}
+    <circle cx="50" cy="42" r="12" fill="url(#nGold)" opacity="0.9"/>
+    {/* Graduation cap */}
+    <polygon points="36,30 50,22 64,30 50,37" fill="url(#nGold)"/>
+    {/* Cap button */}
+    <circle cx="50" cy="21" r="2" fill="#f0d861"/>
+    {/* Tassel */}
+    <line x1="64" y1="30" x2="68" y2="38" stroke="#c9a227" strokeWidth="0.8"/>
+    <circle cx="68" cy="39" r="1.5" fill="#f0d861"/>
+    {/* Star */}
+    <polygon points="50,8 51.5,12 56,12 52.5,14.5 53.5,18.5 50,16 46.5,18.5 47.5,14.5 44,12 48.5,12" fill="#f0d861"/>
     {/* NOBILIS text */}
-    <text x="50" y="56" textAnchor="middle" fill="url(#goldGrad)" fontSize="8" fontFamily="Georgia, serif" fontWeight="bold" letterSpacing="3">NOBILIS</text>
+    <text x="50" y="72" textAnchor="middle" fill="url(#nGold)" fontSize="7" fontFamily="Georgia, serif" fontWeight="bold" letterSpacing="2.5">NOBILIS</text>
     {/* ACADEMY text */}
-    <text x="50" y="66" textAnchor="middle" fill="#c9a227" fontSize="5.5" fontFamily="Arial, sans-serif" letterSpacing="4" opacity="0.8">ACADEMY</text>
-    {/* Decorative stars */}
-    <circle cx="28" cy="50" r="1.5" fill="#c9a227" opacity="0.7"/>
-    <circle cx="72" cy="50" r="1.5" fill="#c9a227" opacity="0.7"/>
-    {/* Bottom laurel hints */}
-    <path d="M35 72 Q42 68 50 74 Q58 68 65 72" fill="none" stroke="#c9a227" strokeWidth="1" opacity="0.5"/>
+    <text x="50" y="80" textAnchor="middle" fill="#c9a227" fontSize="4" fontFamily="Arial, sans-serif" letterSpacing="3" opacity="0.7">ACADEMY</text>
   </svg>
 );
 

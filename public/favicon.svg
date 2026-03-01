@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a3a32"/>
+      <stop offset="100%" stop-color="#0f2a22"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0d861"/>
+      <stop offset="50%" stop-color="#c9a227"/>
+      <stop offset="100%" stop-color="#a68620"/>
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="url(#bg)"/>
+  <!-- Gold oval border -->
+  <ellipse cx="256" cy="256" rx="180" ry="210" fill="none" stroke="url(#gold)" stroke-width="6"/>
+  <ellipse cx="256" cy="256" rx="165" ry="195" fill="none" stroke="url(#gold)" stroke-width="2" opacity="0.4"/>
+  <!-- Graduation cap silhouette -->
+  <g transform="translate(256, 200)">
+    <!-- Head circle -->
+    <circle cx="0" cy="10" r="55" fill="url(#gold)" opacity="0.9"/>
+    <!-- Graduation cap -->
+    <polygon points="-70,-40 0,-70 70,-40 0,-15" fill="url(#gold)"/>
+    <rect x="-5" y="-72" width="10" height="8" fill="#c9a227"/>
+    <circle cx="0" cy="-76" r="6" fill="#f0d861"/>
+    <!-- Cap tassel -->
+    <line x1="70" y1="-40" x2="85" y2="-10" stroke="#c9a227" stroke-width="3"/>
+    <circle cx="85" cy="-7" r="5" fill="#f0d861"/>
+  </g>
+  <!-- Star decoration -->
+  <polygon points="256,90 262,108 280,108 266,118 271,136 256,126 241,136 246,118 232,108 250,108" fill="#f0d861"/>
+  <!-- NOBILIS text -->
+  <text x="256" y="370" text-anchor="middle" fill="url(#gold)" font-family="Georgia, serif" font-size="42" font-weight="bold" letter-spacing="6">NOBILIS</text>
+  <!-- ACADEMY text -->
+  <text x="256" y="400" text-anchor="middle" fill="#c9a227" font-family="Arial, sans-serif" font-size="20" letter-spacing="8" opacity="0.8">ACADEMY</text>
+</svg>

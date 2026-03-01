@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useAppData from './hooks/useAppData';
 import { DOCUMENT_TYPES, PACKAGE_TYPES, SUPPORT_STAGES, COUNTRIES, STUDENT_STATUSES } from './data/constants';
 import { formatDate, formatDateTime, daysUntil, getPackageProgress, getInitials, getAttendancePercent } from './data/utils';
@@ -107,6 +107,23 @@ export default function NobilisAcademy() {
     generateLogin: genLogin, generatePassword: genPassword,
   } = app;
   const [detailTab, setDetailTab] = useState('info');
+  const [swUpdate, setSwUpdate] = useState(null);
+
+  // Listen for service worker updates
+  useEffect(() => {
+    const handler = (e) => setSwUpdate(e.detail);
+    window.addEventListener('swUpdate', handler);
+    return () => window.removeEventListener('swUpdate', handler);
+  }, []);
+
+  const handleAppUpdate = useCallback(() => {
+    if (swUpdate && swUpdate.waiting) {
+      swUpdate.waiting.postMessage({ type: 'SKIP_WAITING' });
+      swUpdate.waiting.addEventListener('statechange', (e) => {
+        if (e.target.state === 'activated') window.location.reload();
+      });
+    }
+  }, [swUpdate]);
 
   // ---- LOGIN SCREEN ----
   if (!user) return <LoginScreen onLogin={handleLogin} />;
@@ -966,6 +983,18 @@ export default function NobilisAcademy() {
         </main>
       </div>
       {renderModal()}
+      {/* PWA update banner */}
+      {swUpdate && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] animate-slideUp">
+          <div className="bg-[#1a3a32] text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-[#c9a227]/30">
+            <div className="w-2 h-2 bg-[#c9a227] rounded-full animate-pulse" />
+            <span className="text-sm">Доступно обновление</span>
+            <button onClick={handleAppUpdate} className="px-4 py-1.5 bg-[#c9a227] text-[#1a3a32] rounded-lg text-sm font-bold hover:bg-[#e8c547] transition-colors">
+              Обновить
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
