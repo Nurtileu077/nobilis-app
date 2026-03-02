@@ -1,36 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 614">
   <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e8c252"/>
+      <stop offset="40%" stop-color="#c8963e"/>
+      <stop offset="100%" stop-color="#a37728"/>
+    </linearGradient>
+    <linearGradient id="goldL" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f0d86a"/>
+      <stop offset="100%" stop-color="#c8963e"/>
+    </linearGradient>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1a3a32"/>
       <stop offset="100%" stop-color="#0f2a22"/>
     </linearGradient>
-    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f0d861"/>
-      <stop offset="50%" stop-color="#c9a227"/>
-      <stop offset="100%" stop-color="#a68620"/>
-    </linearGradient>
+    <clipPath id="oc">
+      <ellipse cx="256" cy="282" rx="195" ry="246"/>
+    </clipPath>
   </defs>
-  <!-- Background circle -->
-  <circle cx="256" cy="256" r="256" fill="url(#bg)"/>
-  <!-- Gold oval border -->
-  <ellipse cx="256" cy="256" rx="180" ry="210" fill="none" stroke="url(#gold)" stroke-width="6"/>
-  <ellipse cx="256" cy="256" rx="165" ry="195" fill="none" stroke="url(#gold)" stroke-width="2" opacity="0.4"/>
-  <!-- Graduation cap silhouette -->
-  <g transform="translate(256, 200)">
-    <!-- Head circle -->
-    <circle cx="0" cy="10" r="55" fill="url(#gold)" opacity="0.9"/>
-    <!-- Graduation cap -->
-    <polygon points="-70,-40 0,-70 70,-40 0,-15" fill="url(#gold)"/>
-    <rect x="-5" y="-72" width="10" height="8" fill="#c9a227"/>
-    <circle cx="0" cy="-76" r="6" fill="#f0d861"/>
-    <!-- Cap tassel -->
-    <line x1="70" y1="-40" x2="85" y2="-10" stroke="#c9a227" stroke-width="3"/>
-    <circle cx="85" cy="-7" r="5" fill="#f0d861"/>
+  <!-- Dark background circle -->
+  <circle cx="256" cy="307" r="300" fill="url(#bg)"/>
+  <!-- Outer oval -->
+  <ellipse cx="256" cy="282" rx="215" ry="266" fill="none" stroke="url(#gold)" stroke-width="12"/>
+  <!-- Inner oval -->
+  <ellipse cx="256" cy="282" rx="195" ry="246" fill="none" stroke="url(#gold)" stroke-width="5"/>
+  <!-- Face profile -->
+  <g clip-path="url(#oc)">
+    <path d="M297,298 C297,198 287,168 250,148 C220,132 200,148 190,168 C180,188 175,210 175,240 C175,260 180,278 190,290" fill="url(#gold)"/>
+    <path d="M190,290 C190,290 185,300 187,310 C190,320 198,325 198,325 L195,335 C195,335 190,340 192,348 C194,355 198,355 198,355 L196,365 C193,378 198,390 210,405 C222,420 234,430 250,440 C268,450 290,450 298,445 C308,438 297,415 297,298 Z" fill="url(#gold)"/>
+    <path d="M297,270 C307,270 318,280 318,298 C318,318 307,330 297,330" fill="url(#goldL)" stroke="#a37728" stroke-width="2"/>
+    <ellipse cx="215" cy="278" rx="12" ry="6" fill="#8a6520" opacity="0.7"/>
+    <path d="M200,265 C210,258 225,258 235,262" fill="none" stroke="#a37728" stroke-width="4"/>
+    <circle cx="193" cy="328" r="4" fill="#a37728" opacity="0.5"/>
+    <path d="M195,350 C200,352 205,350 205,350" fill="none" stroke="#a37728" stroke-width="2"/>
+    <path d="M250,440 C250,450 240,475 230,510 L290,510 C290,475 290,455 290,445" fill="url(#gold)"/>
+    <path d="M230,510 C200,520 160,540 148,560 L368,560 C360,540 320,520 290,510" fill="url(#gold)" opacity="0.8"/>
   </g>
-  <!-- Star decoration -->
-  <polygon points="256,90 262,108 280,108 266,118 271,136 256,126 241,136 246,118 232,108 250,108" fill="#f0d861"/>
-  <!-- NOBILIS text -->
-  <text x="256" y="370" text-anchor="middle" fill="url(#gold)" font-family="Georgia, serif" font-size="42" font-weight="bold" letter-spacing="6">NOBILIS</text>
-  <!-- ACADEMY text -->
-  <text x="256" y="400" text-anchor="middle" fill="#c9a227" font-family="Arial, sans-serif" font-size="20" letter-spacing="8" opacity="0.8">ACADEMY</text>
+  <!-- Graduation cap -->
+  <polygon points="156,158 256,108 356,158 256,198" fill="url(#gold)"/>
+  <path d="M210,198 L210,158 L305,158 L305,198" fill="url(#goldL)" opacity="0.6"/>
+  <circle cx="256" cy="106" r="10" fill="#f0d86a"/>
+  <path d="M256,106 C256,106 330,118 338,148 C342,162 342,180 338,198" fill="none" stroke="#c8963e" stroke-width="5"/>
+  <ellipse cx="338" cy="204" rx="10" ry="15" fill="#e8c252"/>
+  <!-- 4-pointed star -->
+  <g transform="translate(256, 50)">
+    <polygon points="0,-36 8,-10 36,0 8,10 0,36 -8,10 -36,0 -8,-10" fill="#f0d86a"/>
+    <circle cx="0" cy="0" r="8" fill="white" opacity="0.35"/>
+  </g>
 </svg>
