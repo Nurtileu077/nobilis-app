@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import useAppData from './hooks/useAppData';
 import { DOCUMENT_TYPES, PACKAGE_TYPES, SUPPORT_STAGES, COUNTRIES, STUDENT_STATUSES } from './data/constants';
+import { UNIVERSITIES_DB, COUNTRY_INFO } from './data/universities';
 import { formatDate, formatDateTime, daysUntil, getPackageProgress, getInitials, getAttendancePercent } from './data/utils';
 
 // Common components
@@ -65,6 +66,8 @@ const getNavItems = (role) => {
     { id: 'teachers', label: 'Преподаватели', icon: I.Users },
     { id: 'salary', label: 'Зарплаты', icon: I.Money },
     { id: 'retakes', label: 'Пересдачи', icon: I.Test },
+    { id: 'matching', label: 'Подбор ВУЗов', icon: I.Results },
+    { id: 'notifications', label: 'Уведомления', icon: I.Bell },
     { id: 'support', label: 'Поддержка', icon: I.Support },
     { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
   ];
@@ -169,6 +172,8 @@ export default function NobilisAcademy() {
         case 'support': return <CuratorSupport tickets={data.supportTickets} onResolveTicket={resolveTicket} />;
         case 'countries': return <CountriesView students={data.students} />;
         case 'retakes': return <RetakeModeration students={data.students} onApprove={approveRetake} onDeny={denyRetake} />;
+        case 'notifications': return <NotificationsView />;
+        case 'matching': return <MatchmakingView students={data.students} />;
         case 'internships': return <CuratorInternships internships={data.internships} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelInternship={delInternship} />;
         default: break;
       }
@@ -702,37 +707,221 @@ export default function NobilisAcademy() {
   };
 
   // ============================================================
+  // NOTIFICATIONS VIEW (curator sends push notifications)
+  // ============================================================
+  const NotificationsView = () => {
+    const [notifTitle, setNotifTitle] = useState('');
+    const [notifBody, setNotifBody] = useState('');
+    const [notifStatus, setNotifStatus] = useState(null);
+    const [sending, setSending] = useState(false);
+    const sendNotification = async () => {
+      if (!notifTitle.trim()) return;
+      setSending(true);
+      setNotifStatus(null);
+      try {
+        const res = await fetch('/api/send-notification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: notifTitle.trim(), body: notifBody.trim() }),
+        });
+        const json = await res.json();
+        if (res.ok) {
+          setNotifStatus({ ok: true, msg: `Отправлено: ${json.sent} из ${json.total}` });
+          setNotifTitle('');
+          setNotifBody('');
+        } else {
+          setNotifStatus({ ok: false, msg: json.error || 'Ошибка отправки' });
+        }
+      } catch {
+        setNotifStatus({ ok: false, msg: 'Сервер недоступен' });
+      }
+      setSending(false);
+    };
+    return (
+      <div className="space-y-6 animate-fadeIn">
+        <h1 className="text-2xl font-bold text-gray-800">Push-уведомления</h1>
+        <div className="bg-white rounded-2xl p-6 shadow-sm border">
+          <h3 className="text-lg font-semibold mb-4">Отправить уведомление</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Заголовок</label>
+              <input value={notifTitle} onChange={e => setNotifTitle(e.target.value)} placeholder="Заголовок уведомления"
+                className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Текст</label>
+              <textarea value={notifBody} onChange={e => setNotifBody(e.target.value)} placeholder="Текст уведомления (необязательно)" rows={3}
+                className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none resize-none" />
+            </div>
+            <button onClick={sendNotification} disabled={sending || !notifTitle.trim()}
+              className="px-6 py-2 bg-[#1a3a32] text-white rounded-xl hover:bg-[#2d5a4a] disabled:opacity-50 transition-colors">
+              {sending ? 'Отправка...' : 'Отправить'}
+            </button>
+            {notifStatus && (
+              <div className={`p-3 rounded-xl text-sm ${notifStatus.ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                {notifStatus.msg}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl p-6 shadow-sm border">
+          <h3 className="text-lg font-semibold mb-2">Как это работает</h3>
+          <ul className="text-sm text-gray-600 space-y-1 list-disc ml-4">
+            <li>Студенты должны разрешить уведомления в браузере</li>
+            <li>Уведомления приходят даже при закрытом приложении</li>
+            <li>Требуется настройка VAPID-ключей на сервере</li>
+          </ul>
+        </div>
+      </div>
+    );
+  };
+
+  // ============================================================
+  // MATCHMAKING VIEW (match students to universities)
+  // ============================================================
+  const MatchmakingView = ({ students }) => {
+    const [matchStudent, setMatchStudent] = useState(null);
+    const getMatches = (student) => {
+      if (!student) return [];
+      const matches = [];
+      Object.entries(UNIVERSITIES_DB).forEach(([code, unis]) => {
+        const info = COUNTRY_INFO[code] || {};
+        unis.forEach(u => {
+          let score = 0;
+          // GPA match
+          if (student.gpa && student.gpa >= u.gpa) score += 30;
+          else if (student.gpa && student.gpa >= u.gpa - 0.3) score += 15;
+          // IELTS match
+          const ieltsScore = student.englishTestResult?.ieltsEquiv || 0;
+          if (ieltsScore >= u.ielts) score += 25;
+          else if (ieltsScore >= u.ielts - 0.5) score += 10;
+          // Country preference match
+          if (student.selectedCountries?.includes(info.name)) score += 20;
+          // Career/faculty match based on RIASEC
+          if (student.testCareers?.length > 0) {
+            const careerMatch = u.faculties.some(f => student.testCareers.some(c => f.toLowerCase().includes(c.toLowerCase().slice(0, 4))));
+            if (careerMatch) score += 15;
+          }
+          // Scholarship bonus
+          if (u.scholarship) score += 5;
+          // Budget match (tuition)
+          if (u.tuition[0] <= 5000) score += 5;
+          if (score >= 30) matches.push({ ...u, country: info.name, countryFlag: info.flag, countryCode: code, matchScore: score });
+        });
+      });
+      return matches.sort((a, b) => b.matchScore - a.matchScore).slice(0, 20);
+    };
+    const matches = getMatches(matchStudent);
+    return (
+      <div className="space-y-6 animate-fadeIn">
+        <h1 className="text-2xl font-bold text-gray-800">Подбор ВУЗов</h1>
+        <div className="bg-white rounded-2xl p-6 shadow-sm border">
+          <label className="block text-sm font-medium text-gray-700 mb-2">Выберите студента</label>
+          <select value={matchStudent?.id || ''} onChange={e => setMatchStudent(students.find(s => s.id === +e.target.value) || null)}
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none">
+            <option value="">— Выберите —</option>
+            {students.map(s => <option key={s.id} value={s.id}>{s.name} {s.testResult ? `(${s.testResult})` : ''}</option>)}
+          </select>
+        </div>
+        {matchStudent && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm border">
+            <h3 className="font-semibold mb-2">Профиль студента</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+              <div><span className="text-gray-500">GPA:</span> <span className="font-medium">{matchStudent.gpa || '—'}</span></div>
+              <div><span className="text-gray-500">IELTS:</span> <span className="font-medium">{matchStudent.englishTestResult?.ieltsEquiv || '—'}</span></div>
+              <div><span className="text-gray-500">Профиль:</span> <span className="font-medium">{matchStudent.testResult || '—'}</span></div>
+              <div><span className="text-gray-500">Страны:</span> <span className="font-medium">{matchStudent.selectedCountries?.join(', ') || '—'}</span></div>
+            </div>
+          </div>
+        )}
+        {matchStudent && matches.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-lg font-semibold text-gray-800">Рекомендуемые ВУЗы ({matches.length})</h3>
+            {matches.map((m, i) => (
+              <div key={i} className="bg-white rounded-2xl p-5 shadow-sm border card-hover">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span>{m.countryFlag}</span>
+                      <span className="font-semibold">{m.name}</span>
+                    </div>
+                    <div className="text-sm text-gray-500">{m.city}, {m.country} · ${m.tuition[0].toLocaleString()}-${m.tuition[1].toLocaleString()}/год</div>
+                    <div className="text-xs text-gray-400 mt-1">{m.note}</div>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {m.faculties.map(f => <span key={f} className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{f}</span>)}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-2">GPA {m.gpa}+ · IELTS {m.ielts}+ · Дедлайн: {m.deadline}</div>
+                  </div>
+                  <div className="flex flex-col items-center flex-shrink-0">
+                    <div className={`text-2xl font-bold ${m.matchScore >= 70 ? 'text-green-600' : m.matchScore >= 50 ? 'text-yellow-600' : 'text-gray-400'}`}>{m.matchScore}%</div>
+                    <div className="text-[10px] text-gray-400">совпадение</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {matchStudent && matches.length === 0 && (
+          <div className="bg-white rounded-2xl p-8 shadow-sm border text-center text-gray-500">
+            Нет подходящих ВУЗов. Заполните профиль студента (GPA, тест, предпочтения по странам).
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ============================================================
   // COUNTRIES VIEW (inline)
   // ============================================================
-  const CountriesView = ({ students }) => (
+  const CountriesView = ({ students }) => {
+    const [expandedCountry, setExpandedCountry] = useState(null);
+    const [uniSearch, setUniSearch] = useState('');
+    return (
     <div className="space-y-6 animate-fadeIn">
       <h1 className="text-2xl font-bold text-gray-800">Страны и ВУЗы</h1>
+      <input value={uniSearch} onChange={e => setUniSearch(e.target.value)} placeholder="Поиск университета..."
+        className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none" />
       <div className="grid md:grid-cols-2 gap-6">
-        {COUNTRIES.map(c => {
-          const countryStudents = students.filter(s => s.selectedCountries?.includes(c.name));
+        {Object.entries(UNIVERSITIES_DB).map(([code, unis]) => {
+          const info = COUNTRY_INFO[code] || {};
+          const countryStudents = students.filter(s => s.selectedCountries?.includes(info.name));
+          const filtered = uniSearch ? unis.filter(u => u.name.toLowerCase().includes(uniSearch.toLowerCase()) || u.city.toLowerCase().includes(uniSearch.toLowerCase())) : unis;
+          if (uniSearch && filtered.length === 0) return null;
+          const isExpanded = expandedCountry === code;
+          const shown = isExpanded ? filtered : filtered.slice(0, 3);
           return (
-            <div key={c.id} className="bg-white rounded-2xl p-6 shadow-sm border card-hover">
+            <div key={code} className="bg-white rounded-2xl p-6 shadow-sm border card-hover">
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">{c.flag}</span>
-                <div>
-                  <h3 className="text-lg font-semibold">{c.name}</h3>
-                  <p className="text-sm text-gray-500">{c.requirements}</p>
+                <span className="text-3xl">{info.flag}</span>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold">{info.name}</h3>
+                  <p className="text-xs text-gray-500">{info.lang} · {info.currency} · {unis.length} ВУЗов</p>
                 </div>
+                {countryStudents.length > 0 && <span className="text-xs bg-[#1a3a32]/10 text-[#1a3a32] px-2 py-1 rounded-full">{countryStudents.length} студ.</span>}
               </div>
-              <div className="mb-3">
-                <div className="text-sm font-medium mb-2">Университеты:</div>
-                <div className="flex flex-wrap gap-1">
-                  {c.universities.map(u => <span key={u} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded">{u}</span>)}
-                </div>
+              <div className="space-y-2 mb-3">
+                {shown.map(u => (
+                  <div key={u.name} className="p-3 bg-gray-50 rounded-xl">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="font-medium text-sm">{u.name}</div>
+                      {u.scholarship && <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded flex-shrink-0">Стипендия</span>}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">{u.city} · ${u.tuition[0].toLocaleString()}-${u.tuition[1].toLocaleString()}/год · GPA {u.gpa}+ · IELTS {u.ielts}+</div>
+                    <div className="text-xs text-gray-400 mt-1">{u.note}</div>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {u.faculties.map(f => <span key={f} className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{f}</span>)}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="mb-3">
-                <div className="text-sm font-medium mb-2">Документы:</div>
-                <div className="flex flex-wrap gap-1">
-                  {c.documents.map(d => <span key={d} className="text-xs bg-gray-100 px-2 py-1 rounded">{d}</span>)}
-                </div>
-              </div>
+              {filtered.length > 3 && (
+                <button onClick={() => setExpandedCountry(isExpanded ? null : code)}
+                  className="text-sm text-[#1a3a32] hover:underline">
+                  {isExpanded ? 'Свернуть' : `Ещё ${filtered.length - 3} ВУЗов...`}
+                </button>
+              )}
               {countryStudents.length > 0 && (
-                <div className="border-t pt-3">
+                <div className="border-t pt-3 mt-3">
                   <div className="text-sm font-medium mb-2">Студенты ({countryStudents.length}):</div>
                   <div className="flex flex-wrap gap-1">
                     {countryStudents.map(s => (
@@ -749,7 +938,8 @@ export default function NobilisAcademy() {
         })}
       </div>
     </div>
-  );
+    );
+  };
 
   // ============================================================
   // STUDENT PAGE VIEW (full page for curator)
