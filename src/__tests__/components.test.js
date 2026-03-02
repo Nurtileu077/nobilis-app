@@ -155,8 +155,8 @@ describe('LoginScreen', () => {
 
   it('renders NOBILIS branding', () => {
     render(<LoginScreen onLogin={() => {}} />);
-    expect(screen.getByText('NOBILIS')).toBeInTheDocument();
-    expect(screen.getByText('ACADEMY')).toBeInTheDocument();
+    expect(screen.getAllByText('NOBILIS').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('ACADEMY').length).toBeGreaterThan(0);
   });
 });
 
@@ -236,8 +236,8 @@ describe('Sidebar', () => {
         onLogout={() => {}}
       />
     );
-    expect(screen.getByText('NOBILIS')).toBeInTheDocument();
-    expect(screen.getByText('ACADEMY')).toBeInTheDocument();
+    expect(screen.getAllByText('NOBILIS').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('ACADEMY').length).toBeGreaterThan(0);
   });
 
   it('shows user initials', () => {

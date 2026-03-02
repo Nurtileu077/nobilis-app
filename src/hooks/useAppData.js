@@ -208,8 +208,9 @@ export default function useAppData() {
         const e = { id: genId(), type: doc.type, name: DOCUMENT_TYPES[doc.type].label, score: doc.score, date: d.date };
         updates.examResults = [...(student.examResults || []), e];
       }
+      // Combine history update with doc update to avoid stale closure overwrite
+      updates.history = [...(student.history || []), { date: new Date().toISOString(), text: `Загружен документ: ${d.name}`, type: 'action' }];
       updStudent(sid, updates);
-      addHistory(sid, `Загружен документ: ${d.name}`);
     }
   };
   const delDoc = (sid, did) => {

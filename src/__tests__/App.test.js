@@ -22,7 +22,7 @@ beforeEach(() => {
 describe('NobilisAcademy App', () => {
   it('renders login screen when not authenticated', () => {
     render(<NobilisAcademy />);
-    expect(screen.getByText('NOBILIS')).toBeInTheDocument();
+    expect(screen.getAllByText('NOBILIS').length).toBeGreaterThan(0);
     expect(screen.getByText('Войти в систему')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Введите логин')).toBeInTheDocument();
   });

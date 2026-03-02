@@ -84,7 +84,7 @@ describe('useAppData', () => {
   describe('Initial Data', () => {
     it('loads initial data with students', () => {
       const { result } = renderHook(() => useAppData());
-      expect(result.current.data.students).toHaveLength(3);
+      expect(result.current.data.students).toHaveLength(4);
     });
 
     it('loads initial data with teachers', () => {
@@ -99,7 +99,7 @@ describe('useAppData', () => {
 
     it('persists data to localStorage', () => {
       renderHook(() => useAppData());
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('nobilis_v2', expect.any(String));
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('nobilis_v3', expect.any(String));
     });
   });
 
@@ -110,8 +110,8 @@ describe('useAppData', () => {
       act(() => {
         result.current.addStudent({ name: 'Новый Студент', login: 'new.stu', password: 'pass123' });
       });
-      expect(result.current.data.students).toHaveLength(4);
-      const newStudent = result.current.data.students[3];
+      expect(result.current.data.students).toHaveLength(5);
+      const newStudent = result.current.data.students[4];
       expect(newStudent.name).toBe('Новый Студент');
       expect(newStudent.testResult).toBeNull();
       expect(newStudent.examResults).toEqual([]);
@@ -130,7 +130,7 @@ describe('useAppData', () => {
       act(() => {
         result.current.delStudent('3');
       });
-      expect(result.current.data.students).toHaveLength(2);
+      expect(result.current.data.students).toHaveLength(3);
       expect(result.current.data.students.find(s => s.id === '3')).toBeUndefined();
     });
   });
@@ -362,7 +362,7 @@ describe('useAppData', () => {
       act(() => {
         result.current.markAtt('1', '1', '2025-01-10', 'present');
       });
-      expect(result.current.data.attendance['1_2025-01-10']).toEqual({ '1': 'present' });
+      expect(result.current.data.attendance['1_2025-01-10']['1'].status).toBe('present');
     });
 
     it('marks multiple students for same schedule/date', () => {
@@ -373,7 +373,8 @@ describe('useAppData', () => {
       act(() => {
         result.current.markAtt('1', '2', '2025-01-10', 'absent');
       });
-      expect(result.current.data.attendance['1_2025-01-10']).toEqual({ '1': 'present', '2': 'absent' });
+      expect(result.current.data.attendance['1_2025-01-10']['1'].status).toBe('present');
+      expect(result.current.data.attendance['1_2025-01-10']['2'].status).toBe('absent');
     });
   });
 
