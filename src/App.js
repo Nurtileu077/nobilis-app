@@ -64,6 +64,7 @@ const getNavItems = (role) => {
     { id: 'mockTests', label: 'Пробные тесты', icon: I.MockTest },
     { id: 'teachers', label: 'Преподаватели', icon: I.Users },
     { id: 'salary', label: 'Зарплаты', icon: I.Money },
+    { id: 'retakes', label: 'Пересдачи', icon: I.Test },
     { id: 'support', label: 'Поддержка', icon: I.Support },
     { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
   ];
@@ -98,7 +99,7 @@ export default function NobilisAcademy() {
     addSyllabus, updSyllabus, delSyllabus,
     markAtt, markLesson, confirmLesson,
     applyInternship, resolveTicket, addTicket,
-    submitTest, resetTest,
+    submitTest, resetTest, requestRetake, approveRetake, denyRetake,
     addPackage, freezePackage,
     addTask, toggleTask, addComment,
     freezeStudent, unfreezeStudent, setAvatar,
@@ -138,8 +139,8 @@ export default function NobilisAcademy() {
       switch (view) {
         case 'dashboard': return <StudentDashboard student={s} schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
         case 'schedule': return <StudentSchedule student={s} schedule={data.schedule} teachers={data.teachers} onSetSelected={setSelected} onSetModal={setModal} />;
-        case 'englishTest': return <StudentEnglishTest student={s} onSubmitEnglishTest={submitEnglishTest} onResetEnglishTest={resetEnglishTest} />;
-        case 'test': return <StudentTest student={s} testAnswers={testAnswers} testQ={testQ} onSetTestAnswers={setTestAnswers} onSetTestQ={setTestQ} onSubmitTest={submitTest} onResetTest={resetTest} />;
+        case 'englishTest': return <StudentEnglishTest student={s} onSubmitEnglishTest={submitEnglishTest} onResetEnglishTest={resetEnglishTest} onRequestRetake={requestRetake} />;
+        case 'test': return <StudentTest student={s} testAnswers={testAnswers} testQ={testQ} onSetTestAnswers={setTestAnswers} onSetTestQ={setTestQ} onSubmitTest={submitTest} onResetTest={resetTest} onRequestRetake={requestRetake} />;
         case 'results': return <StudentResults student={s} onSetSelected={setSelected} onSetModal={setModal} />;
         case 'mockTests': return <StudentMockTests student={s} mockTests={data.mockTests} onSetSelected={setSelected} onSetModal={setModal} />;
         case 'letters': return <StudentLetters student={s} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
@@ -164,9 +165,10 @@ export default function NobilisAcademy() {
         case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
         case 'mockTests': return <CuratorMockTests mockTests={data.mockTests} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelMockTest={delMockTest} />;
         case 'teachers': return <CuratorTeachers teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelTeacher={delTeacher} />;
-        case 'salary': return <CuratorSalary teachers={data.teachers} onConfirmLesson={confirmLesson} />;
+        case 'salary': return <CuratorSalary teachers={data.teachers} onConfirmLesson={confirmLesson} onUpdateTeacher={updTeacher} />;
         case 'support': return <CuratorSupport tickets={data.supportTickets} onResolveTicket={resolveTicket} />;
         case 'countries': return <CountriesView students={data.students} />;
+        case 'retakes': return <RetakeModeration students={data.students} onApprove={approveRetake} onDeny={denyRetake} />;
         case 'internships': return <CuratorInternships internships={data.internships} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelInternship={delInternship} />;
         default: break;
       }
@@ -643,6 +645,63 @@ export default function NobilisAcademy() {
   };
 
   // ============================================================
+  // RETAKE MODERATION (inline)
+  // ============================================================
+  const RetakeModeration = ({ students, onApprove, onDeny }) => {
+    const careerRequests = students.filter(s => s.retakeRequested);
+    const englishRequests = students.filter(s => s.englishRetakeRequested);
+    const hasRequests = careerRequests.length > 0 || englishRequests.length > 0;
+    return (
+      <div className="space-y-6 animate-fadeIn">
+        <h1 className="text-2xl font-bold text-gray-800">Модерация пересдач</h1>
+        {!hasRequests && (
+          <div className="bg-white rounded-2xl p-8 shadow-sm border text-center text-gray-500">
+            Нет активных запросов на пересдачу
+          </div>
+        )}
+        {careerRequests.length > 0 && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm border">
+            <h3 className="text-lg font-semibold mb-4">Профориентация (тест Холланда)</h3>
+            <div className="space-y-3">
+              {careerRequests.map(s => (
+                <div key={s.id} className="flex items-center justify-between p-4 bg-yellow-50 rounded-xl">
+                  <div>
+                    <div className="font-medium">{s.name}</div>
+                    <div className="text-sm text-gray-500">Текущий результат: {s.testResult || '—'}</div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => onApprove(s.id, 'career')} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm">Одобрить</button>
+                    <button onClick={() => onDeny(s.id, 'career')} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm">Отклонить</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {englishRequests.length > 0 && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm border">
+            <h3 className="text-lg font-semibold mb-4">Тест на знание английского</h3>
+            <div className="space-y-3">
+              {englishRequests.map(s => (
+                <div key={s.id} className="flex items-center justify-between p-4 bg-yellow-50 rounded-xl">
+                  <div>
+                    <div className="font-medium">{s.name}</div>
+                    <div className="text-sm text-gray-500">Текущий результат: {s.englishTestResult?.levelName || '—'} ({s.englishTestResult?.score}/{s.englishTestResult?.total})</div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => onApprove(s.id, 'english')} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm">Одобрить</button>
+                    <button onClick={() => onDeny(s.id, 'english')} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm">Отклонить</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // ============================================================
   // COUNTRIES VIEW (inline)
   // ============================================================
   const CountriesView = ({ students }) => (
@@ -974,9 +1033,16 @@ export default function NobilisAcademy() {
             <I.Menu />
           </button>
           <div className="font-serif font-bold text-[#1a3a32]">NOBILIS</div>
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold" style={{ background: 'linear-gradient(135deg, #c9a227 0%, #a68620 100%)' }}>
-            {getInitials(user.name)}
-          </div>
+          {(() => {
+            const mobileAvatar = user.role === 'curator' ? data.curatorAvatar : user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : (data.teachers.find(x => x.id === user.id)?.avatar);
+            return (
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold overflow-hidden cursor-pointer"
+                style={{ background: mobileAvatar ? 'transparent' : 'linear-gradient(135deg, #c9a227 0%, #a68620 100%)' }}
+                onClick={() => { setForm({ avatarTargetRole: user.role, avatarTargetId: user.id, avatarPreview: mobileAvatar || null }); setModal('avatarUpload'); }}>
+                {mobileAvatar ? <img src={mobileAvatar} alt="" className="w-full h-full object-cover" /> : getInitials(user.name)}
+              </div>
+            );
+          })()}
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           {renderContent()}

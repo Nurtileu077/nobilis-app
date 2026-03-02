@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatDate } from '../../data/utils';
 
-const CuratorSalary = ({ teachers, onConfirmLesson }) => {
+const CuratorSalary = ({ teachers, onConfirmLesson, onUpdateTeacher }) => {
+  const [editingRate, setEditingRate] = useState(null);
+  const [rateValue, setRateValue] = useState('');
+
   const total = teachers.reduce((sum, t) => {
     const conf = t.lessons?.filter(l => l.confirmed && l.status === 'conducted').reduce((s, l) => s + (l.hours || 0), 0) || 0;
     return sum + conf * t.hourlyRate;
@@ -9,6 +12,19 @@ const CuratorSalary = ({ teachers, onConfirmLesson }) => {
   const pending = teachers.flatMap(t =>
     t.lessons?.filter(l => !l.confirmed && l.status === 'conducted').map(l => ({ ...l, teacher: t })) || []
   );
+
+  const startEdit = (teacher) => {
+    setEditingRate(teacher.id);
+    setRateValue(String(teacher.hourlyRate));
+  };
+
+  const saveRate = (teacherId) => {
+    const val = parseInt(rateValue, 10);
+    if (val > 0 && onUpdateTeacher) {
+      onUpdateTeacher(teacherId, { hourlyRate: val });
+    }
+    setEditingRate(null);
+  };
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -39,7 +55,19 @@ const CuratorSalary = ({ teachers, onConfirmLesson }) => {
               <div className="flex flex-wrap gap-3 text-sm">
                 <div className="bg-gray-50 px-3 py-1.5 rounded-lg">
                   <span className="text-gray-500">Ставка: </span>
-                  <span className="font-medium">{t.hourlyRate} тг/ч</span>
+                  {editingRate === t.id ? (
+                    <span className="inline-flex items-center gap-1">
+                      <input type="number" value={rateValue} onChange={e => setRateValue(e.target.value)}
+                        className="w-20 px-1 py-0.5 border rounded text-sm" autoFocus
+                        onKeyDown={e => { if (e.key === 'Enter') saveRate(t.id); if (e.key === 'Escape') setEditingRate(null); }} />
+                      <button onClick={() => saveRate(t.id)} className="text-green-600 font-bold text-xs">OK</button>
+                      <button onClick={() => setEditingRate(null)} className="text-red-500 font-bold text-xs">✕</button>
+                    </span>
+                  ) : (
+                    <span className="font-medium cursor-pointer hover:text-[#c9a227] transition-colors" onClick={() => startEdit(t)}>
+                      {t.hourlyRate} тг/ч
+                    </span>
+                  )}
                 </div>
                 <div className="bg-gray-50 px-3 py-1.5 rounded-lg">
                   <span className="text-gray-500">Подтв: </span>
