@@ -36,22 +36,29 @@ export const daysBetween = (d1, d2) =>
 
 export const daysUntil = (d) => d ? Math.ceil((new Date(d) - new Date()) / 86400000) : 0;
 
-export const calculateTestResult = (testAnswers, gallupQuestions, careerProfiles) => {
-  const scores = {};
-  Object.entries(testAnswers).forEach(([q, v]) => {
-    const cat = gallupQuestions.find(x => x.id === +q)?.cat;
-    if (cat) scores[cat] = (scores[cat] || 0) + v;
+export const calculateTestResult = (testAnswers, questions, profiles) => {
+  const scores = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+  Object.entries(testAnswers).forEach(([qId, value]) => {
+    const q = questions.find(x => x.id === +qId);
+    if (q) scores[q.cat] = (scores[q.cat] || 0) + value;
   });
-  let best = null;
-  let bestScore = 0;
-  Object.entries(careerProfiles).forEach(([name, profile]) => {
-    const sc = profile.cats.reduce((s, c) => s + (scores[c] || 0), 0);
-    if (sc > bestScore) {
-      bestScore = sc;
-      best = name;
-    }
-  });
-  return { profile: best, scores };
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const primaryType = sorted[0][0];
+  const secondaryType = sorted[1][0];
+  const riasecCode = sorted.slice(0, 3).map(x => x[0]).join('');
+  const primary = profiles[primaryType] || {};
+  const secondary = profiles[secondaryType] || {};
+  const combinedCareers = [...new Set([...(primary.careers || []), ...(secondary.careers || [])])].slice(0, 5);
+  return {
+    profile: primaryType,
+    profileName: primary.name || primaryType,
+    riasecCode,
+    scores,
+    sorted,
+    primaryType,
+    secondaryType,
+    careers: combinedCareers,
+  };
 };
 
 export const getInitials = (name) =>

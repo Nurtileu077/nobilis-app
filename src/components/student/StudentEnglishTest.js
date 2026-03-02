@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 // 30 English proficiency questions with difficulty levels
 const ENGLISH_QUESTIONS = [
@@ -54,26 +54,27 @@ function getLevel(score) {
   return { key: 'A1', ...LEVELS.A1 };
 }
 
-const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }) => {
+const TIMER_SECONDS = 30 * 60; // 30 minutes
+
+const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest, onRequestRetake }) => {
   const [answers, setAnswers] = useState({});
   const [currentQ, setCurrentQ] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
+  const [started, setStarted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
+  const timerRef = useRef(null);
+  const submittedRef = useRef(false);
 
   const hasResult = student?.englishTestResult;
 
-  const handleAnswer = (qId, optIdx) => {
-    setAnswers(prev => ({ ...prev, [qId]: optIdx }));
-  };
-
-  const handleSubmit = () => {
-    if (Object.keys(answers).length < 30) {
-      alert('Ответьте на все 30 вопросов');
-      return;
-    }
+  const doSubmit = useCallback((currentAnswers) => {
+    if (submittedRef.current) return;
+    submittedRef.current = true;
+    if (timerRef.current) clearInterval(timerRef.current);
     let correct = 0;
     ENGLISH_QUESTIONS.forEach(q => {
-      if (answers[q.id] === q.answer) correct++;
+      if (currentAnswers[q.id] === q.answer) correct++;
     });
     setScore(correct);
     setShowResult(true);
@@ -83,19 +84,65 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
       total: 30,
       level: level.key,
       levelName: level.name,
-      answers: { ...answers },
+      answers: { ...currentAnswers },
       date: new Date().toISOString(),
     });
+  }, [student?.id, onSubmitEnglishTest]);
+
+  // Timer effect
+  useEffect(() => {
+    if (!started || hasResult || showResult) return;
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [started, hasResult, showResult]);
+
+  // Auto-submit when timer runs out
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
+  useEffect(() => {
+    if (timeLeft === 0 && started && !submittedRef.current) {
+      doSubmit(answersRef.current);
+    }
+  }, [timeLeft, started, doSubmit]);
+
+  const handleAnswer = (qId, optIdx) => {
+    setAnswers(prev => ({ ...prev, [qId]: optIdx }));
+  };
+
+  const handleSubmit = () => {
+    if (Object.keys(answers).length < 30) {
+      if (!window.confirm(`Вы ответили только на ${Object.keys(answers).length} из 30 вопросов. Отправить как есть?`)) return;
+    }
+    doSubmit(answers);
+  };
+
+  const handleRequestRetake = () => {
+    if (onRequestRetake) onRequestRetake(student.id, 'english');
   };
 
   const handleReset = () => {
-    if (window.confirm('Вы уверены что хотите пересдать тест? Предыдущий результат будет сохранен в истории.')) {
-      onResetEnglishTest(student.id);
-      setAnswers({});
-      setCurrentQ(0);
-      setShowResult(false);
-      setScore(0);
-    }
+    onResetEnglishTest(student.id);
+    setAnswers({});
+    setCurrentQ(0);
+    setShowResult(false);
+    setScore(0);
+    setStarted(false);
+    setTimeLeft(TIMER_SECONDS);
+    submittedRef.current = false;
+  };
+
+  const formatTime = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
   // Show previous result
@@ -105,7 +152,6 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
     return (
       <div className="space-y-6 animate-fadeIn">
         <h1 className="text-2xl font-bold text-gray-800">Тест на знание английского</h1>
-
         <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
           <div className="p-6 text-center" style={{ background: `linear-gradient(135deg, ${level.color}15, ${level.color}05)` }}>
             <div className="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-white text-3xl font-bold mb-4" style={{ backgroundColor: level.color }}>
@@ -114,7 +160,6 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
             <h2 className="text-2xl font-bold text-gray-800 mb-1">{level.name}</h2>
             <p className="text-gray-600 max-w-md mx-auto">{level.desc}</p>
           </div>
-
           <div className="p-6">
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="text-center p-4 bg-gray-50 rounded-xl">
@@ -130,8 +175,6 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
                 <div className="text-xs text-gray-500 mt-1">Результат</div>
               </div>
             </div>
-
-            {/* Progress bar showing level */}
             <div className="mb-4">
               <div className="flex justify-between text-xs text-gray-400 mb-1">
                 <span>A1</span><span>A2</span><span>B1</span><span>B2</span><span>C1</span><span>C2</span>
@@ -146,15 +189,25 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
                 ))}
               </div>
             </div>
-
             <div className="text-sm text-gray-500 text-center mb-4">
               Дата прохождения: {new Date(result.date).toLocaleDateString('ru-RU')}
             </div>
-
-            <button onClick={handleReset}
-              className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#1a3a32] hover:text-[#1a3a32] transition-colors">
-              Пересдать тест
-            </button>
+            {/* Retake flow */}
+            {student.englishRetakeRequested ? (
+              <div className="px-4 py-3 bg-yellow-50 border border-yellow-200 rounded-xl text-center text-yellow-700">
+                Запрос на пересдачу отправлен. Ожидайте одобрения куратора.
+              </div>
+            ) : student.englishRetakeAllowed ? (
+              <button onClick={handleReset}
+                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#1a3a32] hover:text-[#1a3a32] transition-colors">
+                Пройти заново
+              </button>
+            ) : (
+              <button onClick={handleRequestRetake}
+                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#c9a227] hover:text-[#c9a227] transition-colors">
+                Запросить пересдачу
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -167,7 +220,6 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
     return (
       <div className="space-y-6 animate-fadeIn">
         <h1 className="text-2xl font-bold text-gray-800">Результат теста</h1>
-
         <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
           <div className="p-8 text-center" style={{ background: `linear-gradient(135deg, ${level.color}20, ${level.color}05)` }}>
             <div className="w-28 h-28 mx-auto rounded-full flex items-center justify-center text-white text-4xl font-bold mb-4 shadow-lg" style={{ backgroundColor: level.color }}>
@@ -176,7 +228,6 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Ваш уровень: {level.name}</h2>
             <p className="text-gray-600 max-w-md mx-auto text-lg">{level.desc}</p>
           </div>
-
           <div className="p-6">
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="text-center p-4 bg-green-50 rounded-xl">
@@ -192,8 +243,6 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
                 <div className="text-sm text-gray-500 mt-1">Результат</div>
               </div>
             </div>
-
-            {/* Breakdown by level */}
             <div className="space-y-2 mb-6">
               <div className="text-sm font-medium text-gray-700 mb-2">Результаты по уровням:</div>
               {Object.entries(LEVELS).map(([key, lv]) => {
@@ -210,8 +259,7 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
                 );
               })}
             </div>
-
-            <button onClick={() => { setShowResult(false); setAnswers({}); setCurrentQ(0); }}
+            <button onClick={() => { setShowResult(false); }}
               className="w-full py-3 btn-primary text-white rounded-xl">
               Закрыть
             </button>
@@ -221,29 +269,69 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
     );
   }
 
-  // Test questions
+  // Start screen
+  if (!started) {
+    return (
+      <div className="space-y-6 animate-fadeIn">
+        <h1 className="text-2xl font-bold text-gray-800">Тест на знание английского</h1>
+        <div className="bg-white rounded-2xl p-8 shadow-sm border text-center">
+          <div className="text-6xl mb-4">{'\u{1F4DD}'}</div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Готовы начать?</h2>
+          <div className="max-w-md mx-auto text-left space-y-3 mb-8">
+            <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+              <span className="text-lg">{'\u{1F4CB}'}</span>
+              <div><span className="font-medium">30 вопросов</span><span className="text-gray-500 text-sm"> — от A1 до C2</span></div>
+            </div>
+            <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+              <span className="text-lg">{'\u{23F0}'}</span>
+              <div><span className="font-medium">30 минут</span><span className="text-gray-500 text-sm"> — таймер запустится сразу</span></div>
+            </div>
+            <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
+              <span className="text-lg">{'\u{1F6AB}'}</span>
+              <div><span className="font-medium">Одна попытка</span><span className="text-gray-500 text-sm"> — пересдача после одобрения куратора</span></div>
+            </div>
+            <div className="flex items-start gap-3 p-3 bg-red-50 rounded-xl">
+              <span className="text-lg">{'\u26A0\uFE0F'}</span>
+              <div><span className="font-medium text-red-700">Авто-отправка</span><span className="text-red-500 text-sm"> — по истечении времени тест отправится автоматически</span></div>
+            </div>
+          </div>
+          <button onClick={() => setStarted(true)}
+            className="px-8 py-3 btn-gold text-[#1a3a32] font-bold rounded-xl text-lg">
+            Начать тест
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Test questions with timer
   const q = ENGLISH_QUESTIONS[currentQ];
   const answeredCount = Object.keys(answers).length;
   const progress = (answeredCount / 30) * 100;
+  const timerWarning = timeLeft <= 60;
+  const timerCaution = timeLeft <= 300 && !timerWarning;
 
   return (
     <div className="space-y-6 animate-fadeIn">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">Тест на знание английского</h1>
-        <span className="text-sm text-gray-500">{answeredCount}/30 ответов</span>
+        <div className={`px-4 py-2 rounded-xl font-mono text-lg font-bold ${
+          timerWarning ? 'bg-red-100 text-red-700 animate-pulse' :
+          timerCaution ? 'bg-yellow-100 text-yellow-700' :
+          'bg-gray-100 text-gray-700'
+        }`}>
+          {'\u{23F0}'} {formatTime(timeLeft)}
+        </div>
       </div>
 
-      {/* Progress bar */}
       <div className="bg-white rounded-2xl p-4 shadow-sm border">
         <div className="flex justify-between text-xs text-gray-400 mb-1">
           <span>Прогресс</span>
-          <span>{Math.round(progress)}%</span>
+          <span>{answeredCount}/30 ответов</span>
         </div>
         <div className="h-2 bg-gray-200 rounded-full">
           <div className="h-2 bg-gradient-to-r from-[#1a3a32] to-[#c9a227] rounded-full transition-all" style={{ width: `${progress}%` }} />
         </div>
-
-        {/* Question nav dots */}
         <div className="flex flex-wrap gap-1.5 mt-3">
           {ENGLISH_QUESTIONS.map((qq, i) => (
             <button key={qq.id} onClick={() => setCurrentQ(i)}
@@ -258,14 +346,12 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
         </div>
       </div>
 
-      {/* Current question */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border">
         <div className="flex items-center gap-2 mb-1">
           <span className="px-2 py-0.5 rounded text-xs font-bold text-white" style={{ backgroundColor: LEVELS[q.level]?.color || '#6b7280' }}>{q.level}</span>
           <span className="text-sm text-gray-400">Вопрос {currentQ + 1} из 30</span>
         </div>
         <h3 className="text-lg font-semibold text-gray-800 mb-6">{q.question}</h3>
-
         <div className="space-y-3">
           {q.options.map((opt, idx) => (
             <button key={idx} onClick={() => handleAnswer(q.id, idx)}
@@ -285,7 +371,6 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
         </div>
       </div>
 
-      {/* Navigation */}
       <div className="flex gap-3">
         <button onClick={() => setCurrentQ(Math.max(0, currentQ - 1))} disabled={currentQ === 0}
           className="flex-1 py-3 bg-white border rounded-xl text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50">
@@ -297,7 +382,7 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest }
             Далее
           </button>
         ) : (
-          <button onClick={handleSubmit} disabled={answeredCount < 30}
+          <button onClick={handleSubmit} disabled={answeredCount < 1}
             className="flex-1 py-3 bg-[#c9a227] text-[#1a3a32] font-bold rounded-xl hover:bg-[#e8c547] transition-colors disabled:opacity-50">
             Завершить тест
           </button>

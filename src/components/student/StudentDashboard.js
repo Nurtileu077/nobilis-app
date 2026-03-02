@@ -73,7 +73,7 @@ const StudentDashboard = ({ student, schedule, teachers, onSetModal, onSetForm, 
           <div className="text-sm text-gray-500">Последний экзамен</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
-          <div className="text-3xl font-bold text-emerald-600">{student.testResult ? '\u2713' : '\u2014'}</div>
+          <div className="text-lg font-bold text-emerald-600 truncate">{student.testResult || '\u2014'}</div>
           <div className="text-sm text-gray-500">Профориентация</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">

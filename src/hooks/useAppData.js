@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getInitialData } from '../data/initialData';
-import { STORAGE_KEY, USER_KEY, DOCUMENT_TYPES, GALLUP_QUESTIONS, CAREER_PROFILES } from '../data/constants';
+import { STORAGE_KEY, USER_KEY, DOCUMENT_TYPES, HOLLAND_QUESTIONS, HOLLAND_PROFILES } from '../data/constants';
 import { generateLogin, generatePassword, calculateTestResult, genId } from '../data/utils';
 
 export default function useAppData() {
@@ -315,23 +315,47 @@ export default function useAppData() {
     }]);
   };
 
-  // ---- CAREER TEST ----
+  // ---- CAREER TEST (Holland RIASEC) ----
   const submitTest = () => {
-    if (Object.keys(testAnswers).length < 20) { alert('Ответьте на все вопросы'); return; }
-    const r = calculateTestResult(testAnswers, GALLUP_QUESTIONS, CAREER_PROFILES);
+    if (Object.keys(testAnswers).length < HOLLAND_QUESTIONS.length) { alert('Ответьте на все вопросы'); return; }
+    const r = calculateTestResult(testAnswers, HOLLAND_QUESTIONS, HOLLAND_PROFILES);
     if (user?.role === 'student') {
-      updStudent(user.id, { testResult: r.profile, testScores: r.scores });
-      setUser(p => ({ ...p, testResult: r.profile, testScores: r.scores }));
+      const updates = {
+        testResult: r.profileName, testProfile: r.profile,
+        testRiasecCode: r.riasecCode, testScores: r.scores, testCareers: r.careers,
+        retakeAllowed: false,
+      };
+      updStudent(user.id, updates);
+      setUser(p => ({ ...p, ...updates }));
+      addHistory(user.id, `Пройден тест профориентации: ${r.profileName} (${r.riasecCode})`);
     }
     setTestAnswers({});
     setTestQ(0);
-    setView('results');
   };
 
   const resetTest = () => {
-    const s = getStudent();
-    updStudent(s.id, { testResult: null, testScores: null });
-    setUser(prev => ({ ...prev, testResult: null, testScores: null }));
+    const s = data.students.find(x => x.id === user?.id);
+    if (!s?.retakeAllowed) return;
+    updStudent(s.id, { testResult: null, testProfile: null, testRiasecCode: null, testScores: null, testCareers: null, retakeAllowed: false });
+    setUser(prev => ({ ...prev, testResult: null, testProfile: null, testRiasecCode: null, testScores: null, testCareers: null, retakeAllowed: false }));
+  };
+
+  // ---- RETAKE MANAGEMENT ----
+  const requestRetake = (studentId, testType) => {
+    const s = data.students.find(x => x.id === studentId);
+    if (!s) return;
+    if (testType === 'career') updStudent(studentId, { retakeRequested: true });
+    else if (testType === 'english') updStudent(studentId, { englishRetakeRequested: true });
+  };
+
+  const approveRetake = (studentId, testType) => {
+    if (testType === 'career') updStudent(studentId, { retakeAllowed: true, retakeRequested: false });
+    else if (testType === 'english') updStudent(studentId, { englishRetakeAllowed: true, englishRetakeRequested: false });
+  };
+
+  const denyRetake = (studentId, testType) => {
+    if (testType === 'career') updStudent(studentId, { retakeRequested: false });
+    else if (testType === 'english') updStudent(studentId, { englishRetakeRequested: false });
   };
 
   // ---- ENGLISH TEST ----
@@ -349,8 +373,8 @@ export default function useAppData() {
 
   const resetEnglishTest = (studentId) => {
     const student = data.students.find(s => s.id === studentId);
-    if (student) {
-      updStudent(studentId, { englishTestResult: null });
+    if (student && student.englishRetakeAllowed) {
+      updStudent(studentId, { englishTestResult: null, englishRetakeAllowed: false });
     }
   };
 
@@ -391,6 +415,7 @@ export default function useAppData() {
     markAtt, markLesson, confirmLesson,
     applyInternship, resolveTicket, addTicket,
     submitTest, resetTest,
+    requestRetake, approveRetake, denyRetake,
     // New v3
     addPackage, updPackage, freezePackage,
     addTask, toggleTask,

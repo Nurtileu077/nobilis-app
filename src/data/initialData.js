@@ -59,7 +59,7 @@ export const getInitialData = () => {
         city: "Астана", status: "process", graduationYear: 2025,
         joinDate: "2024-08-01", contractEndDate: "2025-08-01",
         parentName: "Иванова Елена", parentPhone: "+7 999 876-54-32",
-        testResult: "Творческий Визионер", testScores: { creative: 28, social: 18 },
+        testResult: "Артистический", testProfile: "A", testRiasecCode: "ASE", testScores: { R: 12, I: 15, A: 30, S: 25, E: 20, C: 10 }, testCareers: ["UX/UI Дизайнер", "Режиссёр", "Маркетолог", "Архитектор", "Журналист"],
         targetIelts: "7.5", targetSat: null,
         selectedCountries: ["Нидерланды"],
         targetUniversities: ["TU Delft"],
