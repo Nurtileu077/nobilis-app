@@ -48,7 +48,7 @@ const LoginScreen = ({ onLogin }) => {
         {/* Content on left side */}
         <div className="relative z-10 flex flex-col justify-center items-center w-full px-12">
           <div className="animate-fadeIn">
-            <NobilisLogo size={120} />
+            <NobilisLogo size={160} />
           </div>
           <h1 className="text-5xl font-serif text-white mt-8 tracking-wide">NOBILIS</h1>
           <p className="text-[#c9a227] text-lg tracking-[0.5em] mt-2 font-medium">ACADEMY</p>
@@ -92,7 +92,7 @@ const LoginScreen = ({ onLogin }) => {
           {/* Mobile logo */}
           <div className="text-center mb-8 lg:hidden">
             <div className="flex justify-center mb-3">
-              <NobilisLogo size={80} />
+              <NobilisLogo size={120} />
             </div>
             <h1 className="text-3xl font-serif text-white tracking-wide">NOBILIS</h1>
             <p className="text-[#c9a227] text-sm tracking-[0.3em] mt-1">ACADEMY</p>
