@@ -1033,7 +1033,7 @@ export default function NobilisAcademy() {
           <ul className="text-sm text-gray-600 space-y-1 list-disc ml-4">
             <li>Студенты должны разрешить уведомления в браузере</li>
             <li>Уведомления приходят даже при закрытом приложении</li>
-            <li>Требуется настройка VAPID-ключей на сервере</li>
+            <li>VAPID-ключи настроены и готовы к работе</li>
           </ul>
         </div>
       </div>
