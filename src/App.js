@@ -266,13 +266,111 @@ export default function NobilisAcademy() {
     // LETTER DETAIL
     if (modal === 'letterDetail' && selected) {
       const l = selected;
-      return <Modal title={l.type === 'motivation' ? 'Мотивационное письмо' : 'Рекомендательное письмо'} onClose={() => { setModal(null); setSelected(null); }} size="lg"><div className="space-y-4">{l.university && <div><div className="text-sm text-gray-500">Университет</div><div className="font-medium">{l.university}</div></div>}{l.author && <div><div className="text-sm text-gray-500">Автор</div><div className="font-medium">{l.author} ({l.subject})</div></div>}<div><div className="text-sm text-gray-500">Статус</div><div className={`inline-block px-3 py-1 rounded-full text-sm ${l.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{l.status === 'completed' ? 'Готово' : 'Черновик'}</div></div><div><div className="text-sm text-gray-500 mb-2">Содержание</div><div className="p-4 bg-gray-50 rounded-xl whitespace-pre-wrap">{l.content || 'Пусто'}</div></div>{user?.role === 'student' && l.type === 'motivation' && <div className="flex gap-3"><button onClick={() => { setForm(l); setModal('editLetter'); }} className="flex-1 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">Редактировать</button><button onClick={() => { if (window.confirm('Удалить?')) { delLetter(l.studentId, l.id); setModal(null); setSelected(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors">Удалить</button></div>}</div></Modal>;
+      const isImage = l.fileData?.startsWith('data:image/');
+      const isPdf = l.fileData?.startsWith('data:application/pdf');
+      const handleLetterDownload = () => {
+        if (!l.fileData) return;
+        const a = document.createElement('a');
+        a.href = l.fileData;
+        a.download = l.fileName || 'letter';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      };
+      return (
+        <Modal title={l.type === 'motivation' ? 'Мотивационное письмо' : 'Рекомендательное письмо'} onClose={() => { setModal(null); setSelected(null); }} size="lg">
+          <div className="space-y-4">
+            {l.university && <div><div className="text-sm text-gray-500">Университет</div><div className="font-medium">{l.university}</div></div>}
+            {l.author && <div><div className="text-sm text-gray-500">Автор</div><div className="font-medium">{l.author} {l.subject ? `(${l.subject})` : ''}</div></div>}
+            <div><div className="text-sm text-gray-500">Статус</div><div className={`inline-block px-3 py-1 rounded-full text-sm ${l.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{l.status === 'completed' ? 'Готово' : 'Черновик'}</div></div>
+            {/* File preview */}
+            {l.fileData && (
+              <div>
+                <div className="text-sm text-gray-500 mb-2">Прикреплённый файл</div>
+                {isImage ? (
+                  <div className="rounded-xl overflow-hidden border"><img src={l.fileData} alt={l.fileName} className="w-full max-h-96 object-contain bg-gray-50" /></div>
+                ) : isPdf ? (
+                  <div className="rounded-xl overflow-hidden border bg-gray-50 p-4 text-center">
+                    <div className="text-4xl mb-2">{'\u{1F4C4}'}</div>
+                    <div className="text-sm text-gray-600">{l.fileName}</div>
+                    <a href={l.fileData} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-sm text-blue-600 hover:underline">Открыть в новой вкладке</a>
+                  </div>
+                ) : (
+                  <div className="text-center py-4 bg-gray-50 rounded-xl">
+                    <div className="text-4xl mb-2">{'\u{1F4C4}'}</div>
+                    <div className="text-sm text-gray-600">{l.fileName}</div>
+                    {l.fileSize && <div className="text-xs text-gray-400">{l.fileSize}</div>}
+                  </div>
+                )}
+                <button onClick={handleLetterDownload} className="w-full mt-2 py-2 bg-[#1a3a32] text-white rounded-xl hover:bg-[#2d5a4a] transition-colors flex items-center justify-center gap-2">
+                  <I.Download /><span>Скачать</span>
+                </button>
+              </div>
+            )}
+            {l.content && <div><div className="text-sm text-gray-500 mb-2">Содержание</div><div className="p-4 bg-gray-50 rounded-xl whitespace-pre-wrap">{l.content}</div></div>}
+            {user?.role === 'student' && l.type === 'motivation' && (
+              <div className="flex gap-3">
+                <button onClick={() => { setForm(l); setModal('editLetter'); }} className="flex-1 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">Редактировать</button>
+                <button onClick={() => { if (window.confirm('Удалить?')) { delLetter(l.studentId, l.id); setModal(null); setSelected(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors">Удалить</button>
+              </div>
+            )}
+          </div>
+        </Modal>
+      );
     }
 
     // DOCUMENT DETAIL
     if (modal === 'documentDetail' && selected) {
       const d = selected;
-      return <Modal title={DOCUMENT_TYPES[d.type]?.label || 'Документ'} onClose={() => { setModal(null); setSelected(null); }}><div className="space-y-4"><div className="text-center text-6xl mb-4">{DOCUMENT_TYPES[d.type]?.icon || '\u{1F4C4}'}</div><div><div className="text-sm text-gray-500">Название</div><div className="font-medium">{d.name}</div></div><div><div className="text-sm text-gray-500">Дата</div><div className="font-medium">{formatDate(d.date)}</div></div>{d.score && <div><div className="text-sm text-gray-500">Балл</div><div className="font-medium text-2xl text-[#1a3a32]">{d.score}</div></div>}<div className="flex gap-3"><button className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"><I.Download /><span>Скачать</span></button>{user?.role === 'curator' && <button onClick={() => { if (window.confirm('Удалить?')) { delDoc(d.studentId, d.id); setModal(null); setSelected(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors"><I.Trash /></button>}</div></div></Modal>;
+      const isImage = d.fileData?.startsWith('data:image/');
+      const isPdf = d.fileData?.startsWith('data:application/pdf');
+      const handleDownload = () => {
+        if (!d.fileData) return;
+        const a = document.createElement('a');
+        a.href = d.fileData;
+        a.download = d.fileName || d.name || 'document';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      };
+      return (
+        <Modal title={DOCUMENT_TYPES[d.type]?.label || 'Документ'} onClose={() => { setModal(null); setSelected(null); }}>
+          <div className="space-y-4">
+            {d.fileData ? (
+              isImage ? (
+                <div className="rounded-xl overflow-hidden border"><img src={d.fileData} alt={d.name} className="w-full max-h-96 object-contain bg-gray-50" /></div>
+              ) : isPdf ? (
+                <div className="rounded-xl overflow-hidden border bg-gray-50 p-4 text-center">
+                  <div className="text-4xl mb-2">{DOCUMENT_TYPES[d.type]?.icon || '\u{1F4C4}'}</div>
+                  <div className="text-sm text-gray-500">PDF документ</div>
+                  <a href={d.fileData} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-sm text-blue-600 hover:underline">Открыть в новой вкладке</a>
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <div className="text-5xl mb-2">{DOCUMENT_TYPES[d.type]?.icon || '\u{1F4C4}'}</div>
+                  <div className="text-sm text-gray-500">{d.fileName}</div>
+                  {d.fileSize && <div className="text-xs text-gray-400">{d.fileSize}</div>}
+                </div>
+              )
+            ) : (
+              <div className="text-center text-6xl py-4">{DOCUMENT_TYPES[d.type]?.icon || '\u{1F4C4}'}</div>
+            )}
+            <div><div className="text-sm text-gray-500">Название</div><div className="font-medium">{d.name}</div></div>
+            <div><div className="text-sm text-gray-500">Дата</div><div className="font-medium">{formatDate(d.date)}</div></div>
+            {d.score && <div><div className="text-sm text-gray-500">Балл</div><div className="font-medium text-2xl text-[#1a3a32]">{d.score}</div></div>}
+            <div className="flex gap-3">
+              {d.fileData ? (
+                <button onClick={handleDownload} className="flex-1 py-2 bg-[#1a3a32] text-white rounded-xl hover:bg-[#2d5a4a] transition-colors flex items-center justify-center gap-2">
+                  <I.Download /><span>Скачать</span>
+                </button>
+              ) : (
+                <div className="flex-1 py-2 bg-gray-100 text-gray-400 rounded-xl text-center text-sm">Файл не прикреплён</div>
+              )}
+              {user?.role === 'curator' && <button onClick={() => { if (window.confirm('Удалить?')) { delDoc(d.studentId, d.id); setModal(null); setSelected(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors"><I.Trash /></button>}
+            </div>
+          </div>
+        </Modal>
+      );
     }
 
     // ADD STUDENT
@@ -646,6 +744,172 @@ export default function NobilisAcademy() {
       );
     }
 
+    // UPLOAD RECOMMENDATION (student uploads their own)
+    if (modal === 'uploadRecommendation' && form._uploadStudentId) {
+      const sid = form._uploadStudentId;
+      return (
+        <Modal title="Загрузка рек. письма" onClose={() => { setModal(null); setForm({}); }}>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">Подтвердите загрузку рекомендательного письма.</p>
+            <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Автор</div><div className="font-medium text-sm">{form.author || '—'}</div></div>
+            {form.fileName && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Файл</div><div className="font-medium text-sm">{form.fileName} ({form.fileSize})</div></div>}
+            <button onClick={() => {
+              addLetter(sid, {
+                type: 'recommendation', author: form.author || '', subject: form.subject || '',
+                content: form.content || '', status: form.fileData ? 'completed' : 'draft',
+                fileName: form.fileName || null, fileData: form.fileData || null, fileSize: form.fileSize || null,
+              });
+              setModal(null); setForm({});
+            }} className="w-full py-3 btn-primary text-white rounded-xl">Подтвердить</button>
+          </div>
+        </Modal>
+      );
+    }
+
+    // EDIT PACKAGE
+    if (modal === 'editPackage' && selected && form.editPkgId) {
+      return (
+        <Modal title="Редактировать пакет" onClose={() => { setModal(null); setForm({}); }}>
+          <div className="space-y-4">
+            <div><label className="block text-sm text-gray-600 mb-1">Тип</label>
+              <select value={form.type || 'ielts'} onChange={e => setForm(p => ({ ...p, type: e.target.value }))} className="w-full p-3 border rounded-xl input-focus">
+                {Object.entries(PACKAGE_TYPES).map(([k, v]) => <option key={k} value={k}>{v.name}</option>)}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div><label className="block text-sm text-gray-600 mb-1">Начало</label><input type="date" value={form.startDate || ''} onChange={e => setForm(p => ({ ...p, startDate: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+              <div><label className="block text-sm text-gray-600 mb-1">Конец</label><input type="date" value={form.endDate || ''} onChange={e => setForm(p => ({ ...p, endDate: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+            </div>
+            {form.type !== 'support' && (
+              <>
+                <div><label className="block text-sm text-gray-600 mb-1">Всего занятий</label><input type="number" value={form.totalLessons || 0} onChange={e => setForm(p => ({ ...p, totalLessons: parseInt(e.target.value) || 0 }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-sm text-gray-600 mb-1">Проведено</label><input type="number" value={form.completedLessons || 0} onChange={e => setForm(p => ({ ...p, completedLessons: parseInt(e.target.value) || 0 }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+                  <div><label className="block text-sm text-gray-600 mb-1">Пропущено</label><input type="number" value={form.missedLessons || 0} onChange={e => setForm(p => ({ ...p, missedLessons: parseInt(e.target.value) || 0 }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+                </div>
+              </>
+            )}
+            {form.type === 'support' && (
+              <div><label className="block text-sm text-gray-600 mb-1">Текущий этап</label>
+                <select value={form.currentStage || 1} onChange={e => setForm(p => ({ ...p, currentStage: parseInt(e.target.value) }))} className="w-full p-3 border rounded-xl input-focus">
+                  {SUPPORT_STAGES.map(st => <option key={st.id} value={st.id}>{st.id}. {st.name} ({st.percent}%)</option>)}
+                </select>
+              </div>
+            )}
+            <button onClick={() => {
+              app.updPackage(selected.id, form.editPkgId, {
+                type: form.type, startDate: form.startDate, endDate: form.endDate,
+                totalLessons: form.totalLessons, completedLessons: form.completedLessons,
+                missedLessons: form.missedLessons, currentStage: form.currentStage,
+              });
+              setModal(null); setForm({});
+            }} className="w-full py-3 btn-primary text-white rounded-xl">Сохранить</button>
+          </div>
+        </Modal>
+      );
+    }
+
+    // ADD RECOMMENDATION LETTER (curator adds to student)
+    if (modal === 'addRecommendationLetter' && selected) {
+      return (
+        <Modal title="Добавить рекомендательное письмо" onClose={() => { setModal(null); setForm({}); }}>
+          <div className="space-y-4">
+            <div><label className="block text-sm text-gray-600 mb-1">От кого (автор)</label><input type="text" value={form.author || ''} onChange={e => setForm(p => ({ ...p, author: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Иванова А.И." /></div>
+            <div><label className="block text-sm text-gray-600 mb-1">Предмет / Должность</label><input type="text" value={form.subject || ''} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Английский / Директор школы" /></div>
+            <div><label className="block text-sm text-gray-600 mb-1">Содержание</label><textarea value={form.content || ''} onChange={e => setForm(p => ({ ...p, content: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" rows={4} /></div>
+            {/* File upload */}
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Файл (PDF, DOC)</label>
+              <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:border-[#1a3a32] transition-colors">
+                {form.fileName ? (
+                  <span className="text-sm text-[#1a3a32]">{form.fileName}</span>
+                ) : (
+                  <span className="text-sm text-gray-500">Нажмите для выбора файла</span>
+                )}
+                <input type="file" className="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => { setForm(p => ({ ...p, fileName: file.name, fileSize: `${(file.size / 1024).toFixed(1)} KB`, fileData: ev.target.result })); };
+                    reader.readAsDataURL(file);
+                  }
+                }} />
+              </label>
+            </div>
+            <button onClick={() => {
+              const sid = selected.id;
+              addLetter(sid, {
+                type: 'recommendation', author: form.author || '', subject: form.subject || '',
+                content: form.content || '', status: form.fileData ? 'completed' : 'draft',
+                fileName: form.fileName || null, fileData: form.fileData || null, fileSize: form.fileSize || null,
+              });
+              setModal(null); setForm({});
+            }} className="w-full py-3 btn-primary text-white rounded-xl">Добавить</button>
+          </div>
+        </Modal>
+      );
+    }
+
+    // EDIT UNIVERSITY
+    if (modal === 'editUniversity' && (form.isNew !== undefined)) {
+      const isNew = form.isNew;
+      const [uniForm, setUniForm] = [form.uniForm || {
+        name: isNew ? '' : (selected?.name || ''),
+        city: isNew ? '' : (selected?.city || ''),
+        tuitionMin: isNew ? '' : (selected?.tuition?.[0] || ''),
+        tuitionMax: isNew ? '' : (selected?.tuition?.[1] || ''),
+        gpa: isNew ? '3.0' : (selected?.gpa || ''),
+        ielts: isNew ? '6.0' : (selected?.ielts || ''),
+        deadline: isNew ? '' : (selected?.deadline || ''),
+        faculties: isNew ? '' : (selected?.faculties?.join(', ') || ''),
+        scholarship: isNew ? false : (selected?.scholarship || false),
+        note: isNew ? '' : (selected?.note || ''),
+        photo: isNew ? '' : (selected?.photo || ''),
+      }, (v) => setForm(p => ({ ...p, uniForm: typeof v === 'function' ? v(p.uniForm || {}) : v }))];
+
+      // Initialize uniForm on first render
+      if (!form.uniForm) {
+        setForm(p => ({ ...p, uniForm: {
+          name: isNew ? '' : (selected?.name || ''),
+          city: isNew ? '' : (selected?.city || ''),
+          tuitionMin: isNew ? '' : String(selected?.tuition?.[0] || ''),
+          tuitionMax: isNew ? '' : String(selected?.tuition?.[1] || ''),
+          gpa: isNew ? '3.0' : String(selected?.gpa || ''),
+          ielts: isNew ? '6.0' : String(selected?.ielts || ''),
+          deadline: isNew ? '' : (selected?.deadline || ''),
+          faculties: isNew ? '' : (selected?.faculties?.join(', ') || ''),
+          scholarship: isNew ? false : (selected?.scholarship || false),
+          note: isNew ? '' : (selected?.note || ''),
+          photo: isNew ? '' : (selected?.photo || ''),
+        }}));
+      }
+
+      const uf = form.uniForm || {};
+      return (
+        <Modal title={isNew ? 'Добавить университет' : 'Редактировать университет'} onClose={() => { setModal(null); setForm({}); setSelected(null); }}>
+          <div className="space-y-3">
+            <div><label className="block text-sm text-gray-600 mb-1">Название *</label><input type="text" value={uf.name || ''} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, name: e.target.value } }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+            <div><label className="block text-sm text-gray-600 mb-1">Город *</label><input type="text" value={uf.city || ''} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, city: e.target.value } }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="block text-sm text-gray-600 mb-1">Стоимость от ($)</label><input type="number" value={uf.tuitionMin || ''} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, tuitionMin: e.target.value } }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+              <div><label className="block text-sm text-gray-600 mb-1">Стоимость до ($)</label><input type="number" value={uf.tuitionMax || ''} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, tuitionMax: e.target.value } }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="block text-sm text-gray-600 mb-1">Мин. GPA</label><input type="number" step="0.1" value={uf.gpa || ''} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, gpa: e.target.value } }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+              <div><label className="block text-sm text-gray-600 mb-1">Мин. IELTS</label><input type="number" step="0.5" value={uf.ielts || ''} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, ielts: e.target.value } }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+            </div>
+            <div><label className="block text-sm text-gray-600 mb-1">Дедлайн</label><input type="text" value={uf.deadline || ''} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, deadline: e.target.value } }))} className="w-full p-3 border rounded-xl input-focus" placeholder="1 мая / 15 января" /></div>
+            <div><label className="block text-sm text-gray-600 mb-1">Факультеты (через запятую)</label><input type="text" value={uf.faculties || ''} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, faculties: e.target.value } }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+            <div><label className="block text-sm text-gray-600 mb-1">URL фото</label><input type="text" value={uf.photo || ''} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, photo: e.target.value } }))} className="w-full p-3 border rounded-xl input-focus" placeholder="https://..." /></div>
+            <div><label className="block text-sm text-gray-600 mb-1">Примечание</label><input type="text" value={uf.note || ''} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, note: e.target.value } }))} className="w-full p-3 border rounded-xl input-focus" /></div>
+            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={uf.scholarship || false} onChange={e => setForm(p => ({ ...p, uniForm: { ...p.uniForm, scholarship: e.target.checked } }))} className="w-4 h-4" /><span className="text-sm">Есть стипендия</span></label>
+            <p className="text-xs text-gray-400">Примечание: изменения хранятся в текущей сессии. Для постоянных изменений обновите файл universities.js.</p>
+            <button onClick={() => { setModal(null); setForm({}); setSelected(null); alert('Для сохранения изменений обновите файл src/data/universities.js'); }} className="w-full py-3 btn-primary text-white rounded-xl">Закрыть</button>
+          </div>
+        </Modal>
+      );
+    }
+
     return null;
   };
 
@@ -781,35 +1045,60 @@ export default function NobilisAcademy() {
   // ============================================================
   const MatchmakingView = ({ students }) => {
     const [matchStudent, setMatchStudent] = useState(null);
+    const [matchGpa, setMatchGpa] = useState('');
+    const [matchIelts, setMatchIelts] = useState('');
+    const [matchCountries, setMatchCountries] = useState([]);
+
+    const selectStudent = (s) => {
+      setMatchStudent(s);
+      if (s) {
+        setMatchGpa(String(s.gpa || ''));
+        setMatchIelts(String(s.englishTestResult?.ieltsEquiv || s.targetIelts || ''));
+        setMatchCountries(s.selectedCountries || []);
+      }
+    };
+
+    const toggleCountry = (name) => setMatchCountries(p => p.includes(name) ? p.filter(c => c !== name) : [...p, name]);
+
     const getMatches = (student) => {
       if (!student) return [];
+      const gpa = parseFloat(matchGpa) || 0;
+      const ielts = parseFloat(matchIelts) || 0;
       const matches = [];
       Object.entries(UNIVERSITIES_DB).forEach(([code, unis]) => {
         const info = COUNTRY_INFO[code] || {};
         unis.forEach(u => {
           let score = 0;
-          // GPA match
-          if (student.gpa && student.gpa >= u.gpa) score += 30;
-          else if (student.gpa && student.gpa >= u.gpa - 0.3) score += 15;
-          // IELTS match
-          const ieltsScore = student.englishTestResult?.ieltsEquiv || 0;
-          if (ieltsScore >= u.ielts) score += 25;
-          else if (ieltsScore >= u.ielts - 0.5) score += 10;
-          // Country preference match
-          if (student.selectedCountries?.includes(info.name)) score += 20;
-          // Career/faculty match based on RIASEC
+          let maxPossible = 100;
+          // GPA match (30 pts)
+          if (gpa > 0) {
+            if (gpa >= u.gpa) score += 30;
+            else if (gpa >= u.gpa - 0.3) score += 15;
+          } else maxPossible -= 30;
+          // IELTS match (25 pts)
+          if (ielts > 0) {
+            if (ielts >= u.ielts) score += 25;
+            else if (ielts >= u.ielts - 0.5) score += 10;
+          } else maxPossible -= 25;
+          // Country preference (20 pts)
+          if (matchCountries.length > 0) {
+            if (matchCountries.includes(info.name)) score += 20;
+          } else maxPossible -= 20;
+          // Career/faculty match (15 pts)
           if (student.testCareers?.length > 0) {
             const careerMatch = u.faculties.some(f => student.testCareers.some(c => f.toLowerCase().includes(c.toLowerCase().slice(0, 4))));
             if (careerMatch) score += 15;
-          }
-          // Scholarship bonus
+          } else maxPossible -= 15;
+          // Scholarship (5 pts)
           if (u.scholarship) score += 5;
-          // Budget match (tuition)
+          // Budget (5 pts)
           if (u.tuition[0] <= 5000) score += 5;
-          if (score >= 30) matches.push({ ...u, country: info.name, countryFlag: info.flag, countryCode: code, matchScore: score });
+          // Normalize to percentage of max possible
+          const pct = maxPossible > 0 ? Math.round((score / maxPossible) * 100) : 50;
+          if (pct >= 20) matches.push({ ...u, country: info.name, countryFlag: info.flag, countryCode: code, matchScore: pct });
         });
       });
-      return matches.sort((a, b) => b.matchScore - a.matchScore).slice(0, 20);
+      return matches.sort((a, b) => b.matchScore - a.matchScore).slice(0, 30);
     };
     const matches = getMatches(matchStudent);
     return (
@@ -817,7 +1106,7 @@ export default function NobilisAcademy() {
         <h1 className="text-2xl font-bold text-gray-800">Подбор ВУЗов</h1>
         <div className="bg-white rounded-2xl p-6 shadow-sm border">
           <label className="block text-sm font-medium text-gray-700 mb-2">Выберите студента</label>
-          <select value={matchStudent?.id || ''} onChange={e => setMatchStudent(students.find(s => s.id === +e.target.value) || null)}
+          <select value={matchStudent?.id || ''} onChange={e => selectStudent(students.find(s => String(s.id) === e.target.value) || null)}
             className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none">
             <option value="">— Выберите —</option>
             {students.map(s => <option key={s.id} value={s.id}>{s.name} {s.testResult ? `(${s.testResult})` : ''}</option>)}
@@ -825,12 +1114,33 @@ export default function NobilisAcademy() {
         </div>
         {matchStudent && (
           <div className="bg-white rounded-2xl p-6 shadow-sm border">
-            <h3 className="font-semibold mb-2">Профиль студента</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-              <div><span className="text-gray-500">GPA:</span> <span className="font-medium">{matchStudent.gpa || '—'}</span></div>
-              <div><span className="text-gray-500">IELTS:</span> <span className="font-medium">{matchStudent.englishTestResult?.ieltsEquiv || '—'}</span></div>
-              <div><span className="text-gray-500">Профиль:</span> <span className="font-medium">{matchStudent.testResult || '—'}</span></div>
-              <div><span className="text-gray-500">Страны:</span> <span className="font-medium">{matchStudent.selectedCountries?.join(', ') || '—'}</span></div>
+            <h3 className="font-semibold mb-4">Параметры подбора</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">GPA</label>
+                <input type="number" step="0.1" min="0" max="4" value={matchGpa} onChange={e => setMatchGpa(e.target.value)}
+                  placeholder="3.5" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a32]/20 outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">IELTS</label>
+                <input type="number" step="0.5" min="0" max="9" value={matchIelts} onChange={e => setMatchIelts(e.target.value)}
+                  placeholder="6.5" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a32]/20 outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Профиль RIASEC</label>
+                <div className="px-3 py-2 bg-gray-50 rounded-lg text-sm">{matchStudent.testResult || 'Не пройден'}</div>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-2">Предпочтительные страны</label>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(COUNTRY_INFO).map(([code, info]) => (
+                  <button key={code} onClick={() => toggleCountry(info.name)}
+                    className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${matchCountries.includes(info.name) ? 'bg-[#1a3a32] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                    {info.flag} {info.name}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -871,68 +1181,177 @@ export default function NobilisAcademy() {
   };
 
   // ============================================================
-  // COUNTRIES VIEW (inline)
+  // COUNTRIES VIEW (inline) — with clickable countries & university cards
   // ============================================================
   const CountriesView = ({ students }) => {
-    const [expandedCountry, setExpandedCountry] = useState(null);
+    const [selectedCountry, setSelectedCountry] = useState(null);
+    const [selectedUni, setSelectedUni] = useState(null);
     const [uniSearch, setUniSearch] = useState('');
+    const [editMode, setEditMode] = useState(false);
+
+    // Show single university detail
+    if (selectedUni) {
+      const u = selectedUni;
+      const countryCode = Object.entries(UNIVERSITIES_DB).find(([, unis]) => unis.some(x => x.name === u.name))?.[0];
+      const info = COUNTRY_INFO[countryCode] || {};
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <button onClick={() => setSelectedUni(null)} className="flex items-center gap-2 text-[#1a3a32] hover:underline">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            Назад к {info.name || 'стране'}
+          </button>
+          <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+            {u.photo ? (
+              <div className="h-48 bg-cover bg-center" style={{ backgroundImage: `url(${u.photo})` }} />
+            ) : (
+              <div className="h-48 bg-gradient-to-r from-[#1a3a32] to-[#2d5a4a] flex items-center justify-center">
+                <span className="text-6xl">{info.flag}</span>
+              </div>
+            )}
+            <div className="p-6">
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">{u.name}</h2>
+                  <p className="text-gray-500">{u.city}, {info.name}</p>
+                </div>
+                {u.scholarship && <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex-shrink-0">Стипендия</span>}
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">Стоимость/год</div><div className="font-bold text-[#1a3a32]">${u.tuition[0].toLocaleString()}-${u.tuition[1].toLocaleString()}</div></div>
+                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">Мин. GPA</div><div className="font-bold text-[#1a3a32]">{u.gpa}+</div></div>
+                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">IELTS</div><div className="font-bold text-[#1a3a32]">{u.ielts}+</div></div>
+                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">Дедлайн</div><div className="font-bold text-[#1a3a32]">{u.deadline}</div></div>
+              </div>
+              {u.note && <p className="text-gray-600 mb-4">{u.note}</p>}
+              <div className="mb-4">
+                <div className="text-sm font-medium text-gray-700 mb-2">Факультеты:</div>
+                <div className="flex flex-wrap gap-2">{u.faculties.map(f => <span key={f} className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm">{f}</span>)}</div>
+              </div>
+              {u.documents && (
+                <div>
+                  <div className="text-sm font-medium text-gray-700 mb-2">Необходимые документы:</div>
+                  <div className="flex flex-wrap gap-2">{u.documents.map(d => <span key={d} className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">{d}</span>)}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Show universities of selected country
+    if (selectedCountry) {
+      const code = selectedCountry;
+      const unis = UNIVERSITIES_DB[code] || [];
+      const info = COUNTRY_INFO[code] || {};
+      const countryStudents = students.filter(s => s.selectedCountries?.includes(info.name));
+      const filtered = uniSearch ? unis.filter(u => u.name.toLowerCase().includes(uniSearch.toLowerCase()) || u.city.toLowerCase().includes(uniSearch.toLowerCase())) : unis;
+
+      return (
+        <div className="space-y-6 animate-fadeIn">
+          <div className="flex items-center justify-between">
+            <button onClick={() => { setSelectedCountry(null); setUniSearch(''); setEditMode(false); }} className="flex items-center gap-2 text-[#1a3a32] hover:underline">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              Все страны
+            </button>
+            <button onClick={() => setEditMode(!editMode)} className={`px-4 py-2 rounded-xl text-sm transition-colors ${editMode ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              {editMode ? 'Завершить редактирование' : 'Редактировать'}
+            </button>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-sm border">
+            <div className="flex items-center gap-4 mb-2">
+              <span className="text-4xl">{info.flag}</span>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">{info.name}</h2>
+                <p className="text-sm text-gray-500">{info.lang} · {info.currency} · {unis.length} ВУЗов</p>
+              </div>
+            </div>
+            {info.requirements && <div className="mt-3 text-sm"><span className="text-gray-500">Требования: </span><span className="font-medium">{info.requirements}</span></div>}
+            {countryStudents.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-1">
+                <span className="text-sm text-gray-500 mr-1">Студенты:</span>
+                {countryStudents.map(s => (
+                  <span key={s.id} className="text-xs bg-[#1a3a32]/10 text-[#1a3a32] px-2 py-1 rounded-full">{s.name}</span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <input value={uniSearch} onChange={e => setUniSearch(e.target.value)} placeholder="Поиск университета..."
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none" />
+
+          {editMode && (
+            <button onClick={() => { setSelected({ name: '', city: '', tuition: [0, 0], gpa: 3.0, ielts: 6.0, deadline: '', faculties: [], scholarship: false, note: '', documents: [], photo: '' }); setForm({ isNew: true, countryCode: code }); setModal('editUniversity'); }}
+              className="w-full py-3 border-2 border-dashed border-[#1a3a32] rounded-xl text-[#1a3a32] hover:bg-[#1a3a32]/5 transition-colors flex items-center justify-center gap-2">
+              <I.Plus /><span>Добавить университет</span>
+            </button>
+          )}
+
+          <div className="grid md:grid-cols-2 gap-4">
+            {filtered.map(u => (
+              <div key={u.name} className="bg-white rounded-2xl shadow-sm border overflow-hidden card-hover cursor-pointer" onClick={() => !editMode && setSelectedUni(u)}>
+                {u.photo ? (
+                  <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${u.photo})` }} />
+                ) : (
+                  <div className="h-32 bg-gradient-to-br from-[#1a3a32]/80 to-[#2d5a4a]/60 flex items-center justify-center">
+                    <span className="text-4xl opacity-50">{info.flag}</span>
+                  </div>
+                )}
+                <div className="p-4">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3 className="font-semibold text-gray-800">{u.name}</h3>
+                    {u.scholarship && <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded flex-shrink-0">Стипендия</span>}
+                  </div>
+                  <p className="text-sm text-gray-500 mb-2">{u.city} · ${u.tuition[0].toLocaleString()}-${u.tuition[1].toLocaleString()}/год</p>
+                  <div className="flex gap-3 text-xs text-gray-400 mb-2">
+                    <span>GPA {u.gpa}+</span>
+                    <span>IELTS {u.ielts}+</span>
+                    <span>Дедлайн: {u.deadline}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {u.faculties.slice(0, 4).map(f => <span key={f} className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{f}</span>)}
+                    {u.faculties.length > 4 && <span className="text-[10px] text-gray-400">+{u.faculties.length - 4}</span>}
+                  </div>
+                  {editMode && (
+                    <div className="flex gap-2 mt-3 border-t pt-3">
+                      <button onClick={(e) => { e.stopPropagation(); setSelected(u); setForm({ isNew: false, countryCode: code }); setModal('editUniversity'); }}
+                        className="flex-1 py-1.5 text-xs bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200">Редактировать</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Show all countries grid
     return (
     <div className="space-y-6 animate-fadeIn">
-      <h1 className="text-2xl font-bold text-gray-800">Страны и ВУЗы</h1>
-      <input value={uniSearch} onChange={e => setUniSearch(e.target.value)} placeholder="Поиск университета..."
-        className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none" />
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-800">Страны и ВУЗы</h1>
+        <button onClick={() => setEditMode(!editMode)} className={`px-4 py-2 rounded-xl text-sm transition-colors ${editMode ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+          {editMode ? 'Завершить' : 'Редактировать'}
+        </button>
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {Object.entries(UNIVERSITIES_DB).map(([code, unis]) => {
           const info = COUNTRY_INFO[code] || {};
           const countryStudents = students.filter(s => s.selectedCountries?.includes(info.name));
-          const filtered = uniSearch ? unis.filter(u => u.name.toLowerCase().includes(uniSearch.toLowerCase()) || u.city.toLowerCase().includes(uniSearch.toLowerCase())) : unis;
-          if (uniSearch && filtered.length === 0) return null;
-          const isExpanded = expandedCountry === code;
-          const shown = isExpanded ? filtered : filtered.slice(0, 3);
           return (
-            <div key={code} className="bg-white rounded-2xl p-6 shadow-sm border card-hover">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">{info.flag}</span>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold">{info.name}</h3>
-                  <p className="text-xs text-gray-500">{info.lang} · {info.currency} · {unis.length} ВУЗов</p>
-                </div>
-                {countryStudents.length > 0 && <span className="text-xs bg-[#1a3a32]/10 text-[#1a3a32] px-2 py-1 rounded-full">{countryStudents.length} студ.</span>}
+            <div key={code} className="bg-white rounded-2xl p-5 shadow-sm border card-hover cursor-pointer transition-all hover:shadow-md"
+              onClick={() => setSelectedCountry(code)}>
+              <div className="text-center">
+                <span className="text-4xl block mb-3">{info.flag}</span>
+                <h3 className="font-semibold text-gray-800 mb-1">{info.name}</h3>
+                <p className="text-sm text-gray-500 mb-2">{unis.length} ВУЗов</p>
+                <p className="text-xs text-gray-400">{info.lang}</p>
+                {countryStudents.length > 0 && (
+                  <span className="inline-block mt-2 text-xs bg-[#1a3a32]/10 text-[#1a3a32] px-2 py-1 rounded-full">{countryStudents.length} студентов</span>
+                )}
               </div>
-              <div className="space-y-2 mb-3">
-                {shown.map(u => (
-                  <div key={u.name} className="p-3 bg-gray-50 rounded-xl">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="font-medium text-sm">{u.name}</div>
-                      {u.scholarship && <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded flex-shrink-0">Стипендия</span>}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">{u.city} · ${u.tuition[0].toLocaleString()}-${u.tuition[1].toLocaleString()}/год · GPA {u.gpa}+ · IELTS {u.ielts}+</div>
-                    <div className="text-xs text-gray-400 mt-1">{u.note}</div>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {u.faculties.map(f => <span key={f} className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{f}</span>)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {filtered.length > 3 && (
-                <button onClick={() => setExpandedCountry(isExpanded ? null : code)}
-                  className="text-sm text-[#1a3a32] hover:underline">
-                  {isExpanded ? 'Свернуть' : `Ещё ${filtered.length - 3} ВУЗов...`}
-                </button>
-              )}
-              {countryStudents.length > 0 && (
-                <div className="border-t pt-3 mt-3">
-                  <div className="text-sm font-medium mb-2">Студенты ({countryStudents.length}):</div>
-                  <div className="flex flex-wrap gap-1">
-                    {countryStudents.map(s => (
-                      <button key={s.id} onClick={() => { setSelected(s); setDetailTab('info'); setModal('studentDetail'); }}
-                        className="text-xs bg-[#1a3a32]/10 text-[#1a3a32] px-2 py-1 rounded hover:bg-[#1a3a32]/20 transition-colors cursor-pointer">
-                        {s.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           );
         })}
@@ -951,6 +1370,7 @@ export default function NobilisAcademy() {
       { id: 'packages', label: 'Пакеты' },
       { id: 'tasks', label: 'Задачи' },
       { id: 'docs', label: 'Документы' },
+      { id: 'letters', label: 'Письма' },
       { id: 'invitations', label: 'Приглашения' },
       { id: 'freeze', label: 'Заморозка' },
       { id: 'history', label: 'История' },
@@ -1005,8 +1425,22 @@ export default function NobilisAcademy() {
           {detailTab === 'info' && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Логин</div><div className="font-medium text-sm mt-1">{s.login}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Пароль</div><div className="font-medium text-sm mt-1">{s.password}</div></div>
+                <div className="p-3 bg-gray-50 rounded-xl">
+                  <div className="text-xs text-gray-500">Логин</div>
+                  {form.editingCredentials ? (
+                    <input type="text" value={form.editLogin ?? s.login} onChange={e => setForm(p => ({ ...p, editLogin: e.target.value }))} className="w-full p-1 border rounded text-sm mt-1 input-focus" />
+                  ) : (
+                    <div className="font-medium text-sm mt-1">{s.login}</div>
+                  )}
+                </div>
+                <div className="p-3 bg-gray-50 rounded-xl">
+                  <div className="text-xs text-gray-500">Пароль</div>
+                  {form.editingCredentials ? (
+                    <input type="text" value={form.editPassword ?? s.password} onChange={e => setForm(p => ({ ...p, editPassword: e.target.value }))} className="w-full p-1 border rounded text-sm mt-1 input-focus" />
+                  ) : (
+                    <div className="font-medium text-sm mt-1">{s.password}</div>
+                  )}
+                </div>
                 <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Email</div><div className="font-medium text-sm mt-1">{s.email}</div></div>
                 <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Телефон</div><div className="font-medium text-sm mt-1">{s.phone}</div></div>
                 <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Класс</div><div className="font-medium text-sm mt-1">{s.grade}</div></div>
@@ -1030,8 +1464,26 @@ export default function NobilisAcademy() {
               {s.selectedCountries?.length > 0 && <div><div className="text-xs text-gray-500 mb-1">Страны</div><div className="text-sm">{s.selectedCountries.join(', ')}</div></div>}
               {s.targetUniversities?.length > 0 && <div><div className="text-xs text-gray-500 mb-1">Университеты</div><div className="text-sm">{s.targetUniversities.join(', ')}</div></div>}
               {s.initialResults && <div><div className="text-xs text-gray-500 mb-1">Начальные результаты</div><div className="flex gap-2">{s.initialResults.ielts && <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">IELTS: {s.initialResults.ielts}</span>}{s.initialResults.sat && <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">SAT: {s.initialResults.sat}</span>}</div></div>}
+              {/* Credential editing buttons */}
               <div className="flex gap-2 pt-4 border-t">
+                {form.editingCredentials ? (
+                  <>
+                    <button onClick={() => {
+                      const newLogin = form.editLogin ?? s.login;
+                      const newPassword = form.editPassword ?? s.password;
+                      app.updStudent(s.id, { login: newLogin, password: newPassword });
+                      setForm(p => ({ ...p, editingCredentials: false, editLogin: undefined, editPassword: undefined }));
+                      alert('Логин и пароль обновлены');
+                    }} className="flex-1 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 text-sm">Сохранить</button>
+                    <button onClick={() => setForm(p => ({ ...p, editingCredentials: false, editLogin: undefined, editPassword: undefined }))} className="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl text-sm">Отмена</button>
+                  </>
+                ) : (
+                  <button onClick={() => setForm(p => ({ ...p, editingCredentials: true, editLogin: s.login, editPassword: s.password }))} className="flex-1 py-2 bg-[#c9a227] text-white rounded-xl hover:bg-[#b08b20] text-sm">Изменить логин/пароль</button>
+                )}
+              </div>
+              <div className="flex gap-2">
                 <button onClick={() => { setSelected(s); setForm({ type: 'contract', name: '', score: '' }); setModal('addDocument'); }} className="flex-1 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 text-sm">+ Документ</button>
+                <button onClick={() => { setSelected(s); setForm({ type: 'recommendation' }); setModal('addRecommendationLetter'); }} className="flex-1 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 text-sm">+ Рек. письмо</button>
                 <button onClick={() => { if (window.confirm('Удалить студента? Это действие нельзя отменить.')) { delStudent(s.id); setStudentPage(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 text-sm">Удалить</button>
               </div>
             </div>
@@ -1073,6 +1525,8 @@ export default function NobilisAcademy() {
                         </>
                       )}
                     </div>
+                    <button onClick={() => { setSelected(s); setForm({ editPkgId: pkg.id, type: pkg.type, startDate: pkg.startDate || '', endDate: pkg.endDate || '', totalLessons: pkg.totalLessons || 48, completedLessons: pkg.completedLessons || 0, missedLessons: pkg.missedLessons || 0, currentStage: pkg.currentStage || 1 }); setModal('editPackage'); }}
+                      className="mt-2 text-xs text-blue-600 hover:underline">Редактировать пакет</button>
                   </div>
                 );
               })}
@@ -1130,6 +1584,32 @@ export default function NobilisAcademy() {
                 </div>
               ))}
               {(!s.invitations || s.invitations.length === 0) && <p className="text-gray-500 text-sm text-center py-4">Нет приглашений</p>}
+            </div>
+          )}
+
+          {detailTab === 'letters' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-medium text-gray-700">Письма студента</h4>
+                <button onClick={() => { setSelected(s); setForm({ type: 'recommendation' }); setModal('addRecommendationLetter'); }}
+                  className="text-sm text-[#1a3a32] hover:underline">+ Добавить рек. письмо</button>
+              </div>
+              {(s.letters || []).map(l => (
+                <div key={l.id} className="p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100"
+                  onClick={() => { setSelected({ ...l, studentId: s.id }); setModal('letterDetail'); }}>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-medium text-sm">{l.type === 'motivation' ? 'Мотивационное' : 'Рекомендательное'}</div>
+                      <div className="text-xs text-gray-500">{l.university || l.author || ''} {l.subject ? `(${l.subject})` : ''}</div>
+                      {l.fileName && <div className="text-xs text-blue-600 mt-1">{l.fileName}</div>}
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full ${l.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      {l.status === 'completed' ? 'Готово' : 'Черновик'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              {(!s.letters || s.letters.length === 0) && <p className="text-gray-500 text-sm text-center py-4">Нет писем</p>}
             </div>
           )}
 

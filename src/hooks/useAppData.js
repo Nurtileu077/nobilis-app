@@ -208,6 +208,15 @@ export default function useAppData() {
         const e = { id: genId(), type: doc.type, name: DOCUMENT_TYPES[doc.type].label, score: doc.score, date: d.date };
         updates.examResults = [...(student.examResults || []), e];
       }
+      // If recommendation document, also add to letters
+      if (doc.type === 'recommendation') {
+        updates.letters = [...(student.letters || []), {
+          id: genId(), type: 'recommendation', author: doc.name || 'Куратор',
+          subject: '', content: '', status: 'completed',
+          fileName: doc.fileName || null, fileData: doc.fileData || null, fileSize: doc.fileSize || null,
+          lastEdit: new Date().toISOString().split('T')[0],
+        }];
+      }
       // Combine history update with doc update to avoid stale closure overwrite
       updates.history = [...(student.history || []), { date: new Date().toISOString(), text: `Загружен документ: ${d.name}`, type: 'action' }];
       updStudent(sid, updates);
@@ -321,14 +330,15 @@ export default function useAppData() {
     if (Object.keys(testAnswers).length < HOLLAND_QUESTIONS.length) { alert('Ответьте на все вопросы'); return; }
     const r = calculateTestResult(testAnswers, HOLLAND_QUESTIONS, HOLLAND_PROFILES);
     if (user?.role === 'student') {
+      const student = data.students.find(x => x.id === user.id);
       const updates = {
         testResult: r.profileName, testProfile: r.profile,
         testRiasecCode: r.riasecCode, testScores: r.scores, testCareers: r.careers,
         retakeAllowed: false,
+        history: [...(student?.history || []), { date: new Date().toISOString(), text: `Пройден тест профориентации: ${r.profileName} (${r.riasecCode})`, type: 'action' }],
       };
       updStudent(user.id, updates);
       setUser(p => ({ ...p, ...updates }));
-      addHistory(user.id, `Пройден тест профориентации: ${r.profileName} (${r.riasecCode})`);
     }
     setTestAnswers({});
     setTestQ(0);
@@ -367,8 +377,8 @@ export default function useAppData() {
       updStudent(studentId, {
         englishTestResult: result,
         englishTestHistory: [...prevResults, result],
+        history: [...(student.history || []), { date: new Date().toISOString(), text: `Прошел тест на знание английского: ${result.levelName} (${result.score}/${result.total})`, type: 'action' }],
       });
-      addHistory(studentId, `Прошел тест на знание английского: ${result.levelName} (${result.score}/${result.total})`);
     }
   };
 

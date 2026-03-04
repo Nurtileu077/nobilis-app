@@ -23,7 +23,7 @@ const CuratorTeachers = ({ teachers, onSetModal, onSetForm, onSetSelected, onDel
             <div className="text-sm text-gray-500">{t.subject}</div>
           </div>
           <div className="text-right">
-            <div className="font-medium">{t.hourlyRate} \u20B8/час</div>
+            <div className="font-medium">{t.hourlyRate} тг/ч</div>
             <div className="text-sm text-gray-500">{t.hoursWorked} часов</div>
           </div>
           <div className="flex gap-2">

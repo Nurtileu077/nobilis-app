@@ -24,7 +24,7 @@ const TeacherDashboard = ({ teacher, schedule, onSetSelected, onSetModal }) => {
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
           <div className="text-3xl font-bold text-green-600">{teacher.hourlyRate}</div>
-          <div className="text-sm text-gray-500">\u20B8/час</div>
+          <div className="text-sm text-gray-500">тг/ч</div>
         </div>
       </div>
 
