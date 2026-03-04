@@ -87,7 +87,7 @@ const getNavItems = (role) => {
 export default function NobilisAcademy() {
   const app = useAppData();
   const {
-    data, user, view, modal, selected, search, form,
+    data, user, view, modal, selected, search, form, syncStatus,
     testAnswers, testQ, attDate, attSchedule, sylSearch,
     sidebarOpen, cityFilter, statusFilter, studentPage,
     setView, setModal, setSelected, setSearch, setForm,
@@ -1773,6 +1773,19 @@ export default function NobilisAcademy() {
               Обновить
             </button>
           </div>
+        </div>
+      )}
+      {/* Sync status indicator */}
+      {syncStatus === 'error' && (
+        <div className="fixed bottom-4 right-4 z-50 bg-red-500 text-white px-3 py-1.5 rounded-full text-xs shadow-lg flex items-center gap-1.5">
+          <div className="w-2 h-2 bg-white rounded-full" />
+          Нет связи с сервером
+        </div>
+      )}
+      {syncStatus === 'loading' && (
+        <div className="fixed bottom-4 right-4 z-50 bg-blue-500 text-white px-3 py-1.5 rounded-full text-xs shadow-lg flex items-center gap-1.5">
+          <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+          Загрузка...
         </div>
       )}
     </div>

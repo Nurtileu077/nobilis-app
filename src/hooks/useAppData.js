@@ -1,10 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getInitialData } from '../data/initialData';
 import { STORAGE_KEY, USER_KEY, DOCUMENT_TYPES, HOLLAND_QUESTIONS, HOLLAND_PROFILES } from '../data/constants';
 import { generateLogin, generatePassword, calculateTestResult, genId } from '../data/utils';
+import { supabase } from '../lib/supabase';
+
+// Check if Supabase is properly configured
+const SUPABASE_ENABLED = process.env.REACT_APP_SUPABASE_URL &&
+  process.env.REACT_APP_SUPABASE_URL !== 'YOUR_SUPABASE_URL';
 
 export default function useAppData() {
   const [data, setData] = useState(getInitialData);
+  const [syncStatus, setSyncStatus] = useState('idle'); // idle, loading, synced, error
   // Auth persistence: restore user from localStorage
   const [user, setUser] = useState(() => {
     try { const s = localStorage.getItem(USER_KEY); return s ? JSON.parse(s) : null; } catch { return null; }
@@ -24,9 +30,53 @@ export default function useAppData() {
   const [statusFilter, setStatusFilter] = useState('');
   const [studentPage, setStudentPage] = useState(null);
   const [calendarMode, setCalendarMode] = useState(false);
+  const saveTimer = useRef(null);
+  const initialLoadDone = useRef(false);
 
-  // Persist data
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }, [data]);
+  // Load data from Supabase on mount
+  useEffect(() => {
+    if (!SUPABASE_ENABLED) { initialLoadDone.current = true; return; }
+    setSyncStatus('loading');
+    supabase.from('app_state').select('data').eq('id', 'main').single()
+      .then(({ data: row, error }) => {
+        if (error) {
+          console.warn('Supabase load failed, using localStorage:', error.message);
+          setSyncStatus('error');
+        } else if (row && row.data && Object.keys(row.data).length > 0) {
+          // Merge: Supabase data wins, but fill missing keys from initial data
+          const initial = getInitialData();
+          const merged = { ...initial, ...row.data };
+          setData(merged);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+          setSyncStatus('synced');
+        } else {
+          // Supabase is empty — push current localStorage data up
+          const current = getInitialData();
+          supabase.from('app_state').upsert({ id: 'main', data: current, updated_at: new Date().toISOString() })
+            .then(() => setSyncStatus('synced'))
+            .catch(() => setSyncStatus('error'));
+        }
+        initialLoadDone.current = true;
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Persist data to localStorage + debounced Supabase save
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+    if (!SUPABASE_ENABLED || !initialLoadDone.current) return;
+    // Debounce Supabase saves (2 seconds)
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      supabase.from('app_state')
+        .upsert({ id: 'main', data, updated_at: new Date().toISOString() })
+        .then(({ error }) => {
+          if (error) { console.warn('Supabase save failed:', error.message); setSyncStatus('error'); }
+          else setSyncStatus('synced');
+        });
+    }, 2000);
+  }, [data]);
+
   // Persist user session
   useEffect(() => {
     if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
@@ -403,7 +453,7 @@ export default function useAppData() {
 
   return {
     // State
-    data, user, view, modal, selected, search, form,
+    data, user, view, modal, selected, search, form, syncStatus,
     testAnswers, testQ, attDate, attSchedule, sylSearch,
     sidebarOpen, cityFilter, statusFilter, studentPage, calendarMode,
     // Setters
