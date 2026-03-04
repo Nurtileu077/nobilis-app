@@ -114,13 +114,6 @@ export default function NobilisAcademy() {
   const [detailTab, setDetailTab] = useState('info');
   const [swUpdate, setSwUpdate] = useState(null);
 
-  // Subscribe to push notifications after login
-  useEffect(() => {
-    if (user) {
-      subscribeToPush().catch(() => {});
-    }
-  }, [user]);
-
   // Listen for service worker updates
   useEffect(() => {
     const handler = (e) => setSwUpdate(e.detail);
@@ -979,6 +972,47 @@ export default function NobilisAcademy() {
   };
 
   // ============================================================
+  // PUSH SUBSCRIBE BANNER (shown to all users)
+  // ============================================================
+  const PushSubscribeBanner = () => {
+    const [pushState, setPushState] = useState('loading'); // loading, prompt, subscribed, unsupported, denied
+    useEffect(() => {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        setPushState('unsupported');
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        setPushState('subscribed');
+      } else if (Notification.permission === 'denied') {
+        setPushState('denied');
+      } else {
+        setPushState('prompt');
+      }
+    }, []);
+
+    const handleSubscribe = async () => {
+      setPushState('loading');
+      const sub = await subscribeToPush();
+      setPushState(sub ? 'subscribed' : 'denied');
+    };
+
+    if (pushState === 'subscribed' || pushState === 'unsupported' || pushState === 'loading') return null;
+    if (pushState === 'denied') return (
+      <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl text-sm text-yellow-800">
+        Уведомления заблокированы. Разрешите их в настройках браузера.
+      </div>
+    );
+    return (
+      <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between">
+        <span className="text-sm text-blue-800">Включите push-уведомления чтобы не пропускать важные события</span>
+        <button onClick={handleSubscribe} className="ml-3 px-4 py-2 bg-[#1a3a32] text-white text-sm rounded-xl hover:bg-[#2d5a4a] transition-colors whitespace-nowrap">
+          Включить
+        </button>
+      </div>
+    );
+  };
+
+  // ============================================================
   // NOTIFICATIONS VIEW (curator sends push notifications)
   // ============================================================
   const NotificationsView = () => {
@@ -1012,6 +1046,7 @@ export default function NobilisAcademy() {
     return (
       <div className="space-y-6 animate-fadeIn">
         <h1 className="text-2xl font-bold text-gray-800">Push-уведомления</h1>
+        <PushSubscribeBanner />
         <div className="bg-white rounded-2xl p-6 shadow-sm border">
           <h3 className="text-lg font-semibold mb-4">Отправить уведомление</h3>
           <div className="space-y-4">
@@ -1039,7 +1074,7 @@ export default function NobilisAcademy() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border">
           <h3 className="text-lg font-semibold mb-2">Как это работает</h3>
           <ul className="text-sm text-gray-600 space-y-1 list-disc ml-4">
-            <li>Студенты должны разрешить уведомления в браузере</li>
+            <li>Пользователи должны нажать "Включить" для подписки</li>
             <li>Уведомления приходят даже при закрытом приложении</li>
             <li>VAPID-ключи настроены и готовы к работе</li>
           </ul>
@@ -1723,6 +1758,7 @@ export default function NobilisAcademy() {
           })()}
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          <PushSubscribeBanner />
           {renderContent()}
         </main>
       </div>
