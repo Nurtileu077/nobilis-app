@@ -1,21 +1,12 @@
 // Vercel Serverless Function: Push notifications (subscribe + send)
-// Single function to share /tmp storage between operations
+// Uses Supabase to persist subscriptions across deploys
 
-import { readFileSync, writeFileSync } from 'fs';
+import { createClient } from '@supabase/supabase-js';
 
-const SUBS_FILE = '/tmp/push_subscriptions.json';
-
-function readSubs() {
-  try {
-    return JSON.parse(readFileSync(SUBS_FILE, 'utf8'));
-  } catch {
-    return [];
-  }
-}
-
-function writeSubs(subs) {
-  writeFileSync(SUBS_FILE, JSON.stringify(subs));
-}
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL,
+  process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -32,14 +23,23 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Invalid subscription' });
       }
 
-      const subs = readSubs();
-      const exists = subs.some(s => s.endpoint === subscription.endpoint);
-      if (!exists) {
-        subs.push(subscription);
-        writeSubs(subs);
+      const { error } = await supabase
+        .from('push_subscriptions')
+        .upsert(
+          { endpoint: subscription.endpoint, subscription },
+          { onConflict: 'endpoint' }
+        );
+
+      if (error) {
+        console.error('Supabase subscribe error:', error);
+        return res.status(500).json({ error: 'Failed to save subscription' });
       }
 
-      return res.status(200).json({ success: true, total: subs.length });
+      const { count } = await supabase
+        .from('push_subscriptions')
+        .select('*', { count: 'exact', head: true });
+
+      return res.status(200).json({ success: true, total: count || 0 });
     } catch (error) {
       console.error('Subscribe error:', error);
       return res.status(500).json({ error: 'Internal server error' });
@@ -70,29 +70,43 @@ export default async function handler(req, res) {
 
       webpush.setVapidDetails(vapidEmail, vapidPublic, vapidPrivate);
 
-      const subscriptions = readSubs();
-      if (subscriptions.length === 0) {
+      const { data: rows, error: fetchErr } = await supabase
+        .from('push_subscriptions')
+        .select('endpoint, subscription');
+
+      if (fetchErr) {
+        console.error('Supabase fetch error:', fetchErr);
+        return res.status(500).json({ error: 'Failed to read subscriptions' });
+      }
+
+      if (!rows || rows.length === 0) {
         return res.status(200).json({ sent: 0, failed: 0, total: 0, message: 'No subscribers yet' });
       }
 
       const payload = JSON.stringify({ title, body });
       const results = await Promise.allSettled(
-        subscriptions.map(sub => webpush.sendNotification(sub, payload))
+        rows.map(row => webpush.sendNotification(row.subscription, payload))
       );
 
       // Remove expired subscriptions (410 Gone)
-      const validSubs = subscriptions.filter((_, i) => {
-        const r = results[i];
-        return r.status === 'fulfilled' || (r.reason && r.reason.statusCode !== 410);
-      });
-      if (validSubs.length !== subscriptions.length) {
-        writeSubs(validSubs);
+      const expiredEndpoints = rows
+        .filter((_, i) => {
+          const r = results[i];
+          return r.status === 'rejected' && r.reason && r.reason.statusCode === 410;
+        })
+        .map(row => row.endpoint);
+
+      if (expiredEndpoints.length > 0) {
+        await supabase
+          .from('push_subscriptions')
+          .delete()
+          .in('endpoint', expiredEndpoints);
       }
 
       const sent = results.filter(r => r.status === 'fulfilled').length;
       const failed = results.filter(r => r.status === 'rejected').length;
 
-      return res.status(200).json({ sent, failed, total: subscriptions.length });
+      return res.status(200).json({ sent, failed, total: rows.length });
     } catch (error) {
       console.error('Send notification error:', error);
       return res.status(500).json({ error: 'Internal server error' });
