@@ -8,17 +8,17 @@ import I from '../components/common/Icons';
 
 // ---- NobilisLogo ----
 describe('NobilisLogo', () => {
-  it('renders an img with default size', () => {
+  it('renders an SVG with default size', () => {
     const { container } = render(<NobilisLogo />);
-    const img = container.querySelector('img');
-    expect(img).toBeInTheDocument();
-    expect(img).toHaveStyle({ width: '40px', height: '40px' });
+    const svg = container.querySelector('svg');
+    expect(svg).toBeInTheDocument();
+    expect(svg).toHaveStyle({ width: '40px', height: '40px' });
   });
 
   it('renders with custom size', () => {
     const { container } = render(<NobilisLogo size={80} />);
-    const img = container.querySelector('img');
-    expect(img).toHaveStyle({ width: '80px', height: '80px' });
+    const svg = container.querySelector('svg');
+    expect(svg).toHaveStyle({ width: '80px', height: '80px' });
   });
 });
 
