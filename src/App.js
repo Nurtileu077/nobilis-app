@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import useAppData from './hooks/useAppData';
+import { subscribeToPush } from './utils/pushSubscription';
 import { DOCUMENT_TYPES, PACKAGE_TYPES, SUPPORT_STAGES, COUNTRIES, STUDENT_STATUSES } from './data/constants';
 import { UNIVERSITIES_DB, COUNTRY_INFO } from './data/universities';
 import { formatDate, formatDateTime, daysUntil, getPackageProgress, getInitials, getAttendancePercent } from './data/utils';
@@ -112,6 +113,13 @@ export default function NobilisAcademy() {
   } = app;
   const [detailTab, setDetailTab] = useState('info');
   const [swUpdate, setSwUpdate] = useState(null);
+
+  // Subscribe to push notifications after login
+  useEffect(() => {
+    if (user) {
+      subscribeToPush().catch(() => {});
+    }
+  }, [user]);
 
   // Listen for service worker updates
   useEffect(() => {
@@ -983,10 +991,10 @@ export default function NobilisAcademy() {
       setSending(true);
       setNotifStatus(null);
       try {
-        const res = await fetch('/api/send-notification', {
+        const res = await fetch('/api/push', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: notifTitle.trim(), body: notifBody.trim() }),
+          body: JSON.stringify({ action: 'send', title: notifTitle.trim(), body: notifBody.trim() }),
         });
         const json = await res.json();
         if (res.ok) {

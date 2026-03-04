@@ -26,10 +26,10 @@ export async function subscribeToPush() {
 
   // Send subscription to server
   try {
-    await fetch('/api/subscribe', {
+    await fetch('/api/push', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subscription),
+      body: JSON.stringify({ action: 'subscribe', subscription }),
     });
   } catch (e) {
     console.error('Failed to save subscription:', e);
