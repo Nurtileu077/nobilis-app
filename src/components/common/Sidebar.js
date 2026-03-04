@@ -18,7 +18,7 @@ const Sidebar = ({ user, view, navItems, onNavigate, onLogout, isOpen, onToggle,
 
     <div className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r flex flex-col shadow-sm transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
       <div className="p-5 border-b">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 pl-2">
           <NobilisLogo size={56} />
           <div>
             <div className="font-serif font-bold text-[#1a3a32] text-lg">NOBILIS</div>
