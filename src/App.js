@@ -10,6 +10,7 @@ import LoginScreen from './components/common/LoginScreen';
 import Sidebar from './components/common/Sidebar';
 import Modal from './components/common/Modal';
 import I from './components/common/Icons';
+import UniPhoto from './components/UniPhoto';
 
 // Student views
 import StudentDashboard from './components/student/StudentDashboard';
@@ -1244,13 +1245,7 @@ export default function NobilisAcademy() {
             Назад к {info.name || 'стране'}
           </button>
           <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-            {u.photo ? (
-              <div className="h-48 bg-cover bg-center" style={{ backgroundImage: `url(${u.photo})` }} />
-            ) : (
-              <div className="h-48 bg-gradient-to-r from-[#1a3a32] to-[#2d5a4a] flex items-center justify-center">
-                <span className="text-6xl">{info.flag}</span>
-              </div>
-            )}
+            <UniPhoto name={u.name} flag={info.flag} height="h-48" textSize="text-6xl" />
             <div className="p-6">
               <div className="flex items-start justify-between gap-3 mb-4">
                 <div>
@@ -1334,13 +1329,7 @@ export default function NobilisAcademy() {
           <div className="grid md:grid-cols-2 gap-4">
             {filtered.map(u => (
               <div key={u.name} className="bg-white rounded-2xl shadow-sm border overflow-hidden card-hover cursor-pointer" onClick={() => !editMode && setSelectedUni(u)}>
-                {u.photo ? (
-                  <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${u.photo})` }} />
-                ) : (
-                  <div className="h-32 bg-gradient-to-br from-[#1a3a32]/80 to-[#2d5a4a]/60 flex items-center justify-center">
-                    <span className="text-4xl opacity-50">{info.flag}</span>
-                  </div>
-                )}
+                <UniPhoto name={u.name} flag={info.flag} />
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="font-semibold text-gray-800">{u.name}</h3>
