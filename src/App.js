@@ -45,6 +45,8 @@ import TeacherLessons from './components/teacher/TeacherLessons';
 // Director & management views
 import DirectorDashboard from './components/director/DirectorDashboard';
 import AcademicDirectorDashboard from './components/director/AcademicDirectorDashboard';
+import SalaryDashboard from './components/director/SalaryDashboard';
+import PnLDashboard from './components/director/PnLDashboard';
 
 // Sales views
 import ROPDashboard from './components/sales/ROPDashboard';
@@ -68,9 +70,10 @@ const getNavItems = (role) => {
   ];
   if (role === 'director') return [
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'pnl', label: 'P&L Финансы', icon: I.Money },
+    { id: 'salary', label: 'Зарплаты', icon: I.Money },
     { id: 'employees', label: 'Сотрудники', icon: I.Users },
     { id: 'students', label: 'Студенты', icon: I.Users },
-    { id: 'salary', label: 'Зарплаты', icon: I.Money },
     { id: 'schedule', label: 'Расписание', icon: I.Calendar },
     { id: 'tasks', label: 'Задачи', icon: I.Tasks },
     { id: 'countries', label: 'Страны', icon: I.Globe },
@@ -268,9 +271,10 @@ export default function NobilisAcademy() {
       }
       switch (view) {
         case 'dashboard': return <DirectorDashboard data={data} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
+        case 'pnl': return <PnLDashboard />;
+        case 'salary': return <SalaryDashboard teachers={data.teachers} onConfirmLesson={confirmLesson} onUpdateTeacher={updTeacher} />;
         case 'employees': return <CuratorTeachers teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelTeacher={delTeacher} />;
         case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} cityFilter={cityFilter} statusFilter={statusFilter} managerFilter={managerFilter} onSetCityFilter={setCityFilter} onSetStatusFilter={setStatusFilter} onSetManagerFilter={setManagerFilter} onOpenStudentPage={(id) => setStudentPage(id)} />;
-        case 'salary': return <CuratorSalary teachers={data.teachers} onConfirmLesson={confirmLesson} onUpdateTeacher={updTeacher} />;
         case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
         case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
         case 'countries': return <CountriesView students={data.students} />;
