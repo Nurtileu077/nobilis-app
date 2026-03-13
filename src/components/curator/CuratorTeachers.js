@@ -5,7 +5,7 @@ import { getInitials } from '../../data/utils';
 const CuratorTeachers = ({ teachers, onSetModal, onSetForm, onSetSelected, onDelTeacher }) => (
   <div className="space-y-6 animate-fadeIn">
     <div className="flex justify-between">
-      <h1 className="text-2xl font-bold text-gray-800">Преподаватели</h1>
+      <h1 className="text-2xl font-bold text-gray-800">Сотрудники</h1>
       <button onClick={() => { onSetForm({ name: '', email: '', phone: '', subject: '', hourlyRate: 2500 }); onSetModal('addTeacher'); }}
         className="px-4 py-2 btn-primary text-white rounded-xl flex items-center gap-2">
         <I.Plus /><span>Добавить</span>

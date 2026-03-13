@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import NobilisLogo from './NobilisLogo';
 
 const DEMO_ACCOUNTS = [
+  { login: 'director', password: 'director2024', label: 'Директор', icon: 'D' },
   { login: 'curator', password: 'curator2024', label: 'Куратор', icon: 'C' },
   { login: 'zhakupbekova.dar61', password: '2d937fUSHbm!', label: 'Студент', icon: 'S' },
   { login: 'smirnova.ann', password: 'Teacher2024!', label: 'Препод', icon: 'T' },
+  { login: 'rop', password: 'rop2024', label: 'РОП', icon: 'R' },
+  { login: 'sales', password: 'sales2024', label: 'Менеджер', icon: 'M' },
 ];
 
 const LoginScreen = ({ onLogin }) => {
@@ -145,7 +148,7 @@ const LoginScreen = ({ onLogin }) => {
             {/* Demo access */}
             <div className="mt-8 pt-6 border-t border-white/10">
               <p className="text-xs text-white/40 text-center mb-4">Демо-доступ</p>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                 {DEMO_ACCOUNTS.map(acc => (
                   <button
                     key={acc.login}

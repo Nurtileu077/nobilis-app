@@ -118,13 +118,26 @@ export default function useAppData() {
   const upd = useCallback((k, v) => setData(p => ({ ...p, [k]: v })), []);
 
   // ---- AUTH ----
+  const STAFF_ACCOUNTS = [
+    { login: 'director', password: 'director2024', role: 'director', id: 'dir1', name: 'Директор' },
+    { login: 'curator', password: 'curator2024', role: 'curator', id: 'c', name: 'Куратор Мария' },
+    { login: 'acad_director', password: 'acad2024', role: 'academic_director', id: 'ad1', name: 'Акад. директор' },
+    { login: 'rop', password: 'rop2024', role: 'rop', id: 'rop1', name: 'РОП' },
+    { login: 'sales', password: 'sales2024', role: 'sales_manager', id: 'sm1', name: 'Менеджер Алия' },
+    { login: 'callcenter', password: 'call2024', role: 'callcenter', id: 'cc1', name: 'Оператор Дана' },
+    { login: 'coordinator', password: 'coord2024', role: 'coordinator', id: 'co1', name: 'Координатор Асем' },
+    { login: 'office', password: 'office2024', role: 'office_manager', id: 'om1', name: 'Офис-менеджер' },
+    { login: 'accountant', password: 'acc2024', role: 'accountant', id: 'acc1', name: 'Бухгалтер' },
+  ];
+
   const handleLogin = (login, password) => {
-    if (login === 'curator' && password === 'curator2024') {
-      setUser({ role: 'curator', id: 'c', name: 'Куратор Мария' });
-      return null;
-    }
+    // Staff accounts (hardcoded for now, will move to DB)
+    const staff = STAFF_ACCOUNTS.find(a => a.login === login && a.password === password);
+    if (staff) { setUser({ role: staff.role, id: staff.id, name: staff.name }); return null; }
+    // Students
     const s = data.students.find(x => x.login === login && x.password === password);
     if (s) { setUser({ role: 'student', ...s }); return null; }
+    // Teachers
     const t = data.teachers.find(x => x.login === login && x.password === password);
     if (t) { setUser({ role: 'teacher', ...t }); return null; }
     return 'Неверный логин или пароль';

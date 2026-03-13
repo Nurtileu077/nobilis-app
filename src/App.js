@@ -42,6 +42,15 @@ import TeacherStudents from './components/teacher/TeacherStudents';
 import TeacherSyllabus from './components/teacher/TeacherSyllabus';
 import TeacherLessons from './components/teacher/TeacherLessons';
 
+// Director & management views
+import DirectorDashboard from './components/director/DirectorDashboard';
+import AcademicDirectorDashboard from './components/director/AcademicDirectorDashboard';
+
+// Sales views
+import ROPDashboard from './components/sales/ROPDashboard';
+import SalesManagerDashboard from './components/sales/SalesManagerDashboard';
+import CallcenterDashboard from './components/sales/CallcenterDashboard';
+
 // ============================================================
 // NAV ITEMS CONFIG
 // ============================================================
@@ -57,6 +66,34 @@ const getNavItems = (role) => {
     { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
     { id: 'documents', label: 'Документы', icon: I.Documents },
   ];
+  if (role === 'director') return [
+    { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'employees', label: 'Сотрудники', icon: I.Users },
+    { id: 'students', label: 'Студенты', icon: I.Users },
+    { id: 'salary', label: 'Зарплаты', icon: I.Money },
+    { id: 'schedule', label: 'Расписание', icon: I.Calendar },
+    { id: 'tasks', label: 'Задачи', icon: I.Tasks },
+    { id: 'countries', label: 'Страны', icon: I.Globe },
+    { id: 'mockTests', label: 'Пробные тесты', icon: I.MockTest },
+    { id: 'matching', label: 'Подбор ВУЗов', icon: I.Results },
+    { id: 'support', label: 'Поддержка', icon: I.Support },
+    { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
+    { id: 'notifications', label: 'Уведомления', icon: I.Bell },
+  ];
+  if (role === 'academic_director') return [
+    { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'tasks', label: 'Задачи', icon: I.Tasks },
+    { id: 'students', label: 'Студенты', icon: I.Users },
+    { id: 'attendance', label: 'Посещаемость', icon: I.Check },
+    { id: 'schedule', label: 'Расписание', icon: I.Calendar },
+    { id: 'employees', label: 'Сотрудники', icon: I.Users },
+    { id: 'countries', label: 'Страны', icon: I.Globe },
+    { id: 'mockTests', label: 'Пробные тесты', icon: I.MockTest },
+    { id: 'retakes', label: 'Пересдачи', icon: I.Test },
+    { id: 'matching', label: 'Подбор ВУЗов', icon: I.Results },
+    { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
+    { id: 'notifications', label: 'Уведомления', icon: I.Bell },
+  ];
   if (role === 'curator') return [
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
     { id: 'tasks', label: 'Задачи', icon: I.Tasks },
@@ -65,7 +102,7 @@ const getNavItems = (role) => {
     { id: 'schedule', label: 'Расписание', icon: I.Calendar },
     { id: 'countries', label: 'Страны', icon: I.Globe },
     { id: 'mockTests', label: 'Пробные тесты', icon: I.MockTest },
-    { id: 'teachers', label: 'Преподаватели', icon: I.Users },
+    { id: 'employees', label: 'Сотрудники', icon: I.Users },
     { id: 'salary', label: 'Зарплаты', icon: I.Money },
     { id: 'retakes', label: 'Пересдачи', icon: I.Test },
     { id: 'matching', label: 'Подбор ВУЗов', icon: I.Results },
@@ -73,6 +110,35 @@ const getNavItems = (role) => {
     { id: 'support', label: 'Поддержка', icon: I.Support },
     { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
   ];
+  if (role === 'rop') return [
+    { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'tasks', label: 'Задачи', icon: I.Tasks },
+    { id: 'employees', label: 'Команда', icon: I.Users },
+    { id: 'notifications', label: 'Уведомления', icon: I.Bell },
+  ];
+  if (role === 'sales_manager') return [
+    { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'tasks', label: 'Задачи', icon: I.Tasks },
+    { id: 'notifications', label: 'Уведомления', icon: I.Bell },
+  ];
+  if (role === 'callcenter') return [
+    { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'tasks', label: 'Задачи', icon: I.Tasks },
+    { id: 'notifications', label: 'Уведомления', icon: I.Bell },
+  ];
+  if (role === 'coordinator') return [
+    { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'tasks', label: 'Задачи', icon: I.Tasks },
+    { id: 'students', label: 'Студенты', icon: I.Users },
+    { id: 'schedule', label: 'Расписание', icon: I.Calendar },
+    { id: 'notifications', label: 'Уведомления', icon: I.Bell },
+  ];
+  if (role === 'office_manager' || role === 'accountant') return [
+    { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'tasks', label: 'Задачи', icon: I.Tasks },
+    { id: 'notifications', label: 'Уведомления', icon: I.Bell },
+  ];
+  // teacher (default)
   return [
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
     { id: 'schedule', label: 'Расписание', icon: I.Calendar },
@@ -190,6 +256,109 @@ export default function NobilisAcademy() {
         case 'students': return <TeacherStudents teacher={t} schedule={data.schedule} students={data.students} onSetSelected={setSelected} onSetModal={setModal} />;
         case 'syllabus': return <TeacherSyllabus teacher={t} students={data.students} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onSetSylSearch={setSylSearch} onDelSyllabus={(sid) => delSyllabus(t.id, sid)} />;
         case 'lessons': return <TeacherLessons teacher={t} schedule={data.schedule} onSetModal={setModal} onSetForm={setForm} />;
+        default: break;
+      }
+    }
+
+    // DIRECTOR — sees everything
+    if (user.role === 'director') {
+      if (studentPage) {
+        const sp = data.students.find(x => x.id === studentPage) || null;
+        if (sp) return <StudentPageView student={sp} />;
+      }
+      switch (view) {
+        case 'dashboard': return <DirectorDashboard data={data} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
+        case 'employees': return <CuratorTeachers teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelTeacher={delTeacher} />;
+        case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} cityFilter={cityFilter} statusFilter={statusFilter} managerFilter={managerFilter} onSetCityFilter={setCityFilter} onSetStatusFilter={setStatusFilter} onSetManagerFilter={setManagerFilter} onOpenStudentPage={(id) => setStudentPage(id)} />;
+        case 'salary': return <CuratorSalary teachers={data.teachers} onConfirmLesson={confirmLesson} onUpdateTeacher={updTeacher} />;
+        case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
+        case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
+        case 'countries': return <CountriesView students={data.students} />;
+        case 'mockTests': return <CuratorMockTests mockTests={data.mockTests} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelMockTest={delMockTest} />;
+        case 'matching': return <MatchmakingView students={data.students} />;
+        case 'support': return <CuratorSupport tickets={data.supportTickets} onResolveTicket={resolveTicket} />;
+        case 'internships': return <CuratorInternships internships={data.internships} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelInternship={delInternship} />;
+        case 'notifications': return <NotificationsView />;
+        default: break;
+      }
+    }
+
+    // ACADEMIC DIRECTOR — academic department
+    if (user.role === 'academic_director') {
+      if (studentPage) {
+        const sp = data.students.find(x => x.id === studentPage) || null;
+        if (sp) return <StudentPageView student={sp} />;
+      }
+      switch (view) {
+        case 'dashboard': return <AcademicDirectorDashboard data={data} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
+        case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
+        case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} cityFilter={cityFilter} statusFilter={statusFilter} managerFilter={managerFilter} onSetCityFilter={setCityFilter} onSetStatusFilter={setStatusFilter} onSetManagerFilter={setManagerFilter} onOpenStudentPage={(id) => setStudentPage(id)} />;
+        case 'attendance': return <CuratorAttendance data={data} attDate={attDate} attSchedule={attSchedule} onSetAttDate={setAttDate} onSetAttSchedule={setAttSchedule} onMarkAtt={markAtt} />;
+        case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
+        case 'employees': return <CuratorTeachers teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelTeacher={delTeacher} />;
+        case 'countries': return <CountriesView students={data.students} />;
+        case 'mockTests': return <CuratorMockTests mockTests={data.mockTests} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelMockTest={delMockTest} />;
+        case 'retakes': return <RetakeModeration students={data.students} onApprove={approveRetake} onDeny={denyRetake} />;
+        case 'matching': return <MatchmakingView students={data.students} />;
+        case 'internships': return <CuratorInternships internships={data.internships} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelInternship={delInternship} />;
+        case 'notifications': return <NotificationsView />;
+        default: break;
+      }
+    }
+
+    // ROP (Head of Sales)
+    if (user.role === 'rop') {
+      switch (view) {
+        case 'dashboard': return <ROPDashboard data={data} onSetModal={setModal} onSetForm={setForm} />;
+        case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
+        case 'employees': return <CuratorTeachers teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelTeacher={delTeacher} />;
+        case 'notifications': return <NotificationsView />;
+        default: break;
+      }
+    }
+
+    // SALES MANAGER
+    if (user.role === 'sales_manager') {
+      switch (view) {
+        case 'dashboard': return <SalesManagerDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} />;
+        case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
+        case 'notifications': return <NotificationsView />;
+        default: break;
+      }
+    }
+
+    // CALLCENTER
+    if (user.role === 'callcenter') {
+      switch (view) {
+        case 'dashboard': return <CallcenterDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} />;
+        case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
+        case 'notifications': return <NotificationsView />;
+        default: break;
+      }
+    }
+
+    // COORDINATOR — limited academic access
+    if (user.role === 'coordinator') {
+      if (studentPage) {
+        const sp = data.students.find(x => x.id === studentPage) || null;
+        if (sp) return <StudentPageView student={sp} />;
+      }
+      switch (view) {
+        case 'dashboard': return <AcademicDirectorDashboard data={data} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
+        case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
+        case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} cityFilter={cityFilter} statusFilter={statusFilter} managerFilter={managerFilter} onSetCityFilter={setCityFilter} onSetStatusFilter={setStatusFilter} onSetManagerFilter={setManagerFilter} onOpenStudentPage={(id) => setStudentPage(id)} />;
+        case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
+        case 'notifications': return <NotificationsView />;
+        default: break;
+      }
+    }
+
+    // OFFICE MANAGER / ACCOUNTANT — basic dashboard
+    if (user.role === 'office_manager' || user.role === 'accountant') {
+      switch (view) {
+        case 'dashboard': return <div className="space-y-6 animate-fadeIn"><h1 className="text-2xl font-bold text-gray-800">Главная</h1><div className="bg-white rounded-2xl shadow-sm border p-8 text-center text-gray-500">Раздел в разработке</div></div>;
+        case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
+        case 'notifications': return <NotificationsView />;
         default: break;
       }
     }
@@ -1904,7 +2073,7 @@ export default function NobilisAcademy() {
   // ============================================================
   return (
     <div className="flex h-screen bg-[#f8faf9]">
-      <Sidebar user={{...user, avatar: user.role === 'curator' ? data.curatorAvatar : user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : (data.teachers.find(x => x.id === user.id)?.avatar)}} view={view} navItems={navItems} onNavigate={(v) => { setView(v); setStudentPage(null); }} onLogout={logout} isOpen={sidebarOpen} onToggle={() => setSidebarOpen(false)} onAvatarClick={() => { setForm({ avatarTargetRole: user.role, avatarTargetId: user.id, avatarPreview: user.role === 'curator' ? data.curatorAvatar : null }); setModal('avatarUpload'); }} taskCount={(data.globalTasks || []).filter(t => !t.done).length} />
+      <Sidebar user={{...user, avatar: user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : user.role === 'teacher' ? (data.teachers.find(x => x.id === user.id)?.avatar) : data.curatorAvatar}} view={view} navItems={navItems} onNavigate={(v) => { setView(v); setStudentPage(null); }} onLogout={logout} isOpen={sidebarOpen} onToggle={() => setSidebarOpen(false)} onAvatarClick={() => { setForm({ avatarTargetRole: user.role, avatarTargetId: user.id, avatarPreview: user.role === 'curator' ? data.curatorAvatar : null }); setModal('avatarUpload'); }} taskCount={(data.globalTasks || []).filter(t => !t.done).length} />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile header */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b shadow-sm">
@@ -1913,7 +2082,7 @@ export default function NobilisAcademy() {
           </button>
           <div className="font-serif font-bold text-[#1a3a32]">NOBILIS</div>
           {(() => {
-            const mobileAvatar = user.role === 'curator' ? data.curatorAvatar : user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : (data.teachers.find(x => x.id === user.id)?.avatar);
+            const mobileAvatar = user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : user.role === 'teacher' ? (data.teachers.find(x => x.id === user.id)?.avatar) : data.curatorAvatar;
             return (
               <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold overflow-hidden cursor-pointer"
                 style={{ background: mobileAvatar ? 'transparent' : 'linear-gradient(135deg, #c9a227 0%, #a68620 100%)' }}
