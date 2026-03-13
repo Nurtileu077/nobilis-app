@@ -260,6 +260,17 @@ def canonicalize_name(name):
     ]
     for s in suffixes:
         name = re.sub(s, '', name, flags=re.IGNORECASE).strip()
+
+    # Alias short names back to their canonical full names
+    NAME_ALIASES = {
+        'Аружан': 'Ерболат Аружан',
+        'Нуртилеу': 'Тұрсынхан Нұртілеу',
+        'Ерболат Аружан': 'Ерболат Аружан',
+        'Тұрсынхан Нұртілеу': 'Тұрсынхан Нұртілеу',
+    }
+    if name in NAME_ALIASES:
+        return NAME_ALIASES[name]
+
     return name
 
 
