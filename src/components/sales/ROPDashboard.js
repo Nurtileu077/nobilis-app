@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import I from '../common/Icons';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -859,6 +859,10 @@ const TABS = [
 
 const ROPDashboard = ({ data = {}, user, onSetModal, onSetForm, onSetView, onUpdateData, onAddLead, onUpdLead, onDelLead, onAddLeadNote, onAddMeeting, onUpdMeeting, onDelMeeting, onAddCall, initialTab }) => {
   const [activeTab, setActiveTab] = useState(initialTab || 'leads');
+
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
+  }, [initialTab]);
 
   // safe arrays
   const leads     = Array.isArray(data.leads)     ? data.leads     : [];

@@ -272,6 +272,27 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
   const [collapsedRoles, setCollapsedRoles] = useState({});
   const [editMode, setEditMode] = useState(false);
   const [edits, setEdits] = useState({}); // { 'name|month|field': value }
+  const [advanceForm, setAdvanceForm] = useState(null); // { empName, amount }
+  const [advanceHistory, setAdvanceHistory] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('nobilis_advances') || '[]'); } catch { return []; }
+  });
+
+  const saveAdvance = useCallback((empName, amount, note) => {
+    const entry = {
+      id: Date.now(),
+      empName,
+      amount: Number(amount),
+      note: note || '',
+      month: selectedMonth,
+      date: new Date().toISOString().slice(0, 10),
+    };
+    setAdvanceHistory(prev => {
+      const next = [entry, ...prev];
+      localStorage.setItem('nobilis_advances', JSON.stringify(next));
+      return next;
+    });
+    setAdvanceForm(null);
+  }, [selectedMonth]);
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -842,6 +863,75 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                               </div>
                             </div>
                           )}
+
+                          {/* Advance button & form */}
+                          <div className="mb-4">
+                            {advanceForm?.empName === emp.name ? (
+                              <div className="bg-white rounded-xl border border-[#c9a227]/30 p-4 space-y-3">
+                                <div className="text-sm font-semibold text-gray-700">Записать аванс — {emp.name}</div>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="text-xs text-gray-400">Сумма</label>
+                                    <input
+                                      type="number"
+                                      className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3a32]/20"
+                                      placeholder="100000"
+                                      value={advanceForm.amount || ''}
+                                      onChange={e => setAdvanceForm(prev => ({ ...prev, amount: e.target.value }))}
+                                      onClick={e => e.stopPropagation()}
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-xs text-gray-400">Примечание</label>
+                                    <input
+                                      type="text"
+                                      className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3a32]/20"
+                                      placeholder="Аванс за март"
+                                      value={advanceForm.note || ''}
+                                      onChange={e => setAdvanceForm(prev => ({ ...prev, note: e.target.value }))}
+                                      onClick={e => e.stopPropagation()}
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={e => { e.stopPropagation(); saveAdvance(emp.name, advanceForm.amount, advanceForm.note); }}
+                                    className="px-4 py-2 bg-[#1a3a32] text-white text-xs font-medium rounded-lg hover:bg-[#1a3a32]/90 transition-colors"
+                                  >
+                                    Сохранить
+                                  </button>
+                                  <button
+                                    onClick={e => { e.stopPropagation(); setAdvanceForm(null); }}
+                                    className="px-4 py-2 border border-gray-200 text-gray-500 text-xs rounded-lg hover:bg-gray-50"
+                                  >
+                                    Отмена
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={e => { e.stopPropagation(); setAdvanceForm({ empName: emp.name, amount: '', note: '' }); }}
+                                className="flex items-center gap-2 px-4 py-2 bg-[#c9a227]/10 border border-[#c9a227]/30 text-[#c9a227] text-xs font-medium rounded-xl hover:bg-[#c9a227]/20 transition-colors"
+                              >
+                                <I.Plus className="w-3 h-3" />
+                                Записать аванс
+                              </button>
+                            )}
+
+                            {/* Recorded advances from localStorage */}
+                            {advanceHistory.filter(a => a.empName === emp.name && a.month === selectedMonth).length > 0 && (
+                              <div className="mt-2">
+                                <div className="text-xs text-gray-400 mb-1">Записанные авансы:</div>
+                                <div className="flex flex-wrap gap-2">
+                                  {advanceHistory.filter(a => a.empName === emp.name && a.month === selectedMonth).map(a => (
+                                    <span key={a.id} className="text-xs bg-[#c9a227]/10 text-[#c9a227] px-2.5 py-1 rounded-lg font-medium">
+                                      {a.date}: {fmt(a.amount)} тг {a.note && `(${a.note})`}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
 
                           {/* Monthly history strip */}
                           <div>

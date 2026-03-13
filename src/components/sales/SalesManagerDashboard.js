@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import I from '../common/Icons';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
@@ -132,6 +132,10 @@ const ProgressBar = ({ value, max, color = '#1a3a32', showPercent = true }) => {
 
 const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, onUpdateData, onAddLead, onUpdLead, onAddLeadNote, onAddMeeting, onUpdMeeting, onAddCall, initialTab }) => {
   const [activeTab, setActiveTab] = useState(initialTab || 'leads');
+
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
+  }, [initialTab]);
   const [expandedLead, setExpandedLead] = useState(null);
   const [searchLeads, setSearchLeads] = useState('');
   const [filterStage, setFilterStage] = useState('all');

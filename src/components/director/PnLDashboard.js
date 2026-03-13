@@ -1,12 +1,19 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import I from '../common/Icons';
 
 let PNL_DATA = null;
 let EXPENSES_DETAIL = null;
+let EXPENSE_CATEGORIES = null;
+let COMPANY_DEBTS = null;
 try {
   const pnlModule = require('../../data/pnlData');
   PNL_DATA = pnlModule.PNL_DATA;
   EXPENSES_DETAIL = pnlModule.EXPENSES_DETAIL;
+  EXPENSE_CATEGORIES = pnlModule.EXPENSE_CATEGORIES;
+} catch (e) {}
+try {
+  const salaryModule = require('../../data/salaryData');
+  COMPANY_DEBTS = salaryModule.COMPANY_DEBTS;
 } catch (e) {}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -29,6 +36,8 @@ const pct = (a, b) => (b && b !== 0 ? ((a / b) * 100).toFixed(1) : '0.0');
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
+const LS_KEY = 'pnl_dashboard_tableData';
+
 // ─── Fallback data ────────────────────────────────────────────────────────────
 
 const FALLBACK = {
@@ -40,6 +49,84 @@ const FALLBACK = {
   payroll: [6315000, 5741500, 5116750],
   profit: [3989697, -1047493, -1119962],
 };
+
+// ─── Build expense categories for a given month ──────────────────────────────
+
+function getExpenseCategoriesForMonth(monthName) {
+  // First try EXPENSES_DETAIL (has individual transactions)
+  const details = EXPENSES_DETAIL
+    ? EXPENSES_DETAIL.filter((e) => e.month === monthName)
+    : [];
+
+  if (details.length > 0) {
+    const byCategory = details.reduce((acc, e) => {
+      acc[e.category] = (acc[e.category] || 0) + e.amount;
+      return acc;
+    }, {});
+    const catList = Object.entries(byCategory)
+      .sort((a, b) => b[1] - a[1])
+      .filter(([, v]) => v > 0);
+    return { catList, details, source: 'detail' };
+  }
+
+  // Fallback to EXPENSE_CATEGORIES (aggregated by month)
+  if (EXPENSE_CATEGORIES) {
+    const monthIdx = EXPENSE_CATEGORIES.months.indexOf(monthName);
+    if (monthIdx !== -1 && EXPENSE_CATEGORIES.amounts[monthIdx]) {
+      const row = EXPENSE_CATEGORIES.amounts[monthIdx];
+      const cats = EXPENSE_CATEGORIES.categories;
+      const catList = cats
+        .map((cat, ci) => [cat, row[ci] || 0])
+        .filter(([, v]) => v > 0)
+        .sort((a, b) => b[1] - a[1]);
+      return { catList, details: [], source: 'categories' };
+    }
+  }
+
+  return { catList: [], details: [], source: 'none' };
+}
+
+// ─── Excel export (HTML table approach) ──────────────────────────────────────
+
+function exportExcel(rows, fileName) {
+  const KEYS = [
+    { key: 'revenue', label: 'Выручка' },
+    { key: 'plan', label: 'План' },
+    { key: 'payroll', label: 'Зарплата' },
+    { key: 'directExpenses', label: 'Прямые расходы' },
+    { key: 'totalExpenses', label: 'Итого расходов' },
+    { key: 'profit', label: 'Чистая прибыль' },
+  ];
+
+  let html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+  html += '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>PnL</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>';
+  html += '<body><table border="1">';
+
+  // Header row
+  html += '<tr><th>Показатель</th>';
+  rows.forEach((r) => { html += '<th>' + r.month + '</th>'; });
+  html += '</tr>';
+
+  // Data rows
+  KEYS.forEach((k) => {
+    html += '<tr><td>' + k.label + '</td>';
+    rows.forEach((r) => {
+      html += '<td style="mso-number-format:\'\\#\\,\\#\\#0\'">' + Math.round(r[k.key] ?? 0) + '</td>';
+    });
+    html += '</tr>';
+  });
+
+  html += '</table></body></html>';
+
+  const BOM = '\uFEFF';
+  const blob = new Blob([BOM + html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -60,8 +147,41 @@ export default function PnLDashboard({ onUpdateData } = {}) {
   });
 
   // ── State ─────────────────────────────────────────────────────────────────
-  const [tableData, setTableData] = useState(() => derived.map((d) => ({ ...d })));
-  const [editedCells, setEditedCells] = useState({});
+  const [tableData, setTableData] = useState(() => {
+    // Try loading from localStorage first
+    try {
+      const saved = localStorage.getItem(LS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Validate structure: must be array with same length
+        if (Array.isArray(parsed) && parsed.length === derived.length) {
+          return parsed;
+        }
+      }
+    } catch (e) {}
+    return derived.map((d) => ({ ...d }));
+  });
+  const [editedCells, setEditedCells] = useState(() => {
+    // Detect which cells differ from derived data (were previously edited)
+    const cells = {};
+    try {
+      const saved = localStorage.getItem(LS_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length === derived.length) {
+          const editableKeys = ['revenue', 'plan', 'payroll', 'totalExpenses'];
+          parsed.forEach((row, i) => {
+            editableKeys.forEach((key) => {
+              if (row[key] !== derived[i][key]) {
+                cells[`${key}-${i}`] = true;
+              }
+            });
+          });
+        }
+      }
+    } catch (e) {}
+    return cells;
+  });
   const [editingCell, setEditingCell] = useState(null); // { rowKey, colIdx }
   const [editValue, setEditValue] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(
@@ -79,6 +199,13 @@ export default function PnLDashboard({ onUpdateData } = {}) {
   const inputRef = useRef(null);
 
   const months = tableData.map((d) => d.month);
+
+  // ── Persist edits to localStorage on each change ───────────────────────
+  useEffect(() => {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(tableData));
+    } catch (e) {}
+  }, [tableData]);
 
   // ── Cell editing ──────────────────────────────────────────────────────────
   const handleCellDoubleClick = (rowKey, colIdx) => {
@@ -110,47 +237,25 @@ export default function PnLDashboard({ onUpdateData } = {}) {
   };
 
   const handleSave = () => {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(tableData));
+    } catch (e) {}
     setSavedNotice(true);
     setTimeout(() => setSavedNotice(false), 2500);
   };
 
-  // ── Export CSV ────────────────────────────────────────────────────────────
-  const exportCSV = (onlySelected) => {
+  // ── Export Excel ────────────────────────────────────────────────────────
+  const handleExport = (onlySelected) => {
     const rows = onlySelected ? [tableData[selectedMonth]] : tableData;
-    const KEYS = [
-      { key: 'revenue', label: 'Выручка' },
-      { key: 'plan', label: 'План' },
-      { key: 'payroll', label: 'Зарплата' },
-      { key: 'directExpenses', label: 'Прямые расходы' },
-      { key: 'totalExpenses', label: 'Итого расходов' },
-      { key: 'profit', label: 'Чистая прибыль' },
-    ];
-    const header = ['Показатель', ...rows.map((r) => r.month)];
-    const lines = [
-      header.join(';'),
-      ...KEYS.map((k) => [k.label, ...rows.map((r) => Math.round(r[k.key] ?? 0))].join(';')),
-    ];
-    const blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = onlySelected ? `PnL_${tableData[selectedMonth].month}.csv` : 'PnL_All.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+    const fileName = onlySelected
+      ? `PnL_${tableData[selectedMonth].month}.xls`
+      : 'PnL_All.xls';
+    exportExcel(rows, fileName);
   };
 
   // ── Expense detail for selected month ─────────────────────────────────────
-  const expenseDetails = EXPENSES_DETAIL
-    ? EXPENSES_DETAIL.filter((e) => e.month === months[selectedMonth])
-    : [];
-
-  const expenseByCategory = expenseDetails.reduce((acc, e) => {
-    acc[e.category] = (acc[e.category] || 0) + e.amount;
-    return acc;
-  }, {});
-  const expenseCatList = Object.entries(expenseByCategory)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 14);
+  const { catList: expenseCatList, details: expenseDetails, source: expenseSource } =
+    getExpenseCategoriesForMonth(months[selectedMonth]);
   const expenseCatTotal = expenseCatList.reduce((s, [, v]) => s + v, 0);
 
   // ── Chart scale ───────────────────────────────────────────────────────────
@@ -182,6 +287,15 @@ export default function PnLDashboard({ onUpdateData } = {}) {
     { key: 'totalExpenses', label: 'Итого расходов',    editable: true,  colorClass: 'text-red-600'     },
     { key: 'profit',        label: 'Чистая прибыль',    editable: false, colorClass: ''                 },
   ];
+
+  // ── Company debts data ─────────────────────────────────────────────────────
+  const debts = COMPANY_DEBTS;
+  const debtsTotal = debts
+    ? (debts.salaryDebts?.total || 0) +
+      (debts.companyDebts?.total || 0) +
+      (debts.taxes?.total || 0) +
+      (debts.returnable?.total || 0)
+    : 0;
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
@@ -221,7 +335,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
 
           {/* Export current month */}
           <button
-            onClick={() => exportCSV(true)}
+            onClick={() => handleExport(true)}
             className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-xl border border-gray-200 bg-white hover:bg-gray-50 shadow-sm transition-colors text-gray-600"
           >
             <I.Download className="w-4 h-4" />
@@ -230,7 +344,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
 
           {/* Export all */}
           <button
-            onClick={() => exportCSV(false)}
+            onClick={() => handleExport(false)}
             className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-xl text-white shadow-sm transition-all hover:opacity-90"
             style={{ background: 'linear-gradient(135deg,#1a3a32,#2d6a56)' }}
           >
@@ -300,7 +414,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
               Маржа {margin}%
             </span>
             <span className="text-xs opacity-60">
-              {sel.profit >= 0 ? '▲ Прибыль' : '▼ Убыток'}
+              {sel.profit >= 0 ? '\u25B2 Прибыль' : '\u25BC Убыток'}
             </span>
           </div>
         </div>
@@ -683,6 +797,11 @@ export default function PnLDashboard({ onUpdateData } = {}) {
             >
               {sel.month}
             </span>
+            {expenseSource === 'categories' && (
+              <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-amber-50 text-amber-600">
+                По категориям
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2 text-gray-400">
             <span className="text-xs">{expenseCatList.length} категорий</span>
@@ -735,7 +854,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
                   })}
                 </div>
 
-                {/* Transactions table */}
+                {/* Transactions table (only when we have detailed data) */}
                 {expenseDetails.length > 0 && (
                   <>
                     <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
@@ -819,7 +938,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
                 <th className="text-right py-2.5 text-xs font-bold text-blue-600 pr-4">
                   {tableData[compareMonths[1]]?.month}
                 </th>
-                <th className="text-right py-2.5 text-xs text-gray-500 font-semibold">Δ изменение</th>
+                <th className="text-right py-2.5 text-xs text-gray-500 font-semibold">{'\u0394'} изменение</th>
               </tr>
             </thead>
             <tbody>
@@ -850,7 +969,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
                             color: isGood ? '#16a34a' : '#dc2626',
                           }}
                         >
-                          {isUp ? '▲' : '▼'}
+                          {isUp ? '\u25B2' : '\u25BC'}
                           {diffPctVal !== null ? `${diffPctVal}%` : '—'}
                         </span>
                       ) : (
@@ -920,6 +1039,107 @@ export default function PnLDashboard({ onUpdateData } = {}) {
           </div>
         </div>
       </div>
+
+      {/* ══ COMPANY DEBTS ════════════════════════════════════════════════════ */}
+      {debts && (
+        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 mb-6">
+          <div className="flex items-center gap-3 mb-5">
+            <div
+              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
+              style={{ background: 'linear-gradient(135deg,#7f1d1d,#dc2626)' }}
+            >
+              <I.Money className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="font-bold text-gray-800 text-base">Долги компании</h2>
+              <p className="text-xs text-gray-400">по состоянию на {debts.asOf}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+            {/* Salary debts */}
+            <div className="rounded-2xl border border-red-100 bg-red-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-red-400 mb-1">Долги по ЗП</p>
+              <p className="text-2xl font-extrabold text-red-600">{fmt(debts.salaryDebts?.total || 0)}</p>
+              <p className="text-xs text-red-400 mt-0.5">{fmtFull(debts.salaryDebts?.total || 0)} ₸</p>
+            </div>
+
+            {/* Company debts */}
+            <div className="rounded-2xl border border-orange-100 bg-orange-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-orange-400 mb-1">Долги компании</p>
+              <p className="text-2xl font-extrabold text-orange-600">{fmt(debts.companyDebts?.total || 0)}</p>
+              <p className="text-xs text-orange-400 mt-0.5">{fmtFull(debts.companyDebts?.total || 0)} ₸</p>
+            </div>
+
+            {/* Taxes */}
+            <div className="rounded-2xl border border-rose-100 bg-rose-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-rose-400 mb-1">Налоги</p>
+              <p className="text-2xl font-extrabold text-rose-600">{fmt(debts.taxes?.total || 0)}</p>
+              <p className="text-xs text-rose-400 mt-0.5">{fmtFull(debts.taxes?.total || 0)} ₸</p>
+            </div>
+
+            {/* Returnables */}
+            <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-amber-500 mb-1">Возвратные</p>
+              <p className="text-2xl font-extrabold text-amber-600">{fmt(debts.returnable?.total || 0)}</p>
+              <p className="text-xs text-amber-500 mt-0.5">{fmtFull(debts.returnable?.total || 0)} ₸</p>
+            </div>
+          </div>
+
+          {/* Breakdown details */}
+          {debts.companyDebts?.breakdown && (
+            <div className="mb-4">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Расшифровка долгов компании</h3>
+              <div className="overflow-x-auto rounded-xl border border-gray-100">
+                <table className="w-full text-xs">
+                  <tbody>
+                    {Object.entries(debts.companyDebts.breakdown).map(([name, amount]) => (
+                      <tr key={name} className="border-t border-gray-50 hover:bg-gray-50 transition-colors">
+                        <td className="px-3 py-2 text-gray-600">{name}</td>
+                        <td className="px-3 py-2 text-right font-mono font-bold text-orange-500 tabular-nums whitespace-nowrap">
+                          {fmtFull(amount)} ₸
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {debts.returnable?.breakdown && (
+            <div className="mb-4">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Расшифровка возвратных</h3>
+              <div className="overflow-x-auto rounded-xl border border-gray-100">
+                <table className="w-full text-xs">
+                  <tbody>
+                    {Object.entries(debts.returnable.breakdown).map(([name, amount]) => (
+                      <tr key={name} className="border-t border-gray-50 hover:bg-gray-50 transition-colors">
+                        <td className="px-3 py-2 text-gray-600">{name}</td>
+                        <td className="px-3 py-2 text-right font-mono font-bold text-amber-500 tabular-nums whitespace-nowrap">
+                          {fmtFull(amount)} ₸
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Total */}
+          <div
+            className="rounded-2xl p-4 flex items-center justify-between"
+            style={{ background: 'linear-gradient(135deg,#7f1d1d,#dc2626)' }}
+          >
+            <span className="text-sm font-bold text-white uppercase tracking-wide">Итого долгов</span>
+            <div className="text-right">
+              <p className="text-2xl font-extrabold text-white">{fmt(debtsTotal)}</p>
+              <p className="text-xs text-red-200">{fmtFull(debtsTotal)} ₸</p>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

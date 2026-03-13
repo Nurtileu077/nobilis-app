@@ -47,6 +47,7 @@ import DirectorDashboard from './components/director/DirectorDashboard';
 import AcademicDirectorDashboard from './components/director/AcademicDirectorDashboard';
 import SalaryDashboard from './components/director/SalaryDashboard';
 import PnLDashboard from './components/director/PnLDashboard';
+import ExpensesDashboard from './components/director/ExpensesDashboard';
 
 // Sales views
 import ROPDashboard from './components/sales/ROPDashboard';
@@ -73,6 +74,8 @@ const getNavItems = (role) => {
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
     { id: 'pnl', label: 'P&L Финансы', icon: I.Money },
     { id: 'salary', label: 'Зарплаты', icon: I.Money },
+    { id: 'expenses', label: 'Расходы', icon: I.Documents },
+    { id: 'sales', label: 'Продажи', icon: I.Results },
     { id: 'employees', label: 'Сотрудники', icon: I.Users },
     { id: 'students', label: 'Студенты', icon: I.Users },
     { id: 'schedule', label: 'Расписание', icon: I.Calendar },
@@ -289,6 +292,8 @@ export default function NobilisAcademy() {
         case 'dashboard': return <DirectorDashboard data={data} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
         case 'pnl': return <PnLDashboard onUpdateData={updateData} />;
         case 'salary': return <SalaryDashboard teachers={data.teachers} onConfirmLesson={confirmLesson} onUpdateTeacher={updTeacher} onUpdateData={updateData} />;
+        case 'expenses': return <ExpensesDashboard onUpdateData={updateData} />;
+        case 'sales': return <ROPDashboard data={data} user={user} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onDelLead={delLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onDelMeeting={delMeeting} onAddCall={addCall} initialTab="report" />;
         case 'employees': return <CuratorTeachers teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelTeacher={delTeacher} />;
         case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} cityFilter={cityFilter} statusFilter={statusFilter} managerFilter={managerFilter} onSetCityFilter={setCityFilter} onSetStatusFilter={setStatusFilter} onSetManagerFilter={setManagerFilter} onOpenStudentPage={(id) => setStudentPage(id)} />;
         case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
