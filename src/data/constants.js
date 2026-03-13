@@ -28,6 +28,8 @@ export const SUPPORT_STAGES = [
 export const STUDENT_STATUSES = {
   active: { name: 'Активный', color: '#10b981', bg: '#dcfce7' },
   process: { name: 'В процессе', color: '#f59e0b', bg: '#fef3c7' },
+  completed: { name: 'Завершён', color: '#3b82f6', bg: '#dbeafe' },
+  refund: { name: 'Возврат', color: '#ef4444', bg: '#fee2e2' },
   graduated_2025: { name: 'Выпускник 2025', color: '#3b82f6', bg: '#dbeafe' },
   graduated_2026: { name: 'Выпускник 2026', color: '#8b5cf6', bg: '#ede9fe' },
   paused: { name: 'Приостановлен', color: '#6b7280', bg: '#f3f4f6' },
