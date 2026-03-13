@@ -4357,6 +4357,43 @@ export const getInitialData = () => {
       { id: 'gt3', title: 'Сдать транскрипт оценок', description: 'Принести оригинал транскрипта в офис для заверения.', assigneeId: 'student_1', assigneeName: 'Алексей Петров', deadline: '2025-02-01', urgent: false, done: true, created: '2025-01-15T09:00:00', createdBy: 'Куратор Мария', doneDate: '2025-01-28T16:00:00' },
       { id: 'gt4', title: 'Проверить документы для подачи', description: 'Проверить полноту пакета документов Анны Сидоровой для Cambridge.', assigneeId: 'curator', assigneeName: 'Куратор Мария', deadline: '2025-01-30', urgent: true, done: false, created: '2025-01-25T11:00:00', createdBy: 'Куратор Мария' },
       { id: 'gt5', title: 'Провести пробный IELTS Speaking', description: '', assigneeId: 'teacher_1', assigneeName: 'Смирнова Анна Владимировна', deadline: '2025-02-05', urgent: false, done: false, created: '2025-01-22T15:00:00', createdBy: 'Куратор Мария' },
-    ]
+    ],
+    // ---- SALES / CRM DATA ----
+    leads: [
+      { id: 'lead1', name: 'Асанов Тимур', phone: '+7 701 111-22-33', email: 'asanov@mail.kz', source: 'instagram', status: 'new', managerId: 'sm1', operatorId: 'cc1', notes: 'Интересуется IELTS подготовкой', created: '2026-03-10T09:00:00', updated: '2026-03-10T09:00:00', history: [{ date: '2026-03-10T09:00:00', action: 'created', text: 'Лид создан из Instagram' }] },
+      { id: 'lead2', name: 'Бекова Айгерим', phone: '+7 702 333-44-55', email: 'bekova@gmail.com', source: 'website', status: 'contacted', managerId: 'sm1', operatorId: 'cc1', notes: 'Хочет поступить в Германию', created: '2026-03-08T14:00:00', updated: '2026-03-09T11:00:00', history: [{ date: '2026-03-08T14:00:00', action: 'created', text: 'Заявка с сайта' }, { date: '2026-03-09T11:00:00', action: 'status_change', text: 'Статус: Связались' }] },
+      { id: 'lead3', name: 'Сериков Дамир', phone: '+7 705 555-66-77', email: 'serikov@inbox.kz', source: 'referral', status: 'meeting', managerId: 'sm1', operatorId: 'cc1', notes: 'Рекомендация от Жакупбековой', created: '2026-03-05T10:00:00', updated: '2026-03-11T15:00:00', history: [{ date: '2026-03-05T10:00:00', action: 'created', text: 'Рекомендация' }, { date: '2026-03-11T15:00:00', action: 'meeting_scheduled', text: 'Встреча назначена на 13.03' }] },
+      { id: 'lead4', name: 'Касымова Динара', phone: '+7 707 777-88-99', email: 'kasymova@mail.ru', source: 'bitrix', status: 'negotiation', managerId: 'sm1', operatorId: 'cc1', notes: 'Обсуждаем пакет Обучение+Сопровождение', created: '2026-02-28T16:00:00', updated: '2026-03-12T10:00:00', history: [{ date: '2026-02-28T16:00:00', action: 'created', text: 'Из Битрикс' }, { date: '2026-03-12T10:00:00', action: 'status_change', text: 'Переговоры по условиям' }] },
+      { id: 'lead5', name: 'Нуржанов Арман', phone: '+7 700 111-00-22', email: 'nurzhan@gmail.com', source: 'instagram', status: 'closed_won', managerId: 'sm1', operatorId: 'cc1', notes: 'Подписал договор на 1.6 млн', created: '2026-02-15T09:00:00', updated: '2026-03-01T14:00:00', dealAmount: 1600000, history: [{ date: '2026-02-15T09:00:00', action: 'created', text: 'Instagram реклама' }, { date: '2026-03-01T14:00:00', action: 'closed_won', text: 'Договор подписан, 1 600 000 тг' }] },
+      { id: 'lead6', name: 'Оспанова Камила', phone: '+7 708 222-33-44', email: '', source: 'cold_call', status: 'closed_lost', managerId: 'sm1', operatorId: 'cc1', notes: 'Выбрала другую компанию', created: '2026-02-20T11:00:00', updated: '2026-03-05T16:00:00', history: [{ date: '2026-02-20T11:00:00', action: 'created', text: 'Холодный звонок' }, { date: '2026-03-05T16:00:00', action: 'closed_lost', text: 'Отказ — ушла к конкурентам' }] },
+      { id: 'lead7', name: 'Тойбаев Руслан', phone: '+7 771 444-55-66', email: 'toibaev@mail.kz', source: 'website', status: 'new', managerId: 'sm1', operatorId: 'cc1', notes: '', created: '2026-03-13T08:00:00', updated: '2026-03-13T08:00:00', history: [{ date: '2026-03-13T08:00:00', action: 'created', text: 'Заявка с сайта' }] },
+      { id: 'lead8', name: 'Ермекова Жанна', phone: '+7 776 666-77-88', email: 'ermekova@gmail.com', source: 'referral', status: 'contacted', managerId: 'sm1', operatorId: 'cc1', notes: 'Рекомендация от Серикова', created: '2026-03-12T13:00:00', updated: '2026-03-13T09:00:00', history: [{ date: '2026-03-12T13:00:00', action: 'created', text: 'По рекомендации' }] },
+    ],
+    meetings: [
+      { id: 'meet1', leadId: 'lead3', leadName: 'Сериков Дамир', managerId: 'sm1', managerName: 'Менеджер Алия', date: '2026-03-13', time: '14:00', type: 'offline', location: 'Офис Nobilis', status: 'scheduled', notes: 'Первая встреча, показать офис', result: '' },
+      { id: 'meet2', leadId: 'lead4', leadName: 'Касымова Динара', managerId: 'sm1', managerName: 'Менеджер Алия', date: '2026-03-13', time: '16:00', type: 'online', location: 'Zoom', status: 'scheduled', notes: 'Обсуждение условий договора', result: '' },
+      { id: 'meet3', leadId: 'lead5', leadName: 'Нуржанов Арман', managerId: 'sm1', managerName: 'Менеджер Алия', date: '2026-03-01', time: '11:00', type: 'offline', location: 'Офис Nobilis', status: 'completed', notes: 'Подписание договора', result: 'Договор подписан' },
+      { id: 'meet4', leadId: 'lead2', leadName: 'Бекова Айгерим', managerId: 'sm1', managerName: 'Менеджер Алия', date: '2026-03-14', time: '10:00', type: 'online', location: 'Google Meet', status: 'scheduled', notes: 'Презентация программы', result: '' },
+    ],
+    calls: [
+      { id: 'call1', leadId: 'lead1', leadName: 'Асанов Тимур', operatorId: 'cc1', managerId: 'sm1', date: '2026-03-13T09:15:00', duration: 180, result: 'success', notes: 'Заинтересован, передан менеджеру' },
+      { id: 'call2', leadId: 'lead7', leadName: 'Тойбаев Руслан', operatorId: 'cc1', managerId: 'sm1', date: '2026-03-13T09:30:00', duration: 0, result: 'no_answer', notes: 'Не ответил' },
+      { id: 'call3', leadId: 'lead8', leadName: 'Ермекова Жанна', operatorId: 'cc1', managerId: 'sm1', date: '2026-03-13T09:45:00', duration: 240, result: 'success', notes: 'Хочет узнать подробнее, перезвонить завтра' },
+      { id: 'call4', leadId: 'lead7', leadName: 'Тойбаев Руслан', operatorId: 'cc1', managerId: 'sm1', date: '2026-03-13T10:00:00', duration: 120, result: 'callback', notes: 'Просил перезвонить после 15:00' },
+      { id: 'call5', leadId: 'lead6', leadName: 'Оспанова Камила', operatorId: 'cc1', managerId: 'sm1', date: '2026-03-12T14:00:00', duration: 60, result: 'rejected', notes: 'Не интересует' },
+      { id: 'call6', leadId: 'lead2', leadName: 'Бекова Айгерим', operatorId: 'cc1', managerId: 'sm1', date: '2026-03-12T11:30:00', duration: 300, result: 'meeting', notes: 'Записана на встречу 14.03' },
+    ],
+    salesTeam: [
+      { id: 'sm1', name: 'Менеджер Алия', role: 'sales_manager', phone: '+7 700 100-00-01', monthlyTarget: 5000000, commission: { tier1: 3, tier2: 5, tier3: 7 } },
+      { id: 'cc1', name: 'Оператор Дана', role: 'callcenter', phone: '+7 700 100-00-02', dailyCallTarget: 50 },
+    ],
+    // ---- INTEGRATION SETTINGS ----
+    integrations: {
+      bitrix24: { enabled: false, webhookUrl: '', apiToken: '', domain: 'nobilis.bitrix24.kz', syncLeads: true, syncCalls: true },
+      telegram: { enabled: false, botToken: '', chatIds: [], notifications: { newLead: true, dealClosed: true, dailyReport: true } },
+      googleDrive: { enabled: false, folderId: '', serviceAccountKey: '' },
+      googleCalendar: { enabled: false, calendarId: '' },
+      whatsapp: { enabled: false, apiUrl: '', token: '' },
+    },
   };
 };

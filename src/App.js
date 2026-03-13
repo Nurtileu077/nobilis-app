@@ -52,6 +52,7 @@ import PnLDashboard from './components/director/PnLDashboard';
 import ROPDashboard from './components/sales/ROPDashboard';
 import SalesManagerDashboard from './components/sales/SalesManagerDashboard';
 import CallcenterDashboard from './components/sales/CallcenterDashboard';
+import IntegrationsPanel from './components/sales/IntegrationsPanel';
 
 // ============================================================
 // NAV ITEMS CONFIG
@@ -115,17 +116,27 @@ const getNavItems = (role) => {
   ];
   if (role === 'rop') return [
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'leads', label: 'Лиды', icon: I.Users },
+    { id: 'meetings', label: 'Встречи', icon: I.Calendar },
+    { id: 'reports', label: 'Отчёты', icon: I.Results },
+    { id: 'team', label: 'Команда', icon: I.Users },
     { id: 'tasks', label: 'Задачи', icon: I.Tasks },
-    { id: 'employees', label: 'Команда', icon: I.Users },
+    { id: 'integrations', label: 'Интеграции', icon: I.Globe },
     { id: 'notifications', label: 'Уведомления', icon: I.Bell },
   ];
   if (role === 'sales_manager') return [
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'leads', label: 'Мои лиды', icon: I.Users },
+    { id: 'meetings', label: 'Встречи', icon: I.Calendar },
+    { id: 'calls', label: 'Звонки', icon: I.Phone },
+    { id: 'kpi', label: 'Мой KPI', icon: I.Results },
     { id: 'tasks', label: 'Задачи', icon: I.Tasks },
     { id: 'notifications', label: 'Уведомления', icon: I.Bell },
   ];
   if (role === 'callcenter') return [
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
+    { id: 'callList', label: 'Обзвон', icon: I.Phone },
+    { id: 'callLog', label: 'История', icon: I.Clock },
     { id: 'tasks', label: 'Задачи', icon: I.Tasks },
     { id: 'notifications', label: 'Уведомления', icon: I.Bell },
   ];
@@ -179,6 +190,11 @@ export default function NobilisAcademy() {
     freezeStudent, unfreezeStudent, setAvatar,
     submitEnglishTest, resetEnglishTest,
     addGlobalTask, toggleGlobalTask, deleteGlobalTask,
+    addLead, updLead, delLead, addLeadNote,
+    addMeeting, updMeeting, delMeeting,
+    addCall, updCall,
+    addSalesTeamMember, updSalesTeamMember, delSalesTeamMember,
+    updateIntegration, updateData,
     generateLogin: genLogin, generatePassword: genPassword,
   } = app;
   const [detailTab, setDetailTab] = useState('info');
@@ -271,8 +287,8 @@ export default function NobilisAcademy() {
       }
       switch (view) {
         case 'dashboard': return <DirectorDashboard data={data} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
-        case 'pnl': return <PnLDashboard />;
-        case 'salary': return <SalaryDashboard teachers={data.teachers} onConfirmLesson={confirmLesson} onUpdateTeacher={updTeacher} />;
+        case 'pnl': return <PnLDashboard onUpdateData={updateData} />;
+        case 'salary': return <SalaryDashboard teachers={data.teachers} onConfirmLesson={confirmLesson} onUpdateTeacher={updTeacher} onUpdateData={updateData} />;
         case 'employees': return <CuratorTeachers teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelTeacher={delTeacher} />;
         case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} cityFilter={cityFilter} statusFilter={statusFilter} managerFilter={managerFilter} onSetCityFilter={setCityFilter} onSetStatusFilter={setStatusFilter} onSetManagerFilter={setManagerFilter} onOpenStudentPage={(id) => setStudentPage(id)} />;
         case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
@@ -313,9 +329,13 @@ export default function NobilisAcademy() {
     // ROP (Head of Sales)
     if (user.role === 'rop') {
       switch (view) {
-        case 'dashboard': return <ROPDashboard data={data} onSetModal={setModal} onSetForm={setForm} />;
+        case 'dashboard': return <ROPDashboard data={data} user={user} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onDelLead={delLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onDelMeeting={delMeeting} onAddCall={addCall} />;
+        case 'leads': return <ROPDashboard data={data} user={user} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onDelLead={delLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onDelMeeting={delMeeting} onAddCall={addCall} initialTab="leads" />;
+        case 'meetings': return <ROPDashboard data={data} user={user} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onDelLead={delLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onDelMeeting={delMeeting} onAddCall={addCall} initialTab="meetings" />;
+        case 'reports': return <ROPDashboard data={data} user={user} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onDelLead={delLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onDelMeeting={delMeeting} onAddCall={addCall} initialTab="report" />;
+        case 'team': return <ROPDashboard data={data} user={user} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onDelLead={delLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onDelMeeting={delMeeting} onAddCall={addCall} initialTab="team" />;
+        case 'integrations': return <IntegrationsPanel data={data} onUpdateIntegration={updateIntegration} />;
         case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
-        case 'employees': return <CuratorTeachers teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelTeacher={delTeacher} />;
         case 'notifications': return <NotificationsView />;
         default: break;
       }
@@ -324,7 +344,11 @@ export default function NobilisAcademy() {
     // SALES MANAGER
     if (user.role === 'sales_manager') {
       switch (view) {
-        case 'dashboard': return <SalesManagerDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} />;
+        case 'dashboard': return <SalesManagerDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onAddCall={addCall} />;
+        case 'leads': return <SalesManagerDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onAddCall={addCall} initialTab="leads" />;
+        case 'meetings': return <SalesManagerDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onAddCall={addCall} initialTab="meetings" />;
+        case 'calls': return <SalesManagerDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onAddCall={addCall} initialTab="calls" />;
+        case 'kpi': return <SalesManagerDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onAddCall={addCall} initialTab="kpi" />;
         case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
         case 'notifications': return <NotificationsView />;
         default: break;
@@ -334,7 +358,9 @@ export default function NobilisAcademy() {
     // CALLCENTER
     if (user.role === 'callcenter') {
       switch (view) {
-        case 'dashboard': return <CallcenterDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} />;
+        case 'dashboard': return <CallcenterDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} onUpdateData={updateData} onAddCall={addCall} onUpdLead={updLead} onAddMeeting={addMeeting} />;
+        case 'callList': return <CallcenterDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} onUpdateData={updateData} onAddCall={addCall} onUpdLead={updLead} onAddMeeting={addMeeting} initialTab="callList" />;
+        case 'callLog': return <CallcenterDashboard user={user} data={data} onSetModal={setModal} onSetForm={setForm} onUpdateData={updateData} onAddCall={addCall} onUpdLead={updLead} onAddMeeting={addMeeting} initialTab="callLog" />;
         case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
         case 'notifications': return <NotificationsView />;
         default: break;

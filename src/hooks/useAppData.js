@@ -496,6 +496,73 @@ export default function useAppData() {
     upd('globalTasks', (data.globalTasks || []).filter(t => t.id !== taskId));
   };
 
+  // ---- LEADS CRM ----
+  const addLead = (lead) => {
+    const newLead = {
+      id: genId(), ...lead, created: new Date().toISOString(), updated: new Date().toISOString(),
+      history: [{ date: new Date().toISOString(), action: 'created', text: 'Лид создан' }],
+    };
+    upd('leads', [...(data.leads || []), newLead]);
+    return newLead;
+  };
+  const updLead = (id, changes) => {
+    upd('leads', (data.leads || []).map(l => {
+      if (l.id !== id) return l;
+      const updated = { ...l, ...changes, updated: new Date().toISOString() };
+      if (changes.status && changes.status !== l.status) {
+        updated.history = [...(l.history || []), { date: new Date().toISOString(), action: 'status_change', text: `Статус: ${changes.status}` }];
+      }
+      return updated;
+    }));
+  };
+  const delLead = (id) => upd('leads', (data.leads || []).filter(l => l.id !== id));
+  const addLeadNote = (leadId, text) => {
+    upd('leads', (data.leads || []).map(l => l.id === leadId ? {
+      ...l, updated: new Date().toISOString(),
+      history: [...(l.history || []), { date: new Date().toISOString(), action: 'note', text }],
+    } : l));
+  };
+
+  // ---- MEETINGS ----
+  const addMeeting = (meeting) => {
+    const newMeeting = { id: genId(), ...meeting, created: new Date().toISOString() };
+    upd('meetings', [...(data.meetings || []), newMeeting]);
+    return newMeeting;
+  };
+  const updMeeting = (id, changes) => {
+    upd('meetings', (data.meetings || []).map(m => m.id === id ? { ...m, ...changes } : m));
+  };
+  const delMeeting = (id) => upd('meetings', (data.meetings || []).filter(m => m.id !== id));
+
+  // ---- CALLS ----
+  const addCall = (call) => {
+    const newCall = { id: genId(), ...call, date: call.date || new Date().toISOString() };
+    upd('calls', [...(data.calls || []), newCall]);
+    return newCall;
+  };
+  const updCall = (id, changes) => {
+    upd('calls', (data.calls || []).map(c => c.id === id ? { ...c, ...changes } : c));
+  };
+
+  // ---- INTEGRATIONS ----
+  const updateIntegration = (service, settings) => {
+    upd('integrations', { ...(data.integrations || {}), [service]: { ...(data.integrations?.[service] || {}), ...settings } });
+  };
+
+  // ---- SALES TEAM ----
+  const addSalesTeamMember = (member) => {
+    const newMember = { id: genId(), ...member };
+    upd('salesTeam', [...(data.salesTeam || []), newMember]);
+    return newMember;
+  };
+  const updSalesTeamMember = (id, changes) => {
+    upd('salesTeam', (data.salesTeam || []).map(m => m.id === id ? { ...m, ...changes } : m));
+  };
+  const delSalesTeamMember = (id) => upd('salesTeam', (data.salesTeam || []).filter(m => m.id !== id));
+
+  // ---- GENERIC DATA UPDATE (for inline editing in dashboards) ----
+  const updateData = (key, value) => upd(key, value);
+
   return {
     // State
     data, user, view, modal, selected, search, form, syncStatus,
@@ -531,6 +598,16 @@ export default function useAppData() {
     submitEnglishTest, resetEnglishTest,
     // Global tasks (Bitrix-style)
     addGlobalTask, toggleGlobalTask, deleteGlobalTask,
+    // CRM - Leads, Meetings, Calls
+    addLead, updLead, delLead, addLeadNote,
+    addMeeting, updMeeting, delMeeting,
+    addCall, updCall,
+    // Sales team
+    addSalesTeamMember, updSalesTeamMember, delSalesTeamMember,
+    // Integrations
+    updateIntegration,
+    // Generic update
+    updateData,
     // Helpers
     generateLogin, generatePassword,
   };
