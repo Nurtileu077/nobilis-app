@@ -28,6 +28,7 @@ export default function useAppData() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cityFilter, setCityFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [managerFilter, setManagerFilter] = useState('');
   const [studentPage, setStudentPage] = useState(null);
   const [calendarMode, setCalendarMode] = useState(false);
   const saveTimer = useRef(null);
@@ -455,11 +456,11 @@ export default function useAppData() {
     // State
     data, user, view, modal, selected, search, form, syncStatus,
     testAnswers, testQ, attDate, attSchedule, sylSearch,
-    sidebarOpen, cityFilter, statusFilter, studentPage, calendarMode,
+    sidebarOpen, cityFilter, statusFilter, managerFilter, studentPage, calendarMode,
     // Setters
     setView, setModal, setSelected, setSearch, setForm,
     setTestAnswers, setTestQ, setAttDate, setAttSchedule, setSylSearch,
-    setSidebarOpen, setCityFilter, setStatusFilter, setStudentPage, setCalendarMode,
+    setSidebarOpen, setCityFilter, setStatusFilter, setManagerFilter, setStudentPage, setCalendarMode,
     // Auth
     handleLogin, logout, setUser,
     // Getters

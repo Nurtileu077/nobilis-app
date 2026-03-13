@@ -90,10 +90,10 @@ export default function NobilisAcademy() {
   const {
     data, user, view, modal, selected, search, form, syncStatus,
     testAnswers, testQ, attDate, attSchedule, sylSearch,
-    sidebarOpen, cityFilter, statusFilter, studentPage,
+    sidebarOpen, cityFilter, statusFilter, managerFilter, studentPage,
     setView, setModal, setSelected, setSearch, setForm,
     setTestAnswers, setTestQ, setAttDate, setAttSchedule, setSylSearch,
-    setSidebarOpen, setCityFilter, setStatusFilter, setStudentPage,
+    setSidebarOpen, setCityFilter, setStatusFilter, setManagerFilter, setStudentPage,
     handleLogin, logout, getStudent, getTeacher,
     addStudent, delStudent,
     addTeacher, updTeacher, delTeacher,
@@ -165,7 +165,7 @@ export default function NobilisAcademy() {
       switch (view) {
         case 'dashboard': return <CuratorDashboard data={data} onResolveTicket={resolveTicket} onSetModal={setModal} onSetForm={setForm} />;
         case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
-        case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} cityFilter={cityFilter} statusFilter={statusFilter} onSetCityFilter={setCityFilter} onSetStatusFilter={setStatusFilter} onOpenStudentPage={(id) => setStudentPage(id)} />;
+        case 'students': return <CuratorStudents students={data.students} search={search} onSetSearch={setSearch} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} cityFilter={cityFilter} statusFilter={statusFilter} managerFilter={managerFilter} onSetCityFilter={setCityFilter} onSetStatusFilter={setStatusFilter} onSetManagerFilter={setManagerFilter} onOpenStudentPage={(id) => setStudentPage(id)} />;
         case 'attendance': return <CuratorAttendance data={data} attDate={attDate} attSchedule={attSchedule} onSetAttDate={setAttDate} onSetAttSchedule={setAttSchedule} onMarkAtt={markAtt} />;
         case 'schedule': return <CuratorSchedule schedule={data.schedule} teachers={data.teachers} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelSchedule={delSchedule} />;
         case 'mockTests': return <CuratorMockTests mockTests={data.mockTests} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelMockTest={delMockTest} />;
@@ -515,20 +515,49 @@ export default function NobilisAcademy() {
                 </div>
               </div>
             </div>
+            {/* Contract info row */}
+            {(s.manager || s.conditions) && (
+              <div className="flex flex-wrap gap-2 text-sm">
+                {s.manager && <span className="px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">{s.manager}</span>}
+                {s.conditions && <span className="px-2 py-0.5 bg-blue-50 rounded-full text-blue-600">{s.conditions}</span>}
+              </div>
+            )}
             <div className="grid grid-cols-3 gap-3 text-center">
-              <div className="bg-gray-50 rounded-xl p-3">
-                <div className="text-xl font-bold text-[#1a3a32]">{getAttendancePercent(s.attendance)}%</div>
-                <div className="text-xs text-gray-500">Посещ.</div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3">
-                <div className="text-xl font-bold text-blue-600">{s.packages?.length || 0}</div>
-                <div className="text-xs text-gray-500">Пакетов</div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-3">
-                <div className="text-xl font-bold text-[#c9a227]">{s.documents?.length || 0}</div>
-                <div className="text-xs text-gray-500">Документов</div>
-              </div>
+              {s.totalContractSum > 0 ? (
+                <>
+                  <div className="bg-gray-50 rounded-xl p-3">
+                    <div className="text-lg font-bold text-[#1a3a32]">{(s.totalContractSum || 0).toLocaleString('ru-RU')}</div>
+                    <div className="text-xs text-gray-500">Сумма (тг)</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-3">
+                    <div className={`text-lg font-bold ${s.paidAmount < s.totalContractSum ? 'text-red-600' : 'text-green-600'}`}>{(s.paidAmount || 0).toLocaleString('ru-RU')}</div>
+                    <div className="text-xs text-gray-500">Оплачено (тг)</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-3">
+                    <div className="text-lg font-bold text-blue-600">{s.packages?.length || 0}</div>
+                    <div className="text-xs text-gray-500">Пакетов</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="bg-gray-50 rounded-xl p-3">
+                    <div className="text-xl font-bold text-[#1a3a32]">{getAttendancePercent(s.attendance)}%</div>
+                    <div className="text-xs text-gray-500">Посещ.</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-3">
+                    <div className="text-xl font-bold text-blue-600">{s.packages?.length || 0}</div>
+                    <div className="text-xs text-gray-500">Пакетов</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-3">
+                    <div className="text-xl font-bold text-[#c9a227]">{s.documents?.length || 0}</div>
+                    <div className="text-xs text-gray-500">Документов</div>
+                  </div>
+                </>
+              )}
             </div>
+            {s.paymentType && (
+              <div className="text-xs text-gray-500 text-center">Оплата: {s.paymentType}</div>
+            )}
             {/* Package pills */}
             {s.packages?.length > 0 && (
               <div className="space-y-2">
@@ -1483,6 +1512,43 @@ export default function NobilisAcademy() {
                 <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Тел. родителя</div><div className="font-medium text-sm mt-1">{s.parentPhone}</div></div>
                 <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Дата начала</div><div className="font-medium text-sm mt-1">{formatDate(s.joinDate)}</div></div>
                 <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Конец договора</div><div className="font-medium text-sm mt-1">{formatDate(s.contractEndDate)}{s.contractEndDate && ` (${daysUntil(s.contractEndDate)} дн.)`}</div></div>
+              </div>
+
+              {/* Contract & Financial Info */}
+              <div className="pt-4 border-t">
+                <div className="text-xs text-gray-500 mb-3 font-semibold uppercase tracking-wider">Договор и оплата</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {s.contractNo && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">№ договора</div><div className="font-medium text-sm mt-1">{s.contractNo}</div></div>}
+                  {s.manager && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Менеджер</div><div className="font-medium text-sm mt-1">{s.manager}</div></div>}
+                  {s.conditions && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Условия / Пакет</div><div className="font-medium text-sm mt-1">{s.conditions}</div></div>}
+                  {s.studyPeriod && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Период обучения</div><div className="font-medium text-sm mt-1">{s.studyPeriod}</div></div>}
+                  {(s.totalContractSum > 0 || s.paidAmount > 0) && (
+                    <>
+                      <div className="p-3 bg-gray-50 rounded-xl">
+                        <div className="text-xs text-gray-500">Сумма договора</div>
+                        <div className="font-medium text-sm mt-1">{(s.totalContractSum || 0).toLocaleString('ru-RU')} тг</div>
+                      </div>
+                      <div className="p-3 bg-gray-50 rounded-xl">
+                        <div className="text-xs text-gray-500">Оплачено</div>
+                        <div className={`font-medium text-sm mt-1 ${s.paidAmount < s.totalContractSum ? 'text-red-600' : 'text-green-600'}`}>
+                          {(s.paidAmount || 0).toLocaleString('ru-RU')} тг
+                          {s.totalContractSum > 0 && s.paidAmount < s.totalContractSum && (
+                            <span className="text-xs text-red-500 ml-1">(долг: {((s.totalContractSum || 0) - (s.paidAmount || 0)).toLocaleString('ru-RU')} тг)</span>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {s.paymentType && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Тип оплаты</div><div className="font-medium text-sm mt-1">{s.paymentType}</div></div>}
+                  {s.paymentConditions && s.paymentConditions !== 0 && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Условия оплаты</div><div className="font-medium text-sm mt-1">{s.paymentConditions}</div></div>}
+                </div>
+                {s.bitrixLink && (
+                  <div className="mt-3">
+                    <a href={s.bitrixLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
+                      Открыть в Битрикс24 &rarr;
+                    </a>
+                  </div>
+                )}
               </div>
               {(s.targetIelts || s.targetSat) && (
                 <div>

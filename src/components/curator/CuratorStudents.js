@@ -5,16 +5,17 @@ import { STUDENT_STATUSES, PACKAGE_TYPES, SUPPORT_STAGES } from '../../data/cons
 
 const CuratorStudents = ({
   students, search, onSetSearch, onSetModal, onSetForm, onSetSelected,
-  cityFilter, statusFilter, onSetCityFilter, onSetStatusFilter, onOpenStudentPage
+  cityFilter, statusFilter, managerFilter, onSetCityFilter, onSetStatusFilter, onSetManagerFilter, onOpenStudentPage
 }) => {
   // Get unique cities
   const cities = [...new Set(students.map(s => s.city).filter(Boolean))].sort();
 
   // Apply filters
   const filtered = students.filter(s => {
-    if (search && !s.name.toLowerCase().includes(search.toLowerCase())) return false;
+    if (search && !s.name.toLowerCase().includes(search.toLowerCase()) && !s.parentName?.toLowerCase().includes(search.toLowerCase())) return false;
     if (cityFilter && s.city !== cityFilter) return false;
     if (statusFilter && s.status !== statusFilter) return false;
+    if (managerFilter && s.manager !== managerFilter) return false;
     return true;
   });
 
@@ -26,7 +27,10 @@ const CuratorStudents = ({
     groups[status].push(s);
   });
 
-  const statusOrder = ['active', 'process', 'graduated_2025', 'graduated_2026', 'paused'];
+  const statusOrder = ['active', 'process', 'completed', 'refund', 'graduated_2025', 'graduated_2026', 'paused'];
+
+  // Get unique managers for filter
+  const managers = [...new Set(students.map(s => s.manager).filter(Boolean))].sort();
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -58,6 +62,11 @@ const CuratorStudents = ({
             <option key={k} value={k}>{v.name}</option>
           ))}
         </select>
+        <select value={managerFilter || ''} onChange={e => onSetManagerFilter(e.target.value)}
+          className="p-3 border rounded-xl input-focus">
+          <option value="">Все менеджеры</option>
+          {managers.map(m => <option key={m} value={m}>{m}</option>)}
+        </select>
       </div>
 
       {/* Student groups */}
@@ -88,8 +97,20 @@ const CuratorStudents = ({
                           {s.status === 'paused' && <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Заморожен</span>}
                         </div>
                         <div className="text-sm text-gray-500 truncate">
-                          {s.grade}{s.city ? ` - ${s.city}` : ''} - {getAttendancePercent(s.attendance)}% посещ.
+                          {s.manager && <span className="text-gray-600">{s.manager}</span>}
+                          {s.manager && (s.grade || s.city) && ' · '}
+                          {s.grade}{s.city ? ` · ${s.city}` : ''}
+                          {s.conditions && <span className="ml-1 text-gray-400">· {s.conditions}</span>}
                         </div>
+                        {(s.totalContractSum > 0 || s.paidAmount > 0) && (
+                          <div className="text-xs text-gray-400 mt-0.5">
+                            {(s.totalContractSum || 0).toLocaleString('ru-RU')} тг
+                            {s.paidAmount < s.totalContractSum && (
+                              <span className="text-red-500 ml-1">(долг: {((s.totalContractSum || 0) - (s.paidAmount || 0)).toLocaleString('ru-RU')} тг)</span>
+                            )}
+                            {s.paymentType && <span className="ml-1">· {s.paymentType}</span>}
+                          </div>
+                        )}
                         {/* Package progress pills */}
                         {s.packages?.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
