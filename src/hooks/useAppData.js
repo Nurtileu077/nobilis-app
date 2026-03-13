@@ -39,13 +39,22 @@ export default function useAppData() {
 
   // Load data from Supabase on mount
   useEffect(() => {
-    if (!SUPABASE_ENABLED) { initialLoadDone.current = true; return; }
+    if (!SUPABASE_ENABLED) { initialLoadDone.current = true; setSyncStatus('synced'); return; }
     setSyncStatus('loading');
+    // Timeout: if Supabase doesn't respond in 8 seconds, fall back to localStorage
+    const timeout = setTimeout(() => {
+      if (!initialLoadDone.current) {
+        console.warn('Supabase load timed out, using localStorage');
+        setSyncStatus('synced');
+        initialLoadDone.current = true;
+      }
+    }, 8000);
     supabase.from('app_state').select('data').eq('id', 'main').single()
       .then(({ data: row, error }) => {
+        clearTimeout(timeout);
         if (error) {
           console.warn('Supabase load failed, using localStorage:', error.message);
-          setSyncStatus('error');
+          setSyncStatus('synced'); // Don't show error, just use localStorage silently
         } else if (row && row.data && Object.keys(row.data).length > 0) {
           const remoteVersion = row.data._dataVersion || 0;
           if (remoteVersion < DATA_VERSION) {

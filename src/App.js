@@ -1418,6 +1418,27 @@ export default function NobilisAcademy() {
           {editMode ? 'Завершить' : 'Редактировать'}
         </button>
       </div>
+      <input value={uniSearch} onChange={e => setUniSearch(e.target.value)} placeholder="Поиск по странам и ВУЗам..."
+        className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none bg-white shadow-sm" />
+      {uniSearch ? (
+        <div className="space-y-3">
+          <div className="text-sm text-gray-500">Результаты поиска</div>
+          {Object.entries(UNIVERSITIES_DB).flatMap(([code, unis]) => {
+            const info = COUNTRY_INFO[code] || {};
+            return unis.filter(u => u.name.toLowerCase().includes(uniSearch.toLowerCase()) || u.city?.toLowerCase().includes(uniSearch.toLowerCase()) || info.name?.toLowerCase().includes(uniSearch.toLowerCase()))
+              .map(u => (
+                <div key={code + u.name} className="bg-white rounded-xl p-4 shadow-sm border card-hover cursor-pointer flex items-center gap-3" onClick={() => { setSelectedCountry(code); setSelectedUni(u); setUniSearch(''); }}>
+                  <span className="text-2xl">{info.flag}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-gray-800 truncate">{u.name}</div>
+                    <div className="text-sm text-gray-500">{info.name} · {u.city} · ${u.tuition?.[0]?.toLocaleString()}-${u.tuition?.[1]?.toLocaleString()}/год</div>
+                  </div>
+                  {u.scholarship && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full flex-shrink-0">Стипендия</span>}
+                </div>
+              ));
+          })}
+        </div>
+      ) : (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {Object.entries(UNIVERSITIES_DB).map(([code, unis]) => {
           const info = COUNTRY_INFO[code] || {};
@@ -1438,6 +1459,7 @@ export default function NobilisAcademy() {
           );
         })}
       </div>
+      )}
     </div>
     );
   };
@@ -1921,15 +1943,10 @@ export default function NobilisAcademy() {
       )}
       {/* Sync status indicator */}
       {syncStatus === 'error' && (
-        <div className="fixed bottom-4 right-4 z-50 bg-red-500 text-white px-3 py-1.5 rounded-full text-xs shadow-lg flex items-center gap-1.5">
+        <div className="fixed bottom-4 right-4 z-50 bg-orange-500 text-white px-3 py-1.5 rounded-full text-xs shadow-lg flex items-center gap-1.5 cursor-pointer"
+          onClick={() => window.location.reload()}>
           <div className="w-2 h-2 bg-white rounded-full" />
-          Нет связи с сервером
-        </div>
-      )}
-      {syncStatus === 'loading' && (
-        <div className="fixed bottom-4 right-4 z-50 bg-blue-500 text-white px-3 py-1.5 rounded-full text-xs shadow-lg flex items-center gap-1.5">
-          <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-          Загрузка...
+          Офлайн режим (нажмите для обновления)
         </div>
       )}
     </div>
