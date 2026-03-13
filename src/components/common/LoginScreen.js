@@ -3,7 +3,7 @@ import NobilisLogo from './NobilisLogo';
 
 const DEMO_ACCOUNTS = [
   { login: 'curator', password: 'curator2024', label: 'Куратор', icon: 'C' },
-  { login: 'alexey.pet47', password: 'Nobilis2024!', label: 'Студент', icon: 'S' },
+  { login: 'zhakupbekova.dar61', password: '2d937fUSHbm!', label: 'Студент', icon: 'S' },
   { login: 'smirnova.ann', password: 'Teacher2024!', label: 'Препод', icon: 'T' },
 ];
 

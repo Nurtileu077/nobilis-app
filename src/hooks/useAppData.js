@@ -34,6 +34,9 @@ export default function useAppData() {
   const saveTimer = useRef(null);
   const initialLoadDone = useRef(false);
 
+  // Data version — bump this when initialData changes to force Supabase refresh
+  const DATA_VERSION = 4;
+
   // Load data from Supabase on mount
   useEffect(() => {
     if (!SUPABASE_ENABLED) { initialLoadDone.current = true; return; }
@@ -44,16 +47,31 @@ export default function useAppData() {
           console.warn('Supabase load failed, using localStorage:', error.message);
           setSyncStatus('error');
         } else if (row && row.data && Object.keys(row.data).length > 0) {
-          // Merge: Supabase data wins, but fill missing keys from initial data
-          const initial = getInitialData();
-          const merged = { ...initial, ...row.data };
-          setData(merged);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-          setSyncStatus('synced');
+          const remoteVersion = row.data._dataVersion || 0;
+          if (remoteVersion < DATA_VERSION) {
+            // Initial data is newer — push fresh data to Supabase
+            console.log('Data version mismatch, pushing fresh data to Supabase');
+            const initial = getInitialData();
+            const fresh = { ...initial, _dataVersion: DATA_VERSION };
+            setData(fresh);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+            supabase.from('app_state').upsert({ id: 'main', data: fresh, updated_at: new Date().toISOString() })
+              .then(() => setSyncStatus('synced'))
+              .catch(() => setSyncStatus('error'));
+          } else {
+            // Supabase data is up to date — use it
+            const initial = getInitialData();
+            const merged = { ...initial, ...row.data };
+            setData(merged);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+            setSyncStatus('synced');
+          }
         } else {
-          // Supabase is empty — push current localStorage data up
+          // Supabase is empty — push current data up
           const current = getInitialData();
-          supabase.from('app_state').upsert({ id: 'main', data: current, updated_at: new Date().toISOString() })
+          const fresh = { ...current, _dataVersion: DATA_VERSION };
+          setData(fresh);
+          supabase.from('app_state').upsert({ id: 'main', data: fresh, updated_at: new Date().toISOString() })
             .then(() => setSyncStatus('synced'))
             .catch(() => setSyncStatus('error'));
         }

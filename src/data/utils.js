@@ -7,7 +7,10 @@ const TRANSLIT_MAP = {
   'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
   'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
   'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
-  'ы': 'y', 'э': 'e', 'ю': 'yu', 'я': 'ya'
+  'ы': 'y', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+  // Kazakh letters
+  'ә': 'a', 'ғ': 'g', 'қ': 'q', 'ң': 'n', 'ө': 'o', 'ұ': 'u', 'ү': 'u',
+  'і': 'i', 'һ': 'h'
 };
 
 const PASSWORD_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';

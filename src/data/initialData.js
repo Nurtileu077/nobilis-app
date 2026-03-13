@@ -13,7 +13,8 @@ export const getInitialData = () => {
     students: [
     {
       id: "1", contractNo: 15, name: "Жакупбекова Дарина",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "zhakupbekova.dar61", password: "2d937fUSHbm!",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-06-22", contractEndDate: '',
       parentName: "Краузе-Жакупбекова Инна", parentPhone: '',
@@ -38,7 +39,8 @@ export const getInitialData = () => {
     },
     {
       id: "2", contractNo: 11, name: "Иргалиев Аян Талгатович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "irgaliev.aya18", password: "M!PR55ZQUGUn",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-06-10", contractEndDate: '',
       parentName: "Иргалиев Талгат Базаргалиевич", parentPhone: '',
@@ -63,7 +65,8 @@ export const getInitialData = () => {
     },
     {
       id: "3", contractNo: "?", name: "Амангалиева Камила",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "amangalieva.kam84", password: "u@TRMs2JhkpK",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-06-14", contractEndDate: '',
       parentName: "Тулегенова Батима", parentPhone: '',
@@ -88,7 +91,8 @@ export const getInitialData = () => {
     },
     {
       id: "4", contractNo: 12, name: "Әсет Фараби Азаматұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "aset.far82", password: "g95vH@gf3XX3",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-06-11", contractEndDate: '',
       parentName: "Жакупов Азамат Асетович", parentPhone: '',
@@ -113,7 +117,8 @@ export const getInitialData = () => {
     },
     {
       id: "5", contractNo: "?", name: "Нургалиев Аслан",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "nurgaliev.asl80", password: "H9MDX23!nXWj",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-06-20", contractEndDate: '',
       parentName: "Нургалиев Марат Искакович", parentPhone: '',
@@ -138,7 +143,8 @@ export const getInitialData = () => {
     },
     {
       id: "6", contractNo: 20, name: "Куантханов Алихан Серикович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kuanthanov.ali51", password: "Ypd2U%xLWZX4",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-06-22", contractEndDate: '',
       parentName: "Кеулимжаева Сауле Куантхановна", parentPhone: '',
@@ -163,7 +169,8 @@ export const getInitialData = () => {
     },
     {
       id: "7", contractNo: 19, name: "Митанова Айнур",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "mitanova.ayn63", password: "M39XQY45!GFW",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2024-06-23", contractEndDate: '',
       parentName: "Митанова Айнур", parentPhone: '',
@@ -188,7 +195,8 @@ export const getInitialData = () => {
     },
     {
       id: "8", contractNo: 21, name: "Акан Алмат Маратович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "akan.alm70", password: "4Wf9j@DYJVDa",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2024-06-29", contractEndDate: '',
       parentName: "Канафин Марат Аканович", parentPhone: '',
@@ -213,7 +221,8 @@ export const getInitialData = () => {
     },
     {
       id: "9", contractNo: 21, name: "Оразбек Жигер Дидарулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "orazbek.zhi66", password: "7WsFd9$uzYfR",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-06-30", contractEndDate: '',
       parentName: "Оразбек Ляйля Сагиевна", parentPhone: '',
@@ -238,7 +247,8 @@ export const getInitialData = () => {
     },
     {
       id: "10", contractNo: "?", name: "Идрисова Дайана Айбековна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "idrisova.day19", password: "PWt%ND78xQCK",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "купила", contractEndDate: '',
       parentName: "Темиргалиева Аида Маратовна", parentPhone: '',
@@ -263,7 +273,8 @@ export const getInitialData = () => {
     },
     {
       id: "11", contractNo: 22, name: "Тулеметов Эльдар Халмуратович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "tulemetov.eld74", password: "Hn!fLTtAq2TV",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-07-07", contractEndDate: '',
       parentName: "Байжанова Гульмира Фархадовна", parentPhone: '',
@@ -288,7 +299,8 @@ export const getInitialData = () => {
     },
     {
       id: "12", contractNo: 23, name: "Байдурина Меруерт Болатовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "baydurina.mer65", password: "PgzP2EZ0XFj#",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-07-03", contractEndDate: '',
       parentName: "Кожахметова Нургуль Нурлановна", parentPhone: '',
@@ -313,7 +325,8 @@ export const getInitialData = () => {
     },
     {
       id: "13", contractNo: 22, name: "Байлепесова Нурай Көбболсынқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "baylepesova.nur49", password: "cbrYV%Jgh29t",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2024-07-06", contractEndDate: '',
       parentName: "Тажибаева Феруза Мамыровна", parentPhone: '',
@@ -338,7 +351,8 @@ export const getInitialData = () => {
     },
     {
       id: "14", contractNo: 24, name: "Кызылтаева Адия Идеяткызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kyzyltaeva.adi61", password: "rULW9GMdpN!5",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-07-08", contractEndDate: '',
       parentName: "Жусина Т Б", parentPhone: '',
@@ -363,7 +377,8 @@ export const getInitialData = () => {
     },
     {
       id: "15", contractNo: 15, name: "Кенесова Гульсизим Жараскызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kenesova.gul21", password: "ACS8k2@8c34H",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-07-10", contractEndDate: '',
       parentName: "Аубакирова Самал Кабдодловна", parentPhone: '',
@@ -388,7 +403,8 @@ export const getInitialData = () => {
     },
     {
       id: "16", contractNo: 16, name: "Нуркенова Толкын Сырымовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "nurkenova.tol51", password: "4kzZsfWkC@4k",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-07-15", contractEndDate: '',
       parentName: "Нуркенова Галия Жанатовна", parentPhone: '',
@@ -413,7 +429,8 @@ export const getInitialData = () => {
     },
     {
       id: "17", contractNo: 17, name: "Сабыржан Айсұлтан Бауыржанұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "sabyrzhan.ays51", password: "DR2NB!rxn9kd",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-07-18", contractEndDate: '',
       parentName: "Сабыржанов Бауыржан", parentPhone: '',
@@ -438,7 +455,8 @@ export const getInitialData = () => {
     },
     {
       id: "18", contractNo: 19, name: "Маулешов Дияр Мадиярович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "mauleshov.diy28", password: "qrxJMWj6$XqJ",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-07-20", contractEndDate: '',
       parentName: "Маулешова Жанна Нуркебаевна", parentPhone: '',
@@ -463,7 +481,8 @@ export const getInitialData = () => {
     },
     {
       id: "19", contractNo: 34, name: "Скосарева Лиана Дмитриевна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "skosareva.lia99", password: "AMs34cKZj$gj",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-05", contractEndDate: '',
       parentName: "Агеева Дарья Сергеевна", parentPhone: '',
@@ -488,7 +507,8 @@ export const getInitialData = () => {
     },
     {
       id: "20", contractNo: 23, name: "Сәлімқызы Сая",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "salimqyzy.say11", password: "fd$3kMPZMaMc",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-07-29", contractEndDate: '',
       parentName: "Бектай Эльнур Бектайқызы", parentPhone: '',
@@ -513,7 +533,8 @@ export const getInitialData = () => {
     },
     {
       id: "21", contractNo: 24, name: "Ертай Мансур Жанатович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "ertay.man19", password: "CtS97!g6y2bx",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-08-04", contractEndDate: '',
       parentName: "Кульжанова Лейла Болатовна", parentPhone: '',
@@ -538,7 +559,8 @@ export const getInitialData = () => {
     },
     {
       id: "22", contractNo: 25, name: "Капаров Биарыс Худайбергенұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kaparov.bia47", password: "8SD9W072X!Qm",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-08-04", contractEndDate: '',
       parentName: "Капаров Худайберген", parentPhone: '',
@@ -563,7 +585,8 @@ export const getInitialData = () => {
     },
     {
       id: "23", contractNo: 25, name: "Аншыбай Бексултан Болатұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "anshybay.bek88", password: "ztqMy6u!JXg6",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-07-16", contractEndDate: '',
       parentName: "Телешова Айгуль Нигметуллаеввна", parentPhone: '',
@@ -588,7 +611,8 @@ export const getInitialData = () => {
     },
     {
       id: "24", contractNo: 13, name: "Иралимова Томирис Батырханқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "iralimova.tom58", password: "p7Fr$58qhseX",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-07-10", contractEndDate: '',
       parentName: "Иралимова Гулсум Сейлханова", parentPhone: '',
@@ -613,7 +637,8 @@ export const getInitialData = () => {
     },
     {
       id: "25", contractNo: 10, name: "Жакин Альмухаммед Олжасулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "zhakin.alm22", password: "74j5RkeB@23d",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-08-13", contractEndDate: '',
       parentName: "Исмуканова З М", parentPhone: '',
@@ -638,7 +663,8 @@ export const getInitialData = () => {
     },
     {
       id: "26", contractNo: 27, name: "Козайдар Мадина Маратқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kozaydar.mad96", password: "qh!7PQ9Wd62a",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-08-19", contractEndDate: '',
       parentName: "Ержанова Айжан Нурлановна", parentPhone: '',
@@ -663,7 +689,8 @@ export const getInitialData = () => {
     },
     {
       id: "27", contractNo: 28, name: "Әміржанұлы Сұлтан",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "amirzhanuly.sul28", password: "ULPqt!BLF6kS",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-08-21", contractEndDate: '',
       parentName: "Әміржанұлы Сұлтан", parentPhone: '',
@@ -688,7 +715,8 @@ export const getInitialData = () => {
     },
     {
       id: "28", contractNo: 29, name: "Микитчик Дмитрий Александрович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "mikitchik.dmi76", password: "q9wBF%gmd3eE",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-08-21", contractEndDate: '',
       parentName: "Федорян Юлия", parentPhone: '',
@@ -713,7 +741,8 @@ export const getInitialData = () => {
     },
     {
       id: "29", contractNo: 30, name: "Дауыл Думан",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "dauyl.dum12", password: "r3KpmRKd5a#N",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2024-08-27", contractEndDate: '',
       parentName: "Нурсеитова Галия Амирханова", parentPhone: '',
@@ -738,7 +767,8 @@ export const getInitialData = () => {
     },
     {
       id: "30", contractNo: 33, name: "Бауыржан Асель Канатқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "bauyrzhan.ase23", password: "ZsS2$y7pDQ55",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-05", contractEndDate: '',
       parentName: "Нухаев Канат Бауыржанович", parentPhone: '',
@@ -763,7 +793,8 @@ export const getInitialData = () => {
     },
     {
       id: "31", contractNo: 55, name: "Скосарев Даниил Дмитриевич",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "skosarev.dan73", password: "956gQttpy@TV",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-08", contractEndDate: '',
       parentName: "Агеева Дарья Сергеевна", parentPhone: '',
@@ -788,7 +819,8 @@ export const getInitialData = () => {
     },
     {
       id: "32", contractNo: 31, name: "Ахметжан Алтынай",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "ahmetzhan.alt40", password: "Ne%PeT99BmMb",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2024-09-03", contractEndDate: '',
       parentName: "Ахметжанова Алия", parentPhone: '',
@@ -813,7 +845,8 @@ export const getInitialData = () => {
     },
     {
       id: "33", contractNo: 32, name: "Нугуманова Асем Кайраткызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "nugumanova.ase65", password: "NWnmS7kQgp$g",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-03", contractEndDate: '',
       parentName: "Нугуманова Асем Кайраткызы", parentPhone: '',
@@ -838,7 +871,8 @@ export const getInitialData = () => {
     },
     {
       id: "34", contractNo: "?", name: "Барлыбаева Дария Саяновна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "barlybaeva.dar37", password: "PqLVcT$5Lm50",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-05", contractEndDate: '',
       parentName: "Барлыбаев Саян Серикович", parentPhone: '',
@@ -863,7 +897,8 @@ export const getInitialData = () => {
     },
     {
       id: "35", contractNo: 33, name: "Кенжебай Айша Олжабакызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kenzhebay.ays45", password: "e8S2zsW5k@4e",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-06", contractEndDate: '',
       parentName: "Сабитова З.Р", parentPhone: '',
@@ -888,7 +923,8 @@ export const getInitialData = () => {
     },
     {
       id: "36", contractNo: 35, name: "Сатыбалды Алинур Кайратулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "satybaldy.ali97", password: "cvN!4ucMKJgw",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-10", contractEndDate: '',
       parentName: "Жумагатов Кайрат Сатыбалды", parentPhone: '',
@@ -913,7 +949,8 @@ export const getInitialData = () => {
     },
     {
       id: "37", contractNo: 36, name: "Тургумбаев Санжар Нурланович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "turgumbaev.san80", password: "vNKEBj9g2!6B",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-10", contractEndDate: '',
       parentName: "Исенова Шайзат Темирхановна", parentPhone: '',
@@ -938,7 +975,8 @@ export const getInitialData = () => {
     },
     {
       id: "38", contractNo: 68, name: "Менкин Мансур",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "menkin.man55", password: "5YXq%TgvYJQM",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-16", contractEndDate: '',
       parentName: "Ануарбеккызы Гульбадан", parentPhone: '',
@@ -963,7 +1001,8 @@ export const getInitialData = () => {
     },
     {
       id: "39", contractNo: 36, name: "Сманжан Рахат Бакытканулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "smanzhan.rah48", password: "BGX#JV5FgZQ8",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-14", contractEndDate: '',
       parentName: "Кайсанова Мереке Асылбековна", parentPhone: '',
@@ -988,7 +1027,8 @@ export const getInitialData = () => {
     },
     {
       id: "40", contractNo: 38, name: "Назарова Малика Катталбековна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "nazarova.mal63", password: "aq46sLwRD7H#",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-17", contractEndDate: '',
       parentName: "Назаров Катталбек Оразбекович", parentPhone: '',
@@ -1013,7 +1053,8 @@ export const getInitialData = () => {
     },
     {
       id: "41", contractNo: 39, name: "Нурпеисов Эмир Рахимжанов",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "nurpeisov.emi41", password: "9g8f88vh$xq9",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-17", contractEndDate: '',
       parentName: "Сокжанова Марфуга Кошкинбаевна", parentPhone: '',
@@ -1038,7 +1079,8 @@ export const getInitialData = () => {
     },
     {
       id: "42", contractNo: 41, name: "Ернурулы Нуразим",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "ernuruly.nur44", password: "7wB$aa2MgFq8",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-21", contractEndDate: '',
       parentName: "Искендирова Т М", parentPhone: '',
@@ -1063,7 +1105,8 @@ export const getInitialData = () => {
     },
     {
       id: "43", contractNo: "?", name: "Мыңжасарова Оразгул Ахметқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "mynzhasarova.ora29", password: "M$WqeqENB97b",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-21", contractEndDate: '',
       parentName: "Джамалова Захида", parentPhone: '',
@@ -1088,7 +1131,8 @@ export const getInitialData = () => {
     },
     {
       id: "44", contractNo: 40, name: "Тугунбаева Малика Бейбутовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "tugunbaeva.mal34", password: "Zbyg#vWvD1Ee",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-21", contractEndDate: '',
       parentName: "Тугунбаева Жибек", parentPhone: '',
@@ -1113,7 +1157,8 @@ export const getInitialData = () => {
     },
     {
       id: "45", contractNo: 41, name: "Ерхатқызы Айбибі",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "erhatqyzy.ayb70", password: "!bYjJr4qGXyr",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2024-09-23", contractEndDate: '',
       parentName: "Дюсенова Мунира", parentPhone: '',
@@ -1138,7 +1183,8 @@ export const getInitialData = () => {
     },
     {
       id: "46", contractNo: 44, name: "Колташев Дмитрий Максимович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "koltashev.dmi74", password: "AVG12y3U$LnG",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-23", contractEndDate: '',
       parentName: "Колташева Елена Владиславовна", parentPhone: '',
@@ -1163,7 +1209,8 @@ export const getInitialData = () => {
     },
     {
       id: "47", contractNo: 46, name: "Унайбаева Жанна Сериковна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "unaybaeva.zha77", password: "4hc@GLhgBD6f",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-23", contractEndDate: '',
       parentName: "Унайбаев Серик Уралович", parentPhone: '',
@@ -1188,7 +1235,8 @@ export const getInitialData = () => {
     },
     {
       id: "48", contractNo: "?", name: "Нұрбек Жансая",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "nurbek.zha83", password: "baWgQggf$3x7",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2024-09-26", contractEndDate: '',
       parentName: "Магира", parentPhone: '',
@@ -1213,7 +1261,8 @@ export const getInitialData = () => {
     },
     {
       id: "49", contractNo: 48, name: "Оспанова Жанна Тулебаевна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "ospanova.zha79", password: "#CF9zHzGmjuK",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-28", contractEndDate: '',
       parentName: "Сатмуханбетова", parentPhone: '',
@@ -1238,7 +1287,8 @@ export const getInitialData = () => {
     },
     {
       id: "50", contractNo: 49, name: "Максутов Жандос Амирбекович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "maksutov.zha29", password: "W3wa@NmkwJxK",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-09-30", contractEndDate: '',
       parentName: "Кульжанова Сауле Максутовна", parentPhone: '',
@@ -1263,7 +1313,8 @@ export const getInitialData = () => {
     },
     {
       id: "51", contractNo: 50, name: "Вэнь Жушуан",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "ven.zhu34", password: "tY3cg5Sx6$DR",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2024-09-30", contractEndDate: '',
       parentName: "Манарова Зенебе", parentPhone: '',
@@ -1288,7 +1339,8 @@ export const getInitialData = () => {
     },
     {
       id: "52", contractNo: 51, name: "Давренбекова Жазира Медеткызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "davrenbekova.zha21", password: "DeUwNK3$3aw3",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-03", contractEndDate: '',
       parentName: "Давренбекова Айсулу Муратовна", parentPhone: '',
@@ -1313,7 +1365,8 @@ export const getInitialData = () => {
     },
     {
       id: "53", contractNo: 52, name: "Әміртай Әлимарғұлан Азаматханұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "amirtay.ali50", password: "72Nrmd#qbbkG",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2024-10-07", contractEndDate: '',
       parentName: "Әміртайй Азаматхан Сайлаулы", parentPhone: '',
@@ -1338,7 +1391,8 @@ export const getInitialData = () => {
     },
     {
       id: "54", contractNo: 53, name: "Байділда Діңмұхаммед Науанұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "baydilda.din38", password: "dP5GGj@U5CHy",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-04", contractEndDate: '',
       parentName: "Шалдыбаева Диана Ахметовна", parentPhone: '',
@@ -1363,7 +1417,8 @@ export const getInitialData = () => {
     },
     {
       id: "55", contractNo: 54, name: "Тугаева Алия Абдуалиевна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "tugaeva.ali63", password: "j214wnLF!UGy",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-05", contractEndDate: '',
       parentName: "Тугаева Айгуль Сапашевна", parentPhone: '',
@@ -1388,7 +1443,8 @@ export const getInitialData = () => {
     },
     {
       id: "56", contractNo: 55, name: "Булатов Алихан Даулетович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "bulatov.ali75", password: "fTWReVxHt$7H",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-10", contractEndDate: '',
       parentName: "Тапалова Каракоз Тузеловна", parentPhone: '',
@@ -1413,7 +1469,8 @@ export const getInitialData = () => {
     },
     {
       id: "57", contractNo: 55, name: "Борамбаева Адель Руслановна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "borambaeva.ade49", password: "Q8LdUd7Z3R!F",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-09", contractEndDate: '',
       parentName: "Тулейбаева Асель", parentPhone: '',
@@ -1438,7 +1495,8 @@ export const getInitialData = () => {
     },
     {
       id: "58", contractNo: 56, name: "Сакып Батухан",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "sakyp.bat72", password: "a503vXA#9NJu",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-09", contractEndDate: '',
       parentName: "Мадигалиева Гульвира", parentPhone: '',
@@ -1463,7 +1521,8 @@ export const getInitialData = () => {
     },
     {
       id: "59", contractNo: 58, name: "Куаныш Даниал",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kuanysh.dan56", password: "Bwqfw6USP!Dk",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-19", contractEndDate: '',
       parentName: "Алиханова Алтын Куанышовна", parentPhone: '',
@@ -1488,7 +1547,8 @@ export const getInitialData = () => {
     },
     {
       id: "60", contractNo: 60, name: "Назенов Алишер Рашитулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "nazenov.ali57", password: "$k6Sk0LNSn5E",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-22", contractEndDate: '',
       parentName: "Базгенова Майкен", parentPhone: '',
@@ -1513,7 +1573,8 @@ export const getInitialData = () => {
     },
     {
       id: "61", contractNo: 62, name: "Дәулетқан Ажар Әділетқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "dauletqan.azh92", password: "sJ6Kf1#xWTLh",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-23", contractEndDate: '',
       parentName: "Наурызбаева Айнел Елеуовна", parentPhone: '',
@@ -1538,7 +1599,8 @@ export const getInitialData = () => {
     },
     {
       id: "62", contractNo: 63, name: "Ескендиров Арсен Маратулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "eskendirov.ars81", password: "5YsJn@zXjhEs",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-23", contractEndDate: '',
       parentName: "Ескиндиров Марат Жумабаевич", parentPhone: '',
@@ -1563,7 +1625,8 @@ export const getInitialData = () => {
     },
     {
       id: "63", contractNo: 64, name: "Карабай Алдияр",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "karabay.ald81", password: "Fv7ws5w3n9P$",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-26", contractEndDate: '',
       parentName: "Карабаева Жанат Ержигитовна", parentPhone: '',
@@ -1588,7 +1651,8 @@ export const getInitialData = () => {
     },
     {
       id: "64", contractNo: 64, name: "Кудреватых Данияр Евгеньевич",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kudrevatyh.dan66", password: "rj8DjZG%B8Ls",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-25", contractEndDate: '',
       parentName: "Ауталипова Анара Магжановна", parentPhone: '',
@@ -1613,7 +1677,8 @@ export const getInitialData = () => {
     },
     {
       id: "65", contractNo: 66, name: "Салжанов Тамерлан Арысланович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "salzhanov.tam72", password: "bA3KkbmA@rZs",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-28", contractEndDate: '',
       parentName: "Салжанова Акгуль Тауыпбековна", parentPhone: '',
@@ -1638,7 +1703,8 @@ export const getInitialData = () => {
     },
     {
       id: "66", contractNo: 61, name: "Каиров Милас",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kairov.mil19", password: "QFgZFJVX@31n",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-23", contractEndDate: '',
       parentName: "Салжанов Асылбек Каирович", parentPhone: '',
@@ -1663,7 +1729,8 @@ export const getInitialData = () => {
     },
     {
       id: "67", contractNo: 69, name: "Бакдаулет Даурен Нурланович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "bakdaulet.dau23", password: "HK5@wZ99dQ35",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-10-30", contractEndDate: '',
       parentName: "Джумадылов Нурлан Бакдавлетович", parentPhone: '',
@@ -1688,7 +1755,8 @@ export const getInitialData = () => {
     },
     {
       id: "68", contractNo: 70, name: "Рсбай Чингиз Маликулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "rsbay.chi31", password: "yPq@xgG9ZE48",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-11-08", contractEndDate: '',
       parentName: "Оспанова Айгерим Нуралиевна", parentPhone: '',
@@ -1713,7 +1781,8 @@ export const getInitialData = () => {
     },
     {
       id: "69", contractNo: 143, name: "Әлихан Әшим",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "alihan.ash35", password: "zBEe19Zhj%uH",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2024-11-11", contractEndDate: '',
       parentName: "Ашимова Зухра Далеловна", parentPhone: '',
@@ -1738,7 +1807,8 @@ export const getInitialData = () => {
     },
     {
       id: "70", contractNo: "?", name: "Канапина Милана",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kanapina.mil91", password: "UKcDzEF6x@cU",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-11-20", contractEndDate: '',
       parentName: "Канапина Алияна Кошибаевна", parentPhone: '',
@@ -1763,7 +1833,8 @@ export const getInitialData = () => {
     },
     {
       id: "71", contractNo: 72, name: "Гайсенова Ясмина Маратовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "gaysenova.yas85", password: "v4PhB#39SCwA",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-11-23", contractEndDate: '',
       parentName: "Махамбетова Динара Омиртайкызы", parentPhone: '',
@@ -1788,7 +1859,8 @@ export const getInitialData = () => {
     },
     {
       id: "72", contractNo: 73, name: "Кадырали Мухамеджан Бауыржанулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kadyrali.muh58", password: "dd8qHRHw6%74",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-11-24", contractEndDate: '',
       parentName: "Бектурова Айжан Едильбаевна", parentPhone: '',
@@ -1813,7 +1885,8 @@ export const getInitialData = () => {
     },
     {
       id: "73", contractNo: "?", name: "Аскар",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "askar83", password: "mWfpEqV!NX77",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-11-25", contractEndDate: '',
       parentName: "Жакупова Гульбакыт Багашаровна", parentPhone: '',
@@ -1838,7 +1911,8 @@ export const getInitialData = () => {
     },
     {
       id: "74", contractNo: "?", name: "Анель Нысанбаева",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "anel.nys77", password: "xtqaJM8bBcP%",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2024-11-28", contractEndDate: '',
       parentName: "Анель Нысанбаева", parentPhone: '',
@@ -1863,7 +1937,8 @@ export const getInitialData = () => {
     },
     {
       id: "75", contractNo: 76, name: "Адильбек Мухамеджан",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "adilbek.muh22", password: "hmA0s5EbSZA!",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-11-29", contractEndDate: '',
       parentName: "Утегенова Алия Мухамеджанова", parentPhone: '',
@@ -1888,7 +1963,8 @@ export const getInitialData = () => {
     },
     {
       id: "76", contractNo: 78, name: "Мерсагатова Аруниса Газизхановна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "mersagatova.aru58", password: "bJ2VkWhgHXK#",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-11-30", contractEndDate: '',
       parentName: "Мерсагатова Жанар Кайратовна", parentPhone: '',
@@ -1913,7 +1989,8 @@ export const getInitialData = () => {
     },
     {
       id: "77", contractNo: "?", name: "Берекпол Әділмансур",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "berekpol.adi69", password: "Qreb!LEC5M0N",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-11-30", contractEndDate: '',
       parentName: "Абишева Салтанат Калиоловна", parentPhone: '',
@@ -1938,7 +2015,8 @@ export const getInitialData = () => {
     },
     {
       id: "78", contractNo: 79, name: "Наманбек Адия рустемкызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "namanbek.adi91", password: "QpJ@SU8ya7KK",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-11-30", contractEndDate: '',
       parentName: "Тажиева Гульзира Советбековна", parentPhone: '',
@@ -1963,7 +2041,8 @@ export const getInitialData = () => {
     },
     {
       id: "79", contractNo: 80, name: "Жакишев Мансур Талгатулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "zhakishev.man93", password: "X6BqdQA#yAfJ",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-12-03", contractEndDate: '',
       parentName: "Жакишева Жулдызай Кадыровна", parentPhone: '',
@@ -1988,7 +2067,8 @@ export const getInitialData = () => {
     },
     {
       id: "80", contractNo: "?", name: "Мусеркегенов Динмухамед Нагметович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "muserkegenov.din30", password: "e6tBj%V996x5",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-12-17", contractEndDate: '',
       parentName: "Илюбаева Айгуль Куанышевна", parentPhone: '',
@@ -2013,7 +2093,8 @@ export const getInitialData = () => {
     },
     {
       id: "81", contractNo: "?", name: "Кожмухаметова Дильназ Динмухаметқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kozhmuhametova.dil93", password: "UJ3nDy@sTTDF",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-12-20", contractEndDate: '',
       parentName: "Жармухаметова Мухаббат Смагуловна", parentPhone: '',
@@ -2038,7 +2119,8 @@ export const getInitialData = () => {
     },
     {
       id: "82", contractNo: "?", name: "Туркия Шыңғыс Жеңісұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "turkiya.shy67", password: "y4gHYPm8Fw9$",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2024-12-21", contractEndDate: '',
       parentName: "Шакенова Жанна Мырхахановна", parentPhone: '',
@@ -2063,7 +2145,8 @@ export const getInitialData = () => {
     },
     {
       id: "83", contractNo: "?", name: "Каирбаев Алишер Нуржанович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kairbaev.ali72", password: "Z53@ys3MtpLU",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-01-20", contractEndDate: '',
       parentName: "Омарова Мадина Нуржановна", parentPhone: '',
@@ -2088,7 +2171,8 @@ export const getInitialData = () => {
     },
     {
       id: "84", contractNo: 87, name: "Муратов Амир Ержанулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "muratov.ami88", password: "EcNED#5FbuqL",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-02-05", contractEndDate: '',
       parentName: "Акпарова Зауре Иливхановна", parentPhone: '',
@@ -2113,7 +2197,8 @@ export const getInitialData = () => {
     },
     {
       id: "85", contractNo: 88, name: "Максут Динмухаммед Максатович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "maksut.din12", password: "ZFWnehAf#Bw7",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-02-05", contractEndDate: '',
       parentName: "Ибраев Максат Максутович", parentPhone: '',
@@ -2138,7 +2223,8 @@ export const getInitialData = () => {
     },
     {
       id: "86", contractNo: 89, name: "Абай Елжан Ренатулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "abay.elz78", password: "3h7%75U7jH3k",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-02-09", contractEndDate: '',
       parentName: "Кажгумарова Айгуль Сулейменовна", parentPhone: '',
@@ -2163,7 +2249,8 @@ export const getInitialData = () => {
     },
     {
       id: "87", contractNo: "", name: "Сегизбай Айтуар Саматович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "segizbay.ayt86", password: "YZ#twp2NZHAu",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-02-10", contractEndDate: '',
       parentName: "Есенжолова Асель Канышевна", parentPhone: '',
@@ -2188,7 +2275,8 @@ export const getInitialData = () => {
     },
     {
       id: "88", contractNo: 83, name: "Асылхан Зангар",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "asylhan.zan10", password: "DGv5ZHaWk@K0",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-01-20", contractEndDate: '',
       parentName: "Жаксылык Гулсара Алтынбеккызы", parentPhone: '',
@@ -2213,7 +2301,8 @@ export const getInitialData = () => {
     },
     {
       id: "89", contractNo: 86, name: "Каратаева Айдана Амангельдиевна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "karataeva.ayd62", password: "#gEN1QkYyfCE",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-01-21", contractEndDate: '',
       parentName: "Жапарова Акбота Ермековна", parentPhone: '',
@@ -2238,7 +2327,8 @@ export const getInitialData = () => {
     },
     {
       id: "90", contractNo: 92, name: "Дуйсен Мейрам Ерикулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "duysen.mey58", password: "Nkz@dY9VgNUJ",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-02-15", contractEndDate: '',
       parentName: "Смаилов Ерик Дюсенович", parentPhone: '',
@@ -2263,7 +2353,8 @@ export const getInitialData = () => {
     },
     {
       id: "91", contractNo: 91, name: "Асланова Амина Асланова",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "aslanova.ami91", password: "DCG3GZaYA5#f",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2025-02-15", contractEndDate: '',
       parentName: "Мукушнва Айгуль Жайсанбаевна", parentPhone: '',
@@ -2288,7 +2379,8 @@ export const getInitialData = () => {
     },
     {
       id: "92", contractNo: 100, name: "Шабанова Инжу Ренатовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "shabanova.inz64", password: "20PM@cNMCfqS",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-03-31", contractEndDate: '',
       parentName: "Турсынбаева Балжан Абдихалиевна", parentPhone: '',
@@ -2313,7 +2405,8 @@ export const getInitialData = () => {
     },
     {
       id: "93", contractNo: 94, name: "Зайров Изтилеу Тлепбергенович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "zayrov.izt88", password: "q$7VNyVcS8Am",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-02-25", contractEndDate: '',
       parentName: "Тлегенова Рахила Туребаева", parentPhone: '',
@@ -2338,7 +2431,8 @@ export const getInitialData = () => {
     },
     {
       id: "94", contractNo: 95, name: "Мажит Назерке Дарханкызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "mazhit.naz55", password: "x8b7#GaWNcq8",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-03-10", contractEndDate: '',
       parentName: "Ансатова Куралай Сабиевна", parentPhone: '',
@@ -2363,7 +2457,8 @@ export const getInitialData = () => {
     },
     {
       id: "95", contractNo: 96, name: "Оразалы Аружан 10 класс 2026",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "orazaly.aru99", password: "MjJrc2tzNYz#",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-02-28", contractEndDate: '',
       parentName: "Халмуратов Бегалы Оразалиев", parentPhone: '',
@@ -2388,7 +2483,8 @@ export const getInitialData = () => {
     },
     {
       id: "96", contractNo: 96, name: "Калабай Нурбек Аманжолулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kalabay.nur17", password: "CCjq86qcV2D%",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-03-12", contractEndDate: '',
       parentName: "Ержекенова Самал Нурлановна", parentPhone: '',
@@ -2413,7 +2509,8 @@ export const getInitialData = () => {
     },
     {
       id: "97", contractNo: 96, name: "Оразбаева Аида",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "orazbaeva.aid38", password: "5TDZXn%p3YJ5",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-03-15", contractEndDate: '',
       parentName: "Кондыбаева Асель Тасымовна", parentPhone: '',
@@ -2438,7 +2535,8 @@ export const getInitialData = () => {
     },
     {
       id: "98", contractNo: 98, name: "Зиенгалиев Санжар",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "ziengaliev.san88", password: "E%4BM9xXe4PV",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-03-27", contractEndDate: '',
       parentName: "Зиенгалиева Самал Туралиевна", parentPhone: '',
@@ -2463,7 +2561,8 @@ export const getInitialData = () => {
     },
     {
       id: "99", contractNo: 101, name: "Мустапина Айгерим Ринаткызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "mustapina.ayg75", password: "3$LVqb5MMy5q",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-03-31", contractEndDate: '',
       parentName: "Мустапин Ринат Анатольевич", parentPhone: '',
@@ -2488,7 +2587,8 @@ export const getInitialData = () => {
     },
     {
       id: "100", contractNo: 102, name: "Амантай Әмина",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "amantay.ami65", password: "NEz30d4%Zrb2",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-04-03", contractEndDate: '',
       parentName: "Турмаханбетова Назиля Мадибековна", parentPhone: '',
@@ -2513,7 +2613,8 @@ export const getInitialData = () => {
     },
     {
       id: "101", contractNo: 104, name: "Алимбекова Милат Ерлановна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "alimbekova.mil85", password: "$TdCGh7qJMBy",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-04-05", contractEndDate: '',
       parentName: "Керимбекова Алия Бекболатовна", parentPhone: '',
@@ -2538,7 +2639,8 @@ export const getInitialData = () => {
     },
     {
       id: "102", contractNo: 103, name: "Бактыбай Жансая Орлханкызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "baktybay.zha18", password: "Fa2RqUJxY@jK",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-04-04", contractEndDate: '',
       parentName: "Сакишева Эльвира Жамаловна", parentPhone: '',
@@ -2563,7 +2665,8 @@ export const getInitialData = () => {
     },
     {
       id: "103", contractNo: "", name: "Оракеев Артур",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "orakeev.art34", password: "vv73LB3d%Nfc",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-03-10", contractEndDate: '',
       parentName: "Салтанат", parentPhone: '',
@@ -2588,7 +2691,8 @@ export const getInitialData = () => {
     },
     {
       id: "104", contractNo: 95, name: "Торебек Махамбет",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "torebek.mah20", password: "uaZSj7uhg2q@",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2025-03-18", contractEndDate: '',
       parentName: "Нуркен", parentPhone: '',
@@ -2613,7 +2717,8 @@ export const getInitialData = () => {
     },
     {
       id: "105", contractNo: "", name: "Ильяс Серикбаев",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "ilyas.ser11", password: "FJw%4W9BMy2T",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "", contractEndDate: '',
       parentName: "", parentPhone: '',
@@ -2638,7 +2743,8 @@ export const getInitialData = () => {
     },
     {
       id: "106", contractNo: "", name: "Госман Али",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "gosman.ali10", password: "2@7Q7eSBE26z",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "", contractEndDate: '',
       parentName: "", parentPhone: '',
@@ -2663,7 +2769,8 @@ export const getInitialData = () => {
     },
     {
       id: "107", contractNo: 11, name: "Бекешов Ыбырай Асыланович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "bekeshov.yby97", password: "jmvXvf9#21L5",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-01-20", contractEndDate: '',
       parentName: "Тайрова Жаухар Берхайровна", parentPhone: '',
@@ -2688,7 +2795,8 @@ export const getInitialData = () => {
     },
     {
       id: "108", contractNo: "", name: "Адильхан Кайрат",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "adilhan.kay37", password: "fFs9Uy55%S2h",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "", contractEndDate: '',
       parentName: "", parentPhone: '',
@@ -2713,7 +2821,8 @@ export const getInitialData = () => {
     },
     {
       id: "109", contractNo: 105, name: "Дарханкызы Енлик",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "darhankyzy.enl71", password: "F22ujw$aqBMa",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-05-27", contractEndDate: '',
       parentName: "Нурекенова Ляйля Турсынкановна", parentPhone: '',
@@ -2738,7 +2847,8 @@ export const getInitialData = () => {
     },
     {
       id: "110", contractNo: 106, name: "Апишова Гульвира Байсалбековна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "apishova.gul40", password: "3erbDmQP#E1S",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-05-31", contractEndDate: '',
       parentName: "Апишов Байсалбек", parentPhone: '',
@@ -2763,7 +2873,8 @@ export const getInitialData = () => {
     },
     {
       id: "111", contractNo: 107, name: "Ерсаинова Мира Кадыржановна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "ersainova.mir84", password: "Jz8MQK%CAnHk",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2025-05-31", contractEndDate: '',
       parentName: "Сарсенова Самал Есенамановна", parentPhone: '',
@@ -2788,7 +2899,8 @@ export const getInitialData = () => {
     },
     {
       id: "112", contractNo: 108, name: "Далабаева Ясмина Ринатовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "dalabaeva.yas18", password: "@WN3QeVqBHeW",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-06-02", contractEndDate: '',
       parentName: "Далабаева Алия Урумбаевна", parentPhone: '',
@@ -2813,7 +2925,8 @@ export const getInitialData = () => {
     },
     {
       id: "113", contractNo: 108, name: "Серікбай Ұлпан",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "serikbay.ulp72", password: "T$7r4z85Q2zg",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-07-01", contractEndDate: '',
       parentName: "Әбілжан Серікбай", parentPhone: '',
@@ -2838,7 +2951,8 @@ export const getInitialData = () => {
     },
     {
       id: "114", contractNo: 109, name: "Рахимов Джалиль Тимурович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "rahimov.dzh88", password: "5Rg1FgM%YZbT",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-07-15", contractEndDate: '',
       parentName: "Бисимбаева Алия Кабиевна", parentPhone: '',
@@ -2863,7 +2977,8 @@ export const getInitialData = () => {
     },
     {
       id: "115", contractNo: 110, name: "Этмахамбетова Адия Тимуровна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "etmahambetova.adi69", password: "4jS%T5QNFUvf",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-07-23", contractEndDate: '',
       parentName: "Этмахамбетова Алуаш Әділгерейқызы", parentPhone: '',
@@ -2888,7 +3003,8 @@ export const getInitialData = () => {
     },
     {
       id: "116", contractNo: 111, name: "Қырғи Аиша Есқалиқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "qyrgi.ais12", password: "@56teU8vUJCe",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-07-24", contractEndDate: '',
       parentName: "Жолмуханова Салтанат Наримановна", parentPhone: '',
@@ -2913,7 +3029,8 @@ export const getInitialData = () => {
     },
     {
       id: "117", contractNo: 112, name: "Закіржан Нұрия Елдосқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "zakirzhan.nur79", password: "yUetV8g32wr!",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-08-01", contractEndDate: '',
       parentName: "Кенжебаев Елдос Закиржанович", parentPhone: '',
@@ -2938,7 +3055,8 @@ export const getInitialData = () => {
     },
     {
       id: "118", contractNo: 113, name: "Колупаева Агафья Борисовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kolupaeva.aga63", password: "4NKM@EjLCcJS",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-08-01", contractEndDate: '',
       parentName: "Колупаева Ольга Алексеевна", parentPhone: '',
@@ -2963,7 +3081,8 @@ export const getInitialData = () => {
     },
     {
       id: "119", contractNo: 114, name: "Әлім Лаура Жеңісқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "alim.lau59", password: "#mdSW9Mz8VSX",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-08-08", contractEndDate: '',
       parentName: "Әлім Меруерт Жәметқызы", parentPhone: '',
@@ -2988,7 +3107,8 @@ export const getInitialData = () => {
     },
     {
       id: "120", contractNo: 115, name: "Мақсұт Әлихан Мәуленұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "maqsut.ali63", password: "D3zpX8J4@TzQ",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2925-08-12", contractEndDate: '',
       parentName: "Шайгозова Нургуль Шакармановна", parentPhone: '',
@@ -3013,7 +3133,8 @@ export const getInitialData = () => {
     },
     {
       id: "121", contractNo: 116, name: "Нурдинова Айдана Нургазыевна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "nurdinova.ayd96", password: "%gp8gcfYuk2N",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-08-16", contractEndDate: '',
       parentName: "Закирова Гулшаир Мамаевна", parentPhone: '',
@@ -3038,7 +3159,8 @@ export const getInitialData = () => {
     },
     {
       id: "122", contractNo: 117, name: "Куванов",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kuvanov79", password: "sCGLac!h0ZcG",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-08-17", contractEndDate: '',
       parentName: "Куванова Асем Дженисовна", parentPhone: '',
@@ -3063,7 +3185,8 @@ export const getInitialData = () => {
     },
     {
       id: "123", contractNo: 118, name: "Омирбекова Акерке Мараткызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "omirbekova.ake44", password: "SG2%ybHPr4Ex",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-08-20", contractEndDate: '',
       parentName: "Музапаров Марат Омирбекович", parentPhone: '',
@@ -3088,7 +3211,8 @@ export const getInitialData = () => {
     },
     {
       id: "124", contractNo: 119, name: "Есберген Аселхан Жексенғалиқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "esbergen.ase65", password: "Q%W3nY6dtm9D",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2025-08-27", contractEndDate: '',
       parentName: "Атамбозова Айгуль Карасаевна", parentPhone: '',
@@ -3113,7 +3237,8 @@ export const getInitialData = () => {
     },
     {
       id: "125", contractNo: 121, name: "Заремба Ева Денисовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "zaremba.eva97", password: "yUfQ%J3zjdXx",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-08-31", contractEndDate: '',
       parentName: "Рахимжанова Гульден Серикбаевна", parentPhone: '',
@@ -3138,7 +3263,8 @@ export const getInitialData = () => {
     },
     {
       id: "126", contractNo: 120, name: "Кажмуратова Назерке Мадиевна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kazhmuratova.naz45", password: "8p7N7F!dgGRC",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-08-28", contractEndDate: '',
       parentName: "Кажмуратова Айнур Халилулаевна", parentPhone: '',
@@ -3163,7 +3289,8 @@ export const getInitialData = () => {
     },
     {
       id: "127", contractNo: 122, name: "Кулибаев Бекнур Бауржанович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kulibaev.bek28", password: "JXE9F46cJqz@",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-05", contractEndDate: '',
       parentName: "Култаева Дильбар Токтахунова", parentPhone: '',
@@ -3188,7 +3315,8 @@ export const getInitialData = () => {
     },
     {
       id: "128", contractNo: 123, name: "Камали Алуа Мерейкызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kamali.alu36", password: "AwRH!y5Mj31S",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-05", contractEndDate: '',
       parentName: "Камалиева Бакыткуль Иманалиевна", parentPhone: '',
@@ -3213,7 +3341,8 @@ export const getInitialData = () => {
     },
     {
       id: "129", contractNo: 124, name: "Муслимова Адия Адилевна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "muslimova.adi53", password: "PGV4kg9Mj!ym",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-06", contractEndDate: '',
       parentName: "Рахимова Галия Бейсеновна", parentPhone: '',
@@ -3238,7 +3367,8 @@ export const getInitialData = () => {
     },
     {
       id: "130", contractNo: 125, name: "Абдукаримов Мадияр Санжарович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "abdukarimov.mad36", password: "3Uk4RLfxgDz!",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-12", contractEndDate: '',
       parentName: "Мамбеталиева Рано Сабитовна", parentPhone: '',
@@ -3263,7 +3393,8 @@ export const getInitialData = () => {
     },
     {
       id: "131", contractNo: 125, name: "Sasha De Bode",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "sasha.de65", password: "sTs2kRNMfX#N",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-12", contractEndDate: '',
       parentName: "De Bode Stella", parentPhone: '',
@@ -3288,7 +3419,8 @@ export const getInitialData = () => {
     },
     {
       id: "132", contractNo: 126, name: "Петенев Максим Вадимович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "petenev.mak98", password: "g2U@r2AZcPqN",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-18", contractEndDate: '',
       parentName: "Петенев Вадим Анатольевич", parentPhone: '',
@@ -3313,7 +3445,8 @@ export const getInitialData = () => {
     },
     {
       id: "133", contractNo: 127, name: "Бердалина Адэль Ардаққызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "berdalina.ade24", password: "fhcU6!Jpedds",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-20", contractEndDate: '',
       parentName: "Бердалина Айжан Нурбековна", parentPhone: '',
@@ -3338,7 +3471,8 @@ export const getInitialData = () => {
     },
     {
       id: "134", contractNo: 128, name: "Айтжан Айбар Серікұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "aytzhan.ayb27", password: "whjQcLRrrN8@",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-20", contractEndDate: '',
       parentName: "Бекмурзиева Гульвира Сергеевна", parentPhone: '',
@@ -3363,7 +3497,8 @@ export const getInitialData = () => {
     },
     {
       id: "135", contractNo: 129, name: "Беймуратова Амина Маратовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "beymuratova.ami28", password: "4#ska7GC3Emv",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-20", contractEndDate: '',
       parentName: "Раимова Ольга Анатольевна", parentPhone: '',
@@ -3388,7 +3523,8 @@ export const getInitialData = () => {
     },
     {
       id: "136", contractNo: 130, name: "Айтжан Торехан Айтбайулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "aytzhan.tor63", password: "zA3Uz$qG8Q2f",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-24", contractEndDate: '',
       parentName: "Айтжанов Аманбай Муталович", parentPhone: '',
@@ -3413,7 +3549,8 @@ export const getInitialData = () => {
     },
     {
       id: "137", contractNo: 131, name: "Есенбек Айша Муратовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "esenbek.ays19", password: "76@ALjMD6FXs",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-26", contractEndDate: '',
       parentName: "Имангазиева Асель Сагынгалиевна", parentPhone: '',
@@ -3438,7 +3575,8 @@ export const getInitialData = () => {
     },
     {
       id: "138", contractNo: 132, name: "Каренеева Таира Бахтияровна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kareneeva.tai28", password: "U55pvyRxg@0j",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-09-30", contractEndDate: '',
       parentName: "Каренеева Асель Клышжановна", parentPhone: '',
@@ -3463,7 +3601,8 @@ export const getInitialData = () => {
     },
     {
       id: "139", contractNo: 133, name: "Есен Арайлым Аманқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "esen.ara22", password: "1d2nja$UKGpG",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-10-06", contractEndDate: '',
       parentName: "Панакулова Асель Гдыршаевна", parentPhone: '',
@@ -3488,7 +3627,8 @@ export const getInitialData = () => {
     },
     {
       id: "140", contractNo: 134, name: "Елюбай Шернияз Әуэзұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "elyubay.she34", password: "DFCQ6qyEg$Hc",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-10-07", contractEndDate: '',
       parentName: "Елюбаев Ауэз Жагипарбекович", parentPhone: '',
@@ -3513,7 +3653,8 @@ export const getInitialData = () => {
     },
     {
       id: "141", contractNo: 136, name: "Сабирбай Махаббат Шыныкулкызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "sabirbay.mah65", password: "2KMuF9RysZ#5",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-10-08", contractEndDate: '',
       parentName: "", parentPhone: '',
@@ -3538,7 +3679,8 @@ export const getInitialData = () => {
     },
     {
       id: "142", contractNo: 137, name: "Мырзабаева Азиза",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "myrzabaeva.azi31", password: "k!y34u6bpUaE",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "refund", graduationYear: null,
       joinDate: "2025-10-08", contractEndDate: '',
       parentName: "Мырзабаева Кунсулу Мырзабаевна", parentPhone: '',
@@ -3563,7 +3705,8 @@ export const getInitialData = () => {
     },
     {
       id: "143", contractNo: 138, name: "Қоңыратбай Сымбат Махсатқызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "qonyratbay.sym49", password: "x7nJU%Hhq8fS",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-10-12", contractEndDate: '',
       parentName: "Куралбек Маржан Куралбеккызы", parentPhone: '',
@@ -3588,7 +3731,8 @@ export const getInitialData = () => {
     },
     {
       id: "144", contractNo: 139, name: "Толегенова Альбина",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "tolegenova.alb84", password: "7xnW8Y#CpaQw",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-10-13", contractEndDate: '',
       parentName: "Исканова Жанар Морзагалиевна", parentPhone: '',
@@ -3613,7 +3757,8 @@ export const getInitialData = () => {
     },
     {
       id: "145", contractNo: 140, name: "Есен Абдурахман Саянұлы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "esen.abd50", password: "Lh#eQXEPqES9",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-10-14", contractEndDate: '',
       parentName: "Бердалина Дина Ибрагимовна", parentPhone: '',
@@ -3638,7 +3783,8 @@ export const getInitialData = () => {
     },
     {
       id: "146", contractNo: 141, name: "Кеулимжанов  Имангали Жантемирович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "keulimzhanov.ima38", password: "fY9uAn9XM#CH",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-10-22", contractEndDate: '',
       parentName: "Утеулиев Жантемир Кеулимжанович", parentPhone: '',
@@ -3663,7 +3809,8 @@ export const getInitialData = () => {
     },
     {
       id: "147", contractNo: 142, name: "Тогобицкий Иван",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "togobitskiy.iva24", password: "cndrR9c7@Cpe",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-11-01", contractEndDate: '',
       parentName: "Тогобицкая Юлия Юрьевна", parentPhone: '',
@@ -3688,7 +3835,8 @@ export const getInitialData = () => {
     },
     {
       id: "148", contractNo: 143, name: "Султанова Элина Гарипуллаевна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "sultanova.eli62", password: "Cps@QTj8ufUx",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-11-04", contractEndDate: '',
       parentName: "", parentPhone: '',
@@ -3713,7 +3861,8 @@ export const getInitialData = () => {
     },
     {
       id: "149", contractNo: 144, name: "Абдугалиев Алидар Ануарович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "abdugaliev.ali14", password: "wpeS5t7C2Ew%",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-11-04", contractEndDate: '',
       parentName: "Абдугалиева Асия Аскаровна", parentPhone: '',
@@ -3738,7 +3887,8 @@ export const getInitialData = () => {
     },
     {
       id: "150", contractNo: 146, name: "Байгабулова Аружан Сабитовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "baygabulova.aru44", password: "Tx#S9GRU9cu9",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-11-22", contractEndDate: '',
       parentName: "Сабдыбаева Тахмина Апеновна", parentPhone: '',
@@ -3763,7 +3913,8 @@ export const getInitialData = () => {
     },
     {
       id: "151", contractNo: "", name: "Болекбай Камила Айбаркызы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "bolekbay.kam88", password: "5fMZz!wQzz2b",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-11-24", contractEndDate: '',
       parentName: "Тайтулина Галина Кайржановна", parentPhone: '',
@@ -3788,7 +3939,8 @@ export const getInitialData = () => {
     },
     {
       id: "152", contractNo: 148, name: "Султанов Артур-Тамерлан Гарипуллаевич",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "sultanov.art39", password: "3gJ6NHUXR#DP",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "completed", graduationYear: null,
       joinDate: "2025-11-27", contractEndDate: '',
       parentName: "Султанова Мерханум Мусагалиевна", parentPhone: '',
@@ -3813,7 +3965,8 @@ export const getInitialData = () => {
     },
     {
       id: "153", contractNo: 149, name: "Гуртовенко Максим Андреевич",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "gurtovenko.mak91", password: "Qd1KmP%Umg3e",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-11-28", contractEndDate: '',
       parentName: "Гуртовенко Юлия Александровна", parentPhone: '',
@@ -3838,7 +3991,8 @@ export const getInitialData = () => {
     },
     {
       id: "154", contractNo: 150, name: "Разбекова Амина Арнуровна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "razbekova.ami69", password: "#Mxw75HgXAy7",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-12-14", contractEndDate: '',
       parentName: "Разбекова Ольга Юрьевна", parentPhone: '',
@@ -3863,7 +4017,8 @@ export const getInitialData = () => {
     },
     {
       id: "155", contractNo: 151, name: "Медведева Адеми Мауленовна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "medvedeva.ade12", password: "3hj28fBd!byu",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-12-21", contractEndDate: '',
       parentName: "Медведева Мира Решатовна", parentPhone: '',
@@ -3888,7 +4043,8 @@ export const getInitialData = () => {
     },
     {
       id: "156", contractNo: "150/2", name: "Ермеков Абзал",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "ermekov.abz45", password: "92x8bxqb4kp!",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-12-25", contractEndDate: '',
       parentName: "Жунусова Гульжан Сейдуалиевна", parentPhone: '',
@@ -3913,7 +4069,8 @@ export const getInitialData = () => {
     },
     {
       id: "157", contractNo: 152, name: "Саяжанова Айганым Темирбаевна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "sayazhanova.ayg95", password: "UsGG4Sbd@1Kx",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-12-26", contractEndDate: '',
       parentName: "Джуманбаева Айгуль Талгатовна", parentPhone: '',
@@ -3938,7 +4095,8 @@ export const getInitialData = () => {
     },
     {
       id: "158", contractNo: 153, name: "Рудниченко Арина Сергеевна",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "rudnichenko.ari43", password: "c3Hx$QtRfEJ3",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-12-27", contractEndDate: '',
       parentName: "Ся-Тун-Чин. Мария Владимировна", parentPhone: '',
@@ -3963,7 +4121,8 @@ export const getInitialData = () => {
     },
     {
       id: "159", contractNo: 154, name: "Пак Михаил",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "pak.mih17", password: "7@DsEJCn9N7Q",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2025-12-29", contractEndDate: '',
       parentName: "Пак Евгений Георгиевич", parentPhone: '',
@@ -3988,7 +4147,8 @@ export const getInitialData = () => {
     },
     {
       id: "160", contractNo: 156, name: "Хасенов Алим Адилевич",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "hasenov.ali74", password: "Rqr2fKvUS96@",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2026-01-05", contractEndDate: '',
       parentName: "Хасенова Асия Бексаинова", parentPhone: '',
@@ -4013,7 +4173,8 @@ export const getInitialData = () => {
     },
     {
       id: "161", contractNo: 160, name: "Кенесхан Магжан Айдынбекулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "keneshan.mag52", password: "zynBmmcJ@2PN",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2026-01-12", contractEndDate: '',
       parentName: "Ыдырышев Айдынбек Кенесханулы", parentPhone: '',
@@ -4038,7 +4199,8 @@ export const getInitialData = () => {
     },
     {
       id: "162", contractNo: 162, name: "Жумабай Амирлан Кайроллаулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "zhumabay.ami73", password: "vg$6KJ8gt1Es",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2026-01-26", contractEndDate: '',
       parentName: "Утембеков Кайролла Джумабаевич", parentPhone: '',
@@ -4063,7 +4225,8 @@ export const getInitialData = () => {
     },
     {
       id: "163", contractNo: "", name: "Куянгузов Алан Аныбекович",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "kuyanguzov.ala49", password: "XeypMpRJX@5s",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2026-02-14", contractEndDate: '',
       parentName: "Альмухамедова Эльвира Равильевна", parentPhone: '',
@@ -4088,7 +4251,8 @@ export const getInitialData = () => {
     },
     {
       id: "164", contractNo: 171, name: "Рахмет Алихан Ренатулы",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "rahmet.ali22", password: "1TwEJyNn@4QC",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2026-02-20", contractEndDate: '',
       parentName: "Мукушева Анара Елемесовна", parentPhone: '',
@@ -4113,7 +4277,8 @@ export const getInitialData = () => {
     },
     {
       id: "165", contractNo: "", name: "Утимбеков Санжар Гарифоллаевич",
-      login: '', password: '', email: '', phone: '', age: null, grade: '', city: '',
+      login: "utimbekov.san64", password: "rKHXtU#0UUML",
+      email: '', phone: '', age: null, grade: '', city: '',
       status: "active", graduationYear: null,
       joinDate: "2026-02-22", contractEndDate: '',
       parentName: "Утимбекова Вера Владимировна", parentPhone: '',
