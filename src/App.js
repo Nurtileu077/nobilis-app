@@ -95,7 +95,7 @@ export default function NobilisAcademy() {
     setTestAnswers, setTestQ, setAttDate, setAttSchedule, setSylSearch,
     setSidebarOpen, setCityFilter, setStatusFilter, setManagerFilter, setStudentPage,
     handleLogin, logout, getStudent, getTeacher,
-    addStudent, delStudent,
+    addStudent, updStudent, delStudent,
     addTeacher, updTeacher, delTeacher,
     addSchedule, updSchedule, delSchedule,
     addMockTest, updMockTest, delMockTest,
@@ -106,7 +106,7 @@ export default function NobilisAcademy() {
     applyInternship, resolveTicket, addTicket,
     submitTest, resetTest, requestRetake, approveRetake, denyRetake,
     addPackage, freezePackage,
-    addTask, toggleTask, addComment,
+    addTask, toggleTask, addComment, addHistory,
     freezeStudent, unfreezeStudent, setAvatar,
     submitEnglishTest, resetEnglishTest,
     addGlobalTask, toggleGlobalTask, deleteGlobalTask,
@@ -622,12 +622,30 @@ export default function NobilisAcademy() {
                 )}
                 <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onChange={e => {
                   const file = e.target.files?.[0];
-                  if (file) {
+                  if (!file) return;
+                  const maxSize = 5 * 1024 * 1024; // 5MB limit
+                  if (file.size > maxSize) {
+                    alert('Файл слишком большой (макс. 5 МБ). Сожмите файл и попробуйте снова.');
+                    e.target.value = '';
+                    return;
+                  }
+                  try {
                     const reader = new FileReader();
                     reader.onload = (ev) => {
-                      setForm(p => ({ ...p, fileName: file.name, fileSize: `${(file.size / 1024).toFixed(1)} KB`, fileData: ev.target.result }));
+                      try {
+                        setForm(p => ({ ...p, fileName: file.name, fileSize: `${(file.size / 1024).toFixed(1)} KB`, fileData: ev.target.result }));
+                      } catch (err) {
+                        alert('Ошибка при загрузке файла. Попробуйте файл меньшего размера.');
+                      }
+                    };
+                    reader.onerror = () => {
+                      alert('Ошибка чтения файла');
+                      e.target.value = '';
                     };
                     reader.readAsDataURL(file);
+                  } catch (err) {
+                    alert('Ошибка при загрузке файла');
+                    e.target.value = '';
                   }
                 }} />
               </label>
@@ -703,11 +721,12 @@ export default function NobilisAcademy() {
                 )}
                 <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onChange={e => {
                   const file = e.target.files?.[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => { setForm(p => ({ ...p, freezeFileName: file.name, freezeFileData: ev.target.result })); };
-                    reader.readAsDataURL(file);
-                  }
+                  if (!file) return;
+                  if (file.size > 5 * 1024 * 1024) { alert('Файл слишком большой (макс. 5 МБ)'); e.target.value = ''; return; }
+                  const reader = new FileReader();
+                  reader.onload = (ev) => { setForm(p => ({ ...p, freezeFileName: file.name, freezeFileData: ev.target.result })); };
+                  reader.onerror = () => { alert('Ошибка чтения файла'); };
+                  reader.readAsDataURL(file);
                 }} />
               </label>
             </div>
@@ -750,11 +769,12 @@ export default function NobilisAcademy() {
                 )}
                 <input type="file" className="hidden" accept="image/*" onChange={e => {
                   const file = e.target.files?.[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => { setForm(p => ({ ...p, avatarPreview: ev.target.result })); };
-                    reader.readAsDataURL(file);
-                  }
+                  if (!file) return;
+                  if (file.size > 2 * 1024 * 1024) { alert('Фото слишком большое (макс. 2 МБ)'); e.target.value = ''; return; }
+                  const reader = new FileReader();
+                  reader.onload = (ev) => { setForm(p => ({ ...p, avatarPreview: ev.target.result })); };
+                  reader.onerror = () => { alert('Ошибка чтения файла'); };
+                  reader.readAsDataURL(file);
                 }} />
               </label>
             </div>
@@ -859,11 +879,12 @@ export default function NobilisAcademy() {
                 )}
                 <input type="file" className="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={e => {
                   const file = e.target.files?.[0];
-                  if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => { setForm(p => ({ ...p, fileName: file.name, fileSize: `${(file.size / 1024).toFixed(1)} KB`, fileData: ev.target.result })); };
-                    reader.readAsDataURL(file);
-                  }
+                  if (!file) return;
+                  if (file.size > 5 * 1024 * 1024) { alert('Файл слишком большой (макс. 5 МБ)'); e.target.value = ''; return; }
+                  const reader = new FileReader();
+                  reader.onload = (ev) => { setForm(p => ({ ...p, fileName: file.name, fileSize: `${(file.size / 1024).toFixed(1)} KB`, fileData: ev.target.result })); };
+                  reader.onerror = () => { alert('Ошибка чтения файла'); };
+                  reader.readAsDataURL(file);
                 }} />
               </label>
             </div>
@@ -1483,66 +1504,99 @@ export default function NobilisAcademy() {
 
         {/* Tab content */}
         <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border">
-          {detailTab === 'info' && (
+          {detailTab === 'info' && (() => {
+            const editing = form.editingStudent;
+            const ef = (field) => editing ? (form['_e_' + field] ?? s[field] ?? '') : null;
+            const setEf = (field, val) => setForm(p => ({ ...p, ['_e_' + field]: val }));
+            const Field = ({ label, field, type = 'text', half = true }) => (
+              <div className={`p-3 ${editing ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'} rounded-xl`}>
+                <div className="text-xs text-gray-500">{label}</div>
+                {editing ? (
+                  <input type={type} value={ef(field)} onChange={e => setEf(field, e.target.value)}
+                    className="w-full p-1 border rounded text-sm mt-1 input-focus bg-white" />
+                ) : (
+                  <div className="font-medium text-sm mt-1">{s[field] || '\u2014'}</div>
+                )}
+              </div>
+            );
+            const NumField = ({ label, field, suffix = '' }) => (
+              <div className={`p-3 ${editing ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'} rounded-xl`}>
+                <div className="text-xs text-gray-500">{label}</div>
+                {editing ? (
+                  <input type="number" value={ef(field)} onChange={e => setEf(field, e.target.value)}
+                    className="w-full p-1 border rounded text-sm mt-1 input-focus bg-white" />
+                ) : (
+                  <div className="font-medium text-sm mt-1">
+                    {s[field] ? `${Number(s[field]).toLocaleString('ru-RU')}${suffix}` : '\u2014'}
+                  </div>
+                )}
+              </div>
+            );
+            const SelectField = ({ label, field, options }) => (
+              <div className={`p-3 ${editing ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'} rounded-xl`}>
+                <div className="text-xs text-gray-500">{label}</div>
+                {editing ? (
+                  <select value={ef(field)} onChange={e => setEf(field, e.target.value)}
+                    className="w-full p-1 border rounded text-sm mt-1 input-focus bg-white">
+                    {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                ) : (
+                  <div className="font-medium text-sm mt-1">
+                    {(STUDENT_STATUSES[s[field]] || {}).name || s[field] || '\u2014'}
+                  </div>
+                )}
+              </div>
+            );
+            return (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-3 bg-gray-50 rounded-xl">
-                  <div className="text-xs text-gray-500">Логин</div>
-                  {form.editingCredentials ? (
-                    <input type="text" value={form.editLogin ?? s.login} onChange={e => setForm(p => ({ ...p, editLogin: e.target.value }))} className="w-full p-1 border rounded text-sm mt-1 input-focus" />
-                  ) : (
-                    <div className="font-medium text-sm mt-1">{s.login}</div>
-                  )}
-                </div>
-                <div className="p-3 bg-gray-50 rounded-xl">
-                  <div className="text-xs text-gray-500">Пароль</div>
-                  {form.editingCredentials ? (
-                    <input type="text" value={form.editPassword ?? s.password} onChange={e => setForm(p => ({ ...p, editPassword: e.target.value }))} className="w-full p-1 border rounded text-sm mt-1 input-focus" />
-                  ) : (
-                    <div className="font-medium text-sm mt-1">{s.password}</div>
-                  )}
-                </div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Email</div><div className="font-medium text-sm mt-1">{s.email}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Телефон</div><div className="font-medium text-sm mt-1">{s.phone}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Класс</div><div className="font-medium text-sm mt-1">{s.grade}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Возраст</div><div className="font-medium text-sm mt-1">{s.age}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Город</div><div className="font-medium text-sm mt-1">{s.city || '\u2014'}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Год выпуска</div><div className="font-medium text-sm mt-1">{s.graduationYear || '\u2014'}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Родитель</div><div className="font-medium text-sm mt-1">{s.parentName}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Тел. родителя</div><div className="font-medium text-sm mt-1">{s.parentPhone}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Дата начала</div><div className="font-medium text-sm mt-1">{formatDate(s.joinDate)}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Конец договора</div><div className="font-medium text-sm mt-1">{formatDate(s.contractEndDate)}{s.contractEndDate && ` (${daysUntil(s.contractEndDate)} дн.)`}</div></div>
+                <Field label="Логин" field="login" />
+                <Field label="Пароль" field="password" />
+                <Field label="ФИО ребёнка" field="name" />
+                <Field label="Email" field="email" type="email" />
+                <Field label="Телефон" field="phone" type="tel" />
+                <Field label="Класс" field="grade" />
+                <NumField label="Возраст" field="age" />
+                <Field label="Город" field="city" />
+                <NumField label="Год выпуска" field="graduationYear" />
+                <SelectField label="Статус" field="status" options={[
+                  { value: '', label: '\u2014' },
+                  ...Object.entries(STUDENT_STATUSES).map(([k, v]) => ({ value: k, label: v.name }))
+                ]} />
+                <Field label="Родитель (ФИО)" field="parentName" />
+                <Field label="Тел. родителя" field="parentPhone" type="tel" />
+                <Field label="Дата начала" field="joinDate" type="date" />
+                <Field label="Конец договора" field="contractEndDate" type="date" />
               </div>
 
               {/* Contract & Financial Info */}
               <div className="pt-4 border-t">
                 <div className="text-xs text-gray-500 mb-3 font-semibold uppercase tracking-wider">Договор и оплата</div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {s.contractNo && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">№ договора</div><div className="font-medium text-sm mt-1">{s.contractNo}</div></div>}
-                  {s.manager && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Менеджер</div><div className="font-medium text-sm mt-1">{s.manager}</div></div>}
-                  {s.conditions && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Условия / Пакет</div><div className="font-medium text-sm mt-1">{s.conditions}</div></div>}
-                  {s.studyPeriod && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Период обучения</div><div className="font-medium text-sm mt-1">{s.studyPeriod}</div></div>}
-                  {(s.totalContractSum > 0 || s.paidAmount > 0) && (
-                    <>
-                      <div className="p-3 bg-gray-50 rounded-xl">
-                        <div className="text-xs text-gray-500">Сумма договора</div>
-                        <div className="font-medium text-sm mt-1">{(s.totalContractSum || 0).toLocaleString('ru-RU')} тг</div>
+                  <Field label="№ договора" field="contractNo" />
+                  <Field label="Менеджер" field="manager" />
+                  <Field label="Условия / Пакет" field="conditions" />
+                  <Field label="Период обучения" field="studyPeriod" />
+                  <NumField label="Сумма договора" field="totalContractSum" suffix=" тг" />
+                  <div className={`p-3 ${editing ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'} rounded-xl`}>
+                    <div className="text-xs text-gray-500">Оплачено</div>
+                    {editing ? (
+                      <input type="number" value={ef('paidAmount')} onChange={e => setEf('paidAmount', e.target.value)}
+                        className="w-full p-1 border rounded text-sm mt-1 input-focus bg-white" />
+                    ) : (
+                      <div className={`font-medium text-sm mt-1 ${(s.paidAmount || 0) < (s.totalContractSum || 0) ? 'text-red-600' : 'text-green-600'}`}>
+                        {(s.paidAmount || 0).toLocaleString('ru-RU')} тг
+                        {(s.totalContractSum || 0) > 0 && (s.paidAmount || 0) < (s.totalContractSum || 0) && (
+                          <span className="text-xs text-red-500 ml-1">(долг: {((s.totalContractSum || 0) - (s.paidAmount || 0)).toLocaleString('ru-RU')} тг)</span>
+                        )}
                       </div>
-                      <div className="p-3 bg-gray-50 rounded-xl">
-                        <div className="text-xs text-gray-500">Оплачено</div>
-                        <div className={`font-medium text-sm mt-1 ${s.paidAmount < s.totalContractSum ? 'text-red-600' : 'text-green-600'}`}>
-                          {(s.paidAmount || 0).toLocaleString('ru-RU')} тг
-                          {s.totalContractSum > 0 && s.paidAmount < s.totalContractSum && (
-                            <span className="text-xs text-red-500 ml-1">(долг: {((s.totalContractSum || 0) - (s.paidAmount || 0)).toLocaleString('ru-RU')} тг)</span>
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  {s.paymentType && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Тип оплаты</div><div className="font-medium text-sm mt-1">{s.paymentType}</div></div>}
-                  {s.paymentConditions && s.paymentConditions !== 0 && <div className="p-3 bg-gray-50 rounded-xl"><div className="text-xs text-gray-500">Условия оплаты</div><div className="font-medium text-sm mt-1">{s.paymentConditions}</div></div>}
+                    )}
+                  </div>
+                  <Field label="Тип оплаты" field="paymentType" />
+                  <Field label="Условия оплаты" field="paymentConditions" />
+                  <Field label="Ссылка Битрикс24" field="bitrixLink" />
                 </div>
-                {s.bitrixLink && (
+                {!editing && s.bitrixLink && (
                   <div className="mt-3">
                     <a href={s.bitrixLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline">
                       Открыть в Битрикс24 &rarr;
@@ -1550,33 +1604,67 @@ export default function NobilisAcademy() {
                   </div>
                 )}
               </div>
-              {(s.targetIelts || s.targetSat) && (
-                <div>
-                  <div className="text-xs text-gray-500 mb-2">Цели</div>
-                  <div className="flex flex-wrap gap-2">
-                    {s.targetIelts && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">IELTS: {s.targetIelts}</span>}
-                    {s.targetSat && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">SAT: {s.targetSat}</span>}
-                  </div>
+
+              {/* Goals */}
+              <div className="pt-4 border-t">
+                <div className="text-xs text-gray-500 mb-3 font-semibold uppercase tracking-wider">Цели</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field label="Целевой IELTS" field="targetIelts" />
+                  <Field label="Целевой SAT" field="targetSat" />
                 </div>
-              )}
-              {s.selectedCountries?.length > 0 && <div><div className="text-xs text-gray-500 mb-1">Страны</div><div className="text-sm">{s.selectedCountries.join(', ')}</div></div>}
-              {s.targetUniversities?.length > 0 && <div><div className="text-xs text-gray-500 mb-1">Университеты</div><div className="text-sm">{s.targetUniversities.join(', ')}</div></div>}
-              {s.initialResults && <div><div className="text-xs text-gray-500 mb-1">Начальные результаты</div><div className="flex gap-2">{s.initialResults.ielts && <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">IELTS: {s.initialResults.ielts}</span>}{s.initialResults.sat && <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">SAT: {s.initialResults.sat}</span>}</div></div>}
-              {/* Credential editing buttons */}
+              </div>
+
+              {!editing && s.selectedCountries?.length > 0 && <div><div className="text-xs text-gray-500 mb-1">Страны</div><div className="text-sm">{s.selectedCountries.join(', ')}</div></div>}
+              {!editing && s.targetUniversities?.length > 0 && <div><div className="text-xs text-gray-500 mb-1">Университеты</div><div className="text-sm">{s.targetUniversities.join(', ')}</div></div>}
+              {!editing && s.initialResults && (s.initialResults.ielts || s.initialResults.sat) && <div><div className="text-xs text-gray-500 mb-1">Начальные результаты</div><div className="flex gap-2">{s.initialResults.ielts && <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">IELTS: {s.initialResults.ielts}</span>}{s.initialResults.sat && <span className="text-sm bg-gray-100 px-2 py-0.5 rounded">SAT: {s.initialResults.sat}</span>}</div></div>}
+
+              {/* Action buttons */}
               <div className="flex gap-2 pt-4 border-t">
-                {form.editingCredentials ? (
+                {editing ? (
                   <>
                     <button onClick={() => {
-                      const newLogin = form.editLogin ?? s.login;
-                      const newPassword = form.editPassword ?? s.password;
-                      app.updStudent(s.id, { login: newLogin, password: newPassword });
-                      setForm(p => ({ ...p, editingCredentials: false, editLogin: undefined, editPassword: undefined }));
-                      alert('Логин и пароль обновлены');
-                    }} className="flex-1 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 text-sm">Сохранить</button>
-                    <button onClick={() => setForm(p => ({ ...p, editingCredentials: false, editLogin: undefined, editPassword: undefined }))} className="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl text-sm">Отмена</button>
+                      const updates = {};
+                      const fields = ['login','password','name','email','phone','grade','age','city','graduationYear','status',
+                        'parentName','parentPhone','joinDate','contractEndDate','contractNo','manager','conditions','studyPeriod',
+                        'totalContractSum','paidAmount','paymentType','paymentConditions','bitrixLink','targetIelts','targetSat'];
+                      fields.forEach(f => {
+                        const val = form['_e_' + f];
+                        if (val !== undefined && val !== (s[f] ?? '')) {
+                          // Convert numeric fields
+                          if (['age','graduationYear','totalContractSum','paidAmount'].includes(f)) {
+                            updates[f] = val === '' ? null : Number(val);
+                          } else {
+                            updates[f] = val;
+                          }
+                        }
+                      });
+                      if (Object.keys(updates).length > 0) {
+                        // Sync study period with package dates
+                        if (updates.studyPeriod) {
+                          const sp = updates.studyPeriod;
+                          const parts = sp.split('-').map(p => p.trim());
+                          if (parts.length >= 2) {
+                            const pkgs = (s.packages || []).map(pkg => ({
+                              ...pkg,
+                              startDate: updates.joinDate || s.joinDate || pkg.startDate,
+                            }));
+                            if (pkgs.length > 0) updates.packages = pkgs;
+                          }
+                        }
+                        updStudent(s.id, updates);
+                        addHistory(s.id, 'Данные обновлены');
+                      }
+                      setForm({});
+                    }} className="flex-1 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 text-sm font-medium">
+                      Сохранить изменения
+                    </button>
+                    <button onClick={() => setForm({})} className="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl text-sm">Отмена</button>
                   </>
                 ) : (
-                  <button onClick={() => setForm(p => ({ ...p, editingCredentials: true, editLogin: s.login, editPassword: s.password }))} className="flex-1 py-2 bg-[#c9a227] text-white rounded-xl hover:bg-[#b08b20] text-sm">Изменить логин/пароль</button>
+                  <button onClick={() => setForm({ editingStudent: true })}
+                    className="flex-1 py-2 bg-[#c9a227] text-white rounded-xl hover:bg-[#b08b20] text-sm font-medium">
+                    Изменить данные
+                  </button>
                 )}
               </div>
               <div className="flex gap-2">
@@ -1585,7 +1673,8 @@ export default function NobilisAcademy() {
                 <button onClick={() => { if (window.confirm('Удалить студента? Это действие нельзя отменить.')) { delStudent(s.id); setStudentPage(null); } }} className="px-4 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 text-sm">Удалить</button>
               </div>
             </div>
-          )}
+            );
+          })()}
 
           {detailTab === 'packages' && (
             <div className="space-y-3">

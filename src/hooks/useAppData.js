@@ -81,7 +81,11 @@ export default function useAppData() {
 
   // Persist data to localStorage + debounced Supabase save
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn('localStorage save failed (quota exceeded?):', e.message);
+    }
 
     if (!SUPABASE_ENABLED || !initialLoadDone.current) return;
     // Debounce Supabase saves (2 seconds)
