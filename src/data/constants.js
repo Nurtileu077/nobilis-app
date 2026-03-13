@@ -129,3 +129,43 @@ export const HOLLAND_PROFILES = {
 export const DAYS_ORDER = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
 export const DAYS_RU = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
 export const ANSWER_LABELS = ['Совсем не про меня','Скорее нет','Нейтрально','Скорее да','Полностью про меня'];
+
+// =============================================
+// ROLES & HIERARCHY
+// =============================================
+export const ROLES = {
+  director:          { name: 'Директор',              icon: 'D', department: 'management', level: 0 },
+  academic_director: { name: 'Академический директор', icon: 'A', department: 'academic',   level: 1 },
+  rop:               { name: 'РОП',                    icon: 'R', department: 'sales',      level: 1 },
+  curator:           { name: 'Куратор',                icon: 'C', department: 'academic',   level: 2 },
+  teacher:           { name: 'Преподаватель',          icon: 'T', department: 'academic',   level: 2 },
+  coordinator:       { name: 'Координатор',            icon: 'K', department: 'academic',   level: 2 },
+  sales_manager:     { name: 'Менеджер по продажам',   icon: 'M', department: 'sales',      level: 2 },
+  callcenter:        { name: 'Колл-центр',             icon: 'P', department: 'sales',      level: 2 },
+  office_manager:    { name: 'Офис-менеджер',          icon: 'O', department: 'operations', level: 2 },
+  accountant:        { name: 'Бухгалтер',              icon: 'B', department: 'operations', level: 2 },
+  student:           { name: 'Студент',                icon: 'S', department: 'student',    level: 3 },
+};
+
+// Who manages whom
+export const ROLE_HIERARCHY = {
+  director:          ['academic_director', 'rop', 'curator', 'teacher', 'coordinator', 'sales_manager', 'callcenter', 'office_manager', 'accountant'],
+  academic_director: ['curator', 'teacher', 'coordinator'],
+  rop:               ['sales_manager', 'callcenter'],
+  curator:           [],
+  teacher:           [],
+  coordinator:       [],
+  sales_manager:     [],
+  callcenter:        [],
+  office_manager:    [],
+  accountant:        [],
+};
+
+// Department labels
+export const DEPARTMENTS = {
+  management: 'Руководство',
+  academic:   'Академический отдел',
+  sales:      'Отдел продаж',
+  operations: 'Операционный отдел',
+  student:    'Студенты',
+};
