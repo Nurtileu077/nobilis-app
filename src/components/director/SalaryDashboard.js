@@ -3,10 +3,12 @@ import I from '../common/Icons';
 
 let SALARY_DATA = null;
 let SALES_DATA = null;
+let COMPANY_DEBTS = null;
 try {
   const salaryModule = require('../../data/salaryData');
   SALARY_DATA = salaryModule.SALARY_DATA;
   SALES_DATA = salaryModule.SALES_DATA;
+  COMPANY_DEBTS = salaryModule.COMPANY_DEBTS;
 } catch (e) {}
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -1085,6 +1087,41 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
           <span className="text-sm font-medium text-green-700">
             Все выплаты за {selectedMonth} закрыты
           </span>
+        </div>
+      )}
+
+      {/* Company Debts from Excel */}
+      {COMPANY_DEBTS && (
+        <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+          <div className="px-5 py-4 border-b bg-red-50" style={{ borderLeftWidth: '4px', borderLeftColor: '#ef4444' }}>
+            <h3 className="font-semibold text-gray-800">Долги компании (Февраль 2026)</h3>
+          </div>
+          <div className="p-5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+              <div className="bg-red-50 rounded-xl p-4">
+                <div className="text-xs text-gray-500 mb-1">Долги по ЗП</div>
+                <div className="text-lg font-bold text-red-600">{fmt(COMPANY_DEBTS.salaryDebts)} тг</div>
+              </div>
+              <div className="bg-orange-50 rounded-xl p-4">
+                <div className="text-xs text-gray-500 mb-1">Долги компании</div>
+                <div className="text-lg font-bold text-orange-600">{fmt(COMPANY_DEBTS.companyDebts)} тг</div>
+              </div>
+              <div className="bg-yellow-50 rounded-xl p-4">
+                <div className="text-xs text-gray-500 mb-1">Налоги</div>
+                <div className="text-lg font-bold text-yellow-600">{fmt(COMPANY_DEBTS.taxes)} тг</div>
+              </div>
+              <div className="bg-blue-50 rounded-xl p-4">
+                <div className="text-xs text-gray-500 mb-1">Возвраты</div>
+                <div className="text-lg font-bold text-blue-600">{fmt(COMPANY_DEBTS.returnables)} тг</div>
+              </div>
+            </div>
+            <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-xl p-4 text-white">
+              <div className="text-sm text-white/70">Общий долг</div>
+              <div className="text-2xl font-bold">
+                {fmt((COMPANY_DEBTS.salaryDebts || 0) + (COMPANY_DEBTS.companyDebts || 0) + (COMPANY_DEBTS.taxes || 0) + (COMPANY_DEBTS.returnables || 0))} тг
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
