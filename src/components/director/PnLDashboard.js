@@ -169,7 +169,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length === derived.length) {
-          const editableKeys = ['revenue', 'plan', 'payroll', 'totalExpenses'];
+          const editableKeys = ['revenue', 'plan', 'payroll', 'totalExpenses', 'directExpenses', 'profit'];
           parsed.forEach((row, i) => {
             editableKeys.forEach((key) => {
               if (row[key] !== derived[i][key]) {
@@ -224,11 +224,15 @@ export default function PnLDashboard({ onUpdateData } = {}) {
         prev.map((row, i) => {
           if (i !== colIdx) return row;
           const updated = { ...row, [rowKey]: num };
-          return {
-            ...updated,
-            directExpenses: updated.totalExpenses - updated.payroll,
-            profit: updated.revenue - updated.totalExpenses,
-          };
+          // Auto-calc directExpenses only if not manually edited
+          if (rowKey !== 'directExpenses' && !editedCells[`directExpenses-${colIdx}`]) {
+            updated.directExpenses = updated.totalExpenses - updated.payroll;
+          }
+          // Auto-calc profit only if not manually edited
+          if (rowKey !== 'profit' && !editedCells[`profit-${colIdx}`]) {
+            updated.profit = updated.revenue - updated.totalExpenses;
+          }
+          return updated;
         })
       );
       setEditedCells((prev) => ({ ...prev, [`${rowKey}-${colIdx}`]: true }));
@@ -283,9 +287,9 @@ export default function PnLDashboard({ onUpdateData } = {}) {
     { key: 'revenue',       label: 'Выручка',          editable: true,  colorClass: 'text-emerald-600' },
     { key: 'plan',          label: 'План',              editable: true,  colorClass: 'text-amber-500'   },
     { key: 'payroll',       label: 'Зарплата',          editable: true,  colorClass: 'text-rose-500'    },
-    { key: 'directExpenses',label: 'Прямые расходы',    editable: false, colorClass: 'text-orange-500'  },
+    { key: 'directExpenses',label: 'Прямые расходы',    editable: true, colorClass: 'text-orange-500'  },
     { key: 'totalExpenses', label: 'Итого расходов',    editable: true,  colorClass: 'text-red-600'     },
-    { key: 'profit',        label: 'Чистая прибыль',    editable: false, colorClass: ''                 },
+    { key: 'profit',        label: 'Чистая прибыль',    editable: true, colorClass: ''                 },
   ];
 
   // ── Company debts data ─────────────────────────────────────────────────────

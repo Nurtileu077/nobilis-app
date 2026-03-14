@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import I from '../common/Icons';
 
 let SALARY_DATA = null;
@@ -10,6 +10,8 @@ try {
   SALES_DATA = salaryModule.SALES_DATA;
   COMPANY_DEBTS = salaryModule.COMPANY_DEBTS;
 } catch (e) {}
+
+const SALARY_LS_KEY = 'nobilis_salary_edits';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -271,7 +273,22 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
   const [expandedEmployee, setExpandedEmployee] = useState(null);
   const [collapsedRoles, setCollapsedRoles] = useState({});
   const [editMode, setEditMode] = useState(false);
-  const [edits, setEdits] = useState({}); // { 'name|month|field': value }
+  const [edits, setEdits] = useState(() => {
+    try {
+      const saved = localStorage.getItem(SALARY_LS_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {};
+  }); // { 'name|month|field': value }
+  const [savedNotice, setSavedNotice] = useState(false);
+
+  // Persist salary edits
+  useEffect(() => {
+    try {
+      localStorage.setItem(SALARY_LS_KEY, JSON.stringify(edits));
+    } catch (e) {}
+  }, [edits]);
+
   const [advanceForm, setAdvanceForm] = useState(null); // { empName, amount }
   const [advanceHistory, setAdvanceHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem('nobilis_advances') || '[]'); } catch { return []; }
@@ -502,12 +519,23 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
           {/* Save edits */}
           {editMode && Object.keys(edits).length > 0 && (
             <button
-              onClick={() => { setEditMode(false); }}
+              onClick={() => {
+                setEditMode(false);
+                setSavedNotice(true);
+                setTimeout(() => setSavedNotice(false), 2500);
+              }}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#1a3a32] text-white hover:bg-[#2d5a4a] transition-colors shadow-sm"
             >
               <I.Save />
               Сохранить ({Object.keys(edits).length})
             </button>
+          )}
+
+          {/* Saved confirmation */}
+          {savedNotice && (
+            <span className="flex items-center gap-1 text-sm text-green-600 font-medium animate-pulse">
+              Изменения сохранены
+            </span>
           )}
 
           {/* Export */}
