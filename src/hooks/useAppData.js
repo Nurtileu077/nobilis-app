@@ -119,15 +119,13 @@ export default function useAppData() {
 
   // ---- AUTH ----
   const STAFF_ACCOUNTS = [
-    { login: 'director', password: 'director2024', role: 'director', id: 'dir1', name: 'Директор' },
-    { login: 'curator', password: 'curator2024', role: 'curator', id: 'c', name: 'Куратор Мария' },
-    { login: 'acad_director', password: 'acad2024', role: 'academic_director', id: 'ad1', name: 'Акад. директор' },
-    { login: 'rop', password: 'rop2024', role: 'rop', id: 'rop1', name: 'РОП' },
-    { login: 'sales', password: 'sales2024', role: 'sales_manager', id: 'sm1', name: 'Менеджер Алия' },
-    { login: 'callcenter', password: 'call2024', role: 'callcenter', id: 'cc1', name: 'Оператор Дана' },
-    { login: 'coordinator', password: 'coord2024', role: 'coordinator', id: 'co1', name: 'Координатор Асем' },
-    { login: 'office', password: 'office2024', role: 'office_manager', id: 'om1', name: 'Офис-менеджер' },
-    { login: 'accountant', password: 'acc2024', role: 'accountant', id: 'acc1', name: 'Бухгалтер' },
+    { login: 'nurtileu', password: 'Nobilis2024!', role: 'director', id: 'dir1', name: 'Нуртилеу' },
+    { login: 'saltanat', password: 'Nobilis2024@', role: 'academic_director', id: 'ad1', name: 'Салтанат' },
+    { login: 'madiyar', password: 'Nobilis2024#', role: 'rop', id: 'rop1', name: 'Мадияр' },
+    // Legacy aliases for backward compatibility
+    { login: 'director', password: 'director2024', role: 'director', id: 'dir1', name: 'Нуртилеу' },
+    { login: 'acad_director', password: 'acad2024', role: 'academic_director', id: 'ad1', name: 'Салтанат' },
+    { login: 'rop', password: 'rop2024', role: 'rop', id: 'rop1', name: 'Мадияр' },
   ];
 
   const handleLogin = (login, password) => {

@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import NobilisLogo from './NobilisLogo';
 
 const DEMO_ACCOUNTS = [
-  { login: 'director', password: 'director2024', label: 'Директор', icon: 'D' },
-  { login: 'curator', password: 'curator2024', label: 'Куратор', icon: 'C' },
+  { login: 'nurtileu', password: 'Nobilis2024!', label: 'Нуртилеу (Директор)', icon: 'Н' },
+  { login: 'saltanat', password: 'Nobilis2024@', label: 'Салтанат (Акад. дир.)', icon: 'С' },
+  { login: 'madiyar', password: 'Nobilis2024#', label: 'Мадияр (РОП)', icon: 'М' },
   { login: 'zhakupbekova.dar61', password: '2d937fUSHbm!', label: 'Студент', icon: 'S' },
-  { login: 'smirnova.ann', password: 'Teacher2024!', label: 'Препод', icon: 'T' },
-  { login: 'rop', password: 'rop2024', label: 'РОП', icon: 'R' },
-  { login: 'sales', password: 'sales2024', label: 'Менеджер', icon: 'M' },
 ];
 
 const LoginScreen = ({ onLogin }) => {

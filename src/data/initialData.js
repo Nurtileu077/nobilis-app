@@ -4304,30 +4304,25 @@ export const getInitialData = () => {
     ],
     teachers: [
       {
-        id: '1', name: "Смирнова Анна Владимировна", login: "smirnova.ann", password: "Teacher2024!",
-        email: "smirnova@nobilis.edu", phone: "+7 999 111-22-33",
-        subject: "Английский / IELTS", hourlyRate: 2500, hoursWorked: 48, totalLessons: 32,
-        lessons: [
-          { id: 'tl1', date: "2024-12-09", scheduleId: '1', status: "conducted", hours: 1.5, confirmed: true },
-          { id: 'tl2', date: "2024-12-12", scheduleId: '1', status: "cancelled", hours: 0, note: "Больничный", confirmed: false }
-        ],
-        syllabus: [
-          { id: 's1', course: "IELTS Prep", weeks: 12, topics: ["Listening", "Reading", "Writing", "Speaking"], progress: 75, students: ['1', '2'], youtubeLinks: { "Listening": "https://youtube.com/watch?v=example1", "Reading": "" } }
-        ]
-      },
-      {
-        id: '2', name: "Петров Иван Константинович", login: "petrov.iva", password: "Teacher2024@",
-        email: "petrov@nobilis.edu", phone: "+7 999 222-33-44",
-        subject: "Математика / SAT", hourlyRate: 2800, hoursWorked: 36, totalLessons: 24,
-        lessons: [{ id: 'tl4', date: "2024-12-13", scheduleId: '3', status: "conducted", hours: 1.5, confirmed: true }],
-        syllabus: [{ id: 's3', course: "SAT Math", weeks: 16, topics: ["Algebra", "Geometry", "Statistics"], progress: 60, students: ['1', '3'], youtubeLinks: {} }]
-      },
-      {
-        id: '3', name: "Дизайнова Анна Сергеевна", login: "anna.dsgn", password: "Teacher2024#",
-        email: "anna@nobilis.edu", phone: "+7 999 333-44-55",
-        subject: "Портфолио / Дизайн", hourlyRate: 3000, hoursWorked: 24, totalLessons: 12,
+        id: 'dir1', name: "Нуртилеу", login: "nurtileu", password: "Nobilis2024!",
+        email: "nurtileu@nobilis.kz", phone: "+7 700 100-00-00",
+        role: "director", subject: "Директор / Управление", hourlyRate: 0, hoursWorked: 0, totalLessons: 0,
         lessons: [],
-        syllabus: [{ id: 's4', course: "Portfolio", weeks: 10, topics: ["Concept", "Execution"], progress: 40, students: ['2'], youtubeLinks: {} }]
+        syllabus: []
+      },
+      {
+        id: 'ad1', name: "Салтанат", login: "saltanat", password: "Nobilis2024@",
+        email: "saltanat@nobilis.kz", phone: "+7 700 200-00-00",
+        role: "academic_director", subject: "Акад. директор / Академический отдел", hourlyRate: 0, hoursWorked: 0, totalLessons: 0,
+        lessons: [],
+        syllabus: []
+      },
+      {
+        id: 'rop1', name: "Мадияр", login: "madiyar", password: "Nobilis2024#",
+        email: "madiyar@nobilis.kz", phone: "+7 700 300-00-00",
+        role: "rop", subject: "РОП / Отдел продаж", hourlyRate: 0, hoursWorked: 0, totalLessons: 0,
+        lessons: [],
+        syllabus: []
       }
     ],
     schedule: [
