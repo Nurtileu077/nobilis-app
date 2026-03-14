@@ -180,9 +180,24 @@ body {
   animation: shimmer 15s ease infinite;
 }
 
-/* Focus styles */
+/* Focus styles - visible for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--nobilis-gold);
+  outline-offset: 2px;
+}
+
 input:focus, select:focus, textarea:focus {
   outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.3);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Mobile responsive */

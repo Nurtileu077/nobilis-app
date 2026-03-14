@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import NobilisLogo from './NobilisLogo';
 
 const DEMO_ACCOUNTS = [
@@ -13,8 +13,20 @@ const DEMO_ACCOUNTS = [
 const LoginScreen = ({ onLogin }) => {
   const [loginForm, setLoginForm] = useState({ login: '', password: '' });
   const [loginError, setLoginError] = useState('');
+  const loginInputRef = useRef(null);
+  const errorRef = useRef(null);
+
+  useEffect(() => {
+    if (loginError && errorRef.current) {
+      errorRef.current.focus();
+    }
+  }, [loginError]);
 
   const handleLogin = () => {
+    if (!loginForm.login.trim() || !loginForm.password.trim()) {
+      setLoginError('Введите логин и пароль');
+      return;
+    }
     const error = onLogin(loginForm.login, loginForm.password);
     if (error) setLoginError(error);
   };
@@ -22,18 +34,18 @@ const LoginScreen = ({ onLogin }) => {
   return (
     <div className="min-h-screen flex relative overflow-hidden">
       {/* Left side - decorative background */}
-      <div className="hidden lg:flex lg:w-1/2 relative login-bg-left">
+      <div className="hidden lg:flex lg:w-1/2 relative login-bg-left" aria-hidden="true">
         {/* Geometric patterns */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Large circle */}
-          <div className="absolute -top-20 -left-20 w-96 h-96 border-2 border-[#c9a227]/15 rounded-full animate-float" />
-          <div className="absolute top-1/4 right-10 w-64 h-64 border border-[#c9a227]/10 rounded-full animate-float" style={{ animationDelay: '1s' }} />
-          <div className="absolute bottom-20 left-20 w-48 h-48 border border-[#c9a227]/20 rounded-full animate-float" style={{ animationDelay: '2s' }} />
+          <div className="absolute -top-20 -left-20 w-96 h-96 border-2 border-nobilis-gold/15 rounded-full animate-float" />
+          <div className="absolute top-1/4 right-10 w-64 h-64 border border-nobilis-gold/10 rounded-full animate-float" style={{ animationDelay: '1s' }} />
+          <div className="absolute bottom-20 left-20 w-48 h-48 border border-nobilis-gold/20 rounded-full animate-float" style={{ animationDelay: '2s' }} />
 
           {/* Grid dots */}
           {Array.from({ length: 40 }).map((_, i) => (
             <div key={i}
-              className="absolute w-1 h-1 bg-[#c9a227]/20 rounded-full"
+              className="absolute w-1 h-1 bg-nobilis-gold/20 rounded-full"
               style={{ top: `${(i * 31 + 11) % 100}%`, left: `${(i * 47 + 13) % 100}%` }}
             />
           ))}
@@ -54,8 +66,8 @@ const LoginScreen = ({ onLogin }) => {
             <NobilisLogo size={240} />
           </div>
           <h1 className="text-5xl font-serif text-white mt-8 tracking-wide">NOBILIS</h1>
-          <p className="text-[#c9a227] text-lg tracking-[0.5em] mt-2 font-medium">ACADEMY</p>
-          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-[#c9a227] to-transparent mt-6" />
+          <p className="text-nobilis-gold text-lg tracking-[0.5em] mt-2 font-medium">ACADEMY</p>
+          <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-nobilis-gold to-transparent mt-6" />
           <p className="text-white/40 text-sm mt-6 max-w-sm text-center leading-relaxed">
             Образовательная платформа нового поколения для подготовки к IELTS, SAT и поступлению в лучшие университеты мира
           </p>
@@ -68,7 +80,7 @@ const LoginScreen = ({ onLogin }) => {
               { label: 'Лучшие ВУЗы мира', desc: 'MIT, Oxford, TU Munich...' },
             ].map((f, i) => (
               <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10 animate-fadeIn" style={{ animationDelay: `${(i + 1) * 0.2}s` }}>
-                <div className="w-10 h-10 rounded-lg bg-[#c9a227]/20 flex items-center justify-center text-[#c9a227] flex-shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-nobilis-gold/20 flex items-center justify-center text-nobilis-gold flex-shrink-0">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
@@ -86,9 +98,9 @@ const LoginScreen = ({ onLogin }) => {
       {/* Right side - login form */}
       <div className="flex-1 flex items-center justify-center p-6 login-bg-right relative">
         {/* Mobile background patterns */}
-        <div className="absolute inset-0 overflow-hidden lg:hidden">
-          <div className="absolute top-10 left-10 w-72 h-72 border border-[#c9a227]/10 rounded-full animate-float" />
-          <div className="absolute bottom-10 right-10 w-48 h-48 border border-[#c9a227]/15 rounded-full animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute inset-0 overflow-hidden lg:hidden" aria-hidden="true">
+          <div className="absolute top-10 left-10 w-72 h-72 border border-nobilis-gold/10 rounded-full animate-float" />
+          <div className="absolute bottom-10 right-10 w-48 h-48 border border-nobilis-gold/15 rounded-full animate-float" style={{ animationDelay: '1s' }} />
         </div>
 
         <div className="relative w-full max-w-md animate-fadeIn">
@@ -98,7 +110,7 @@ const LoginScreen = ({ onLogin }) => {
               <NobilisLogo size={180} />
             </div>
             <h1 className="text-3xl font-serif text-white tracking-wide">NOBILIS</h1>
-            <p className="text-[#c9a227] text-sm tracking-[0.3em] mt-1">ACADEMY</p>
+            <p className="text-nobilis-gold text-sm tracking-[0.3em] mt-1">ACADEMY</p>
           </div>
 
           {/* Form card */}
@@ -108,42 +120,53 @@ const LoginScreen = ({ onLogin }) => {
               <p className="text-white/50 text-sm mt-1">Войдите в свой аккаунт</p>
             </div>
 
-            <div className="space-y-4">
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
               <div>
-                <label className="block text-sm text-[#c9a227]/80 mb-2 font-medium">Логин</label>
+                <label htmlFor="login-input" className="block text-sm text-nobilis-gold/80 mb-2 font-medium">Логин</label>
                 <input
+                  id="login-input"
+                  ref={loginInputRef}
                   type="text"
                   value={loginForm.login}
                   onChange={e => { setLoginForm(p => ({ ...p, login: e.target.value })); setLoginError(''); }}
-                  className="w-full p-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-[#c9a227] focus:bg-white/10 transition-all"
+                  className="w-full p-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-nobilis-gold focus:bg-white/10 transition-all"
                   placeholder="Введите логин"
                   autoComplete="username"
-                  onKeyDown={e => e.key === 'Enter' && handleLogin()}
+                  aria-invalid={loginError ? 'true' : undefined}
+                  aria-describedby={loginError ? 'login-error' : undefined}
                 />
               </div>
               <div>
-                <label className="block text-sm text-[#c9a227]/80 mb-2 font-medium">Пароль</label>
+                <label htmlFor="password-input" className="block text-sm text-nobilis-gold/80 mb-2 font-medium">Пароль</label>
                 <input
+                  id="password-input"
                   type="password"
                   value={loginForm.password}
                   onChange={e => { setLoginForm(p => ({ ...p, password: e.target.value })); setLoginError(''); }}
-                  className="w-full p-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-[#c9a227] focus:bg-white/10 transition-all"
+                  className="w-full p-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-nobilis-gold focus:bg-white/10 transition-all"
                   placeholder="Введите пароль"
                   autoComplete="current-password"
-                  onKeyDown={e => e.key === 'Enter' && handleLogin()}
+                  aria-invalid={loginError ? 'true' : undefined}
+                  aria-describedby={loginError ? 'login-error' : undefined}
                 />
               </div>
 
               {loginError && (
-                <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl animate-fadeIn">
+                <div
+                  id="login-error"
+                  ref={errorRef}
+                  className="p-3 bg-red-500/20 border border-red-500/30 rounded-xl animate-fadeIn"
+                  role="alert"
+                  tabIndex={-1}
+                >
                   <p className="text-red-300 text-sm text-center">{loginError}</p>
                 </div>
               )}
 
-              <button onClick={handleLogin} className="w-full py-4 rounded-xl font-semibold text-[#1a3a32] text-lg btn-gold mt-2">
+              <button type="submit" className="w-full py-4 rounded-xl font-semibold text-nobilis-green text-lg btn-gold mt-2">
                 Войти в систему
               </button>
-            </div>
+            </form>
 
             {/* Demo access */}
             <div className="mt-8 pt-6 border-t border-white/10">
@@ -153,9 +176,10 @@ const LoginScreen = ({ onLogin }) => {
                   <button
                     key={acc.login}
                     onClick={() => setLoginForm({ login: acc.login, password: acc.password })}
-                    className="p-3 bg-white/5 hover:bg-white/10 border border-white/15 rounded-xl text-white/70 transition-all hover:scale-105 hover:border-[#c9a227]/50"
+                    className="p-3 bg-white/5 hover:bg-white/10 border border-white/15 rounded-xl text-white/70 transition-all hover:scale-105 hover:border-nobilis-gold/50"
+                    aria-label={`Войти как ${acc.label}`}
                   >
-                    <div className="w-8 h-8 mx-auto mb-1.5 rounded-full bg-[#c9a227]/20 flex items-center justify-center text-[#c9a227] text-sm font-bold">
+                    <div className="w-8 h-8 mx-auto mb-1.5 rounded-full bg-nobilis-gold/20 flex items-center justify-center text-nobilis-gold text-sm font-bold" aria-hidden="true">
                       {acc.icon}
                     </div>
                     <div className="text-xs font-medium">{acc.label}</div>
