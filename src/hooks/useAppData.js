@@ -35,7 +35,7 @@ export default function useAppData() {
   const initialLoadDone = useRef(false);
 
   // Data version — bump this when initialData changes to force Supabase refresh
-  const DATA_VERSION = 5;
+  const DATA_VERSION = 6;
 
   // Load data from Supabase on mount
   useEffect(() => {
@@ -119,12 +119,23 @@ export default function useAppData() {
 
   // ---- AUTH ----
   const STAFF_ACCOUNTS = [
+    // Руководство
+    { login: 'aruzhan', password: 'Nob2024ar!', role: 'director', id: 'dir0', name: 'Аружан' },
     { login: 'nurtileu', password: 'Nobilis2024!', role: 'director', id: 'dir1', name: 'Нуртилеу' },
     { login: 'saltanat', password: 'Nobilis2024@', role: 'academic_director', id: 'ad1', name: 'Салтанат' },
+    // Куратор
+    { login: 'sultan.curator', password: 'Nob2024sc!', role: 'curator', id: 'cur1', name: 'Султан куратор' },
+    // Координатор
+    { login: 'dias', password: 'Nob2024di!', role: 'coordinator', id: 'co1', name: 'Диас' },
+    // Отдел продаж
     { login: 'madiyar', password: 'Nobilis2024#', role: 'rop', id: 'rop1', name: 'Мадияр' },
-    // Legacy aliases for backward compatibility
+    { login: 'darina', password: 'Nob2024dk!', role: 'callcenter', id: 'cc1', name: 'Дарина КЦ' },
+    { login: 'erasyl', password: 'Nob2024er!', role: 'callcenter', id: 'cc2', name: 'Ерасыл Кц' },
+    // Операционный
+    { login: 'kamila', password: 'Nob2024km!', role: 'office_manager', id: 'om1', name: 'Камила' },
+    { login: 'gulzhakhan', password: 'Nob2024gz!', role: 'accountant', id: 'acc1', name: 'Гульжахан' },
+    // Legacy aliases
     { login: 'director', password: 'director2024', role: 'director', id: 'dir1', name: 'Нуртилеу' },
-    { login: 'acad_director', password: 'acad2024', role: 'academic_director', id: 'ad1', name: 'Салтанат' },
     { login: 'rop', password: 'rop2024', role: 'rop', id: 'rop1', name: 'Мадияр' },
   ];
 

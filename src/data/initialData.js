@@ -4303,27 +4303,32 @@ export const getInitialData = () => {
     }
     ],
     teachers: [
-      {
-        id: 'dir1', name: "Нуртилеу", login: "nurtileu", password: "Nobilis2024!",
-        email: "nurtileu@nobilis.kz", phone: "+7 700 100-00-00",
-        role: "director", subject: "Директор / Управление", hourlyRate: 0, hoursWorked: 0, totalLessons: 0,
-        lessons: [],
-        syllabus: []
-      },
-      {
-        id: 'ad1', name: "Салтанат", login: "saltanat", password: "Nobilis2024@",
-        email: "saltanat@nobilis.kz", phone: "+7 700 200-00-00",
-        role: "academic_director", subject: "Акад. директор / Академический отдел", hourlyRate: 0, hoursWorked: 0, totalLessons: 0,
-        lessons: [],
-        syllabus: []
-      },
-      {
-        id: 'rop1', name: "Мадияр", login: "madiyar", password: "Nobilis2024#",
-        email: "madiyar@nobilis.kz", phone: "+7 700 300-00-00",
-        role: "rop", subject: "РОП / Отдел продаж", hourlyRate: 0, hoursWorked: 0, totalLessons: 0,
-        lessons: [],
-        syllabus: []
-      }
+      // ── Руководство ──
+      { id: 'dir0', name: "Аружан", login: "aruzhan", password: "Nob2024ar!", role: "director", subject: "Учредитель", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 'dir1', name: "Нуртилеу", login: "nurtileu", password: "Nobilis2024!", role: "director", subject: "Директор / Владелец", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 'ad1', name: "Салтанат", login: "saltanat", password: "Nobilis2024@", role: "academic_director", subject: "Акад. директор", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      // ── Преподаватели ──
+      { id: 't1', name: "Алуа (Онлайн)", login: "alua", password: "Nob2024al!", role: "teacher", subject: "IELTS / Онлайн", hourlyRate: 3000, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 't2', name: "Султан айлтс онлайн", login: "sultan.ielts", password: "Nob2024si!", role: "teacher", subject: "IELTS / Онлайн", hourlyRate: 3000, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 't3', name: "Мади дженерал инглиш", login: "madi", password: "Nob2024md!", role: "teacher", subject: "General English", hourlyRate: 3000, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 't4', name: "Мадина международн отд (Онлайн)", login: "madina", password: "Nob2024mn!", role: "teacher", subject: "Международный отдел / Онлайн", hourlyRate: 3000, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 't5', name: "Ванесса дженерал", login: "vanessa", password: "Nob2024vn!", role: "teacher", subject: "General English", hourlyRate: 3000, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 't6', name: "Илона айлтс", login: "ilona", password: "Nob2024il!", role: "teacher", subject: "IELTS", hourlyRate: 3000, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 't7', name: "Рустам сат вербал", login: "rustam", password: "Nob2024rs!", role: "teacher", subject: "SAT Verbal", hourlyRate: 3000, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 't8', name: "Аружан САТ", login: "aruzhan.sat", password: "Nob2024as!", role: "teacher", subject: "SAT", hourlyRate: 3000, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 't9', name: "Касымжомарт Сат матем", login: "kasymzhomart", password: "Nob2024ks!", role: "teacher", subject: "SAT Math", hourlyRate: 3000, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      // ── Куратор ──
+      { id: 'cur1', name: "Султан куратор", login: "sultan.curator", password: "Nob2024sc!", role: "curator", subject: "Куратор", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      // ── Координатор ──
+      { id: 'co1', name: "Диас международн координатор", login: "dias", password: "Nob2024di!", role: "coordinator", subject: "Международный координатор", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      // ── Отдел продаж ──
+      { id: 'rop1', name: "Мадияр РОП/Оп", login: "madiyar", password: "Nobilis2024#", role: "rop", subject: "РОП / Отдел продаж", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 'cc1', name: "Дарина КЦ", login: "darina", password: "Nob2024dk!", role: "callcenter", subject: "Колл-центр", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 'cc2', name: "Ерасыл Кц", login: "erasyl", password: "Nob2024er!", role: "callcenter", subject: "Колл-центр", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      // ── Операционный ──
+      { id: 'om1', name: "Камила Офис менеджер", login: "kamila", password: "Nob2024km!", role: "office_manager", subject: "Офис-менеджер", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 'acc1', name: "Гульжахан Бухгалтер", login: "gulzhakhan", password: "Nob2024gz!", role: "accountant", subject: "Бухгалтер", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
+      { id: 'oth1', name: "Асем уборщица", login: "asem", password: "Nob2024am!", role: "other", subject: "Уборка", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
     ],
     schedule: [
       { id: '1', subject: "Подготовка к IELTS", teacherId: '1', day: "Понедельник", time: "16:00", duration: 90, room: "201", students: ['1', '2'] },

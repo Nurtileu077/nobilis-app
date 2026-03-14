@@ -2,8 +2,8 @@
 // NOBILIS ACADEMY - CONSTANTS v3
 // =============================================
 
-export const STORAGE_KEY = 'nobilis_v6';
-export const USER_KEY = 'nobilis_user_v6';
+export const STORAGE_KEY = 'nobilis_v7';
+export const USER_KEY = 'nobilis_user_v7';
 
 // Package types
 export const PACKAGE_TYPES = {
