@@ -1,19 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import I from '../common/Icons';
+import { useSheets } from '../../context/GoogleSheetsContext';
 
-let PNL_DATA = null;
-let EXPENSES_DETAIL = null;
-let EXPENSE_CATEGORIES = null;
-let COMPANY_DEBTS = null;
+let STATIC_PNL_DATA = null;
+let STATIC_EXPENSES_DETAIL = null;
+let STATIC_EXPENSE_CATEGORIES = null;
+let STATIC_COMPANY_DEBTS = null;
 try {
   const pnlModule = require('../../data/pnlData');
-  PNL_DATA = pnlModule.PNL_DATA;
-  EXPENSES_DETAIL = pnlModule.EXPENSES_DETAIL;
-  EXPENSE_CATEGORIES = pnlModule.EXPENSE_CATEGORIES;
+  STATIC_PNL_DATA = pnlModule.PNL_DATA;
+  STATIC_EXPENSES_DETAIL = pnlModule.EXPENSES_DETAIL;
+  STATIC_EXPENSE_CATEGORIES = pnlModule.EXPENSE_CATEGORIES;
 } catch (e) {}
 try {
   const salaryModule = require('../../data/salaryData');
-  COMPANY_DEBTS = salaryModule.COMPANY_DEBTS;
+  STATIC_COMPANY_DEBTS = salaryModule.COMPANY_DEBTS;
 } catch (e) {}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -53,10 +54,10 @@ const FALLBACK = {
 
 // ─── Build expense categories for a given month ──────────────────────────────
 
-function getExpenseCategoriesForMonth(monthName) {
+function getExpenseCategoriesForMonth(monthName, expensesDetail, expenseCategories) {
   // First try EXPENSES_DETAIL (has individual transactions)
-  const details = EXPENSES_DETAIL
-    ? EXPENSES_DETAIL.filter((e) => e.month === monthName)
+  const details = expensesDetail
+    ? expensesDetail.filter((e) => e.month === monthName)
     : [];
 
   if (details.length > 0) {
@@ -71,11 +72,11 @@ function getExpenseCategoriesForMonth(monthName) {
   }
 
   // Fallback to EXPENSE_CATEGORIES (aggregated by month)
-  if (EXPENSE_CATEGORIES) {
-    const monthIdx = EXPENSE_CATEGORIES.months.indexOf(monthName);
-    if (monthIdx !== -1 && EXPENSE_CATEGORIES.amounts[monthIdx]) {
-      const row = EXPENSE_CATEGORIES.amounts[monthIdx];
-      const cats = EXPENSE_CATEGORIES.categories;
+  if (expenseCategories) {
+    const monthIdx = expenseCategories.months.indexOf(monthName);
+    if (monthIdx !== -1 && expenseCategories.amounts[monthIdx]) {
+      const row = expenseCategories.amounts[monthIdx];
+      const cats = expenseCategories.categories;
       const catList = cats
         .map((cat, ci) => [cat, row[ci] || 0])
         .filter(([, v]) => v > 0)
@@ -133,6 +134,11 @@ function exportExcel(rows, fileName) {
 
 // eslint-disable-next-line no-unused-vars
 export default function PnLDashboard({ onUpdateData } = {}) {
+  const sheets = useSheets();
+  const PNL_DATA = sheets?.pnlData || STATIC_PNL_DATA;
+  const EXPENSES_DETAIL = sheets?.expensesDetail || STATIC_EXPENSES_DETAIL;
+  const EXPENSE_CATEGORIES = sheets?.expenseCategories || STATIC_EXPENSE_CATEGORIES;
+  const COMPANY_DEBTS = sheets?.companyDebts || STATIC_COMPANY_DEBTS;
   const raw = PNL_DATA || FALLBACK;
 
   // Build a clean row array for each month
@@ -320,7 +326,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
 
   // ── Expense detail for selected month ─────────────────────────────────────
   const { catList: expenseCatList, details: expenseDetails, source: expenseSource } =
-    getExpenseCategoriesForMonth(months[selectedMonth]);
+    getExpenseCategoriesForMonth(months[selectedMonth], EXPENSES_DETAIL, EXPENSE_CATEGORIES);
   const expenseCatTotal = expenseCatList.reduce((s, [, v]) => s + v, 0);
 
   // ── Chart scale ───────────────────────────────────────────────────────────

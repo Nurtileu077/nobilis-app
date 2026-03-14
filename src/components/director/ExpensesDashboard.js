@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import I from '../common/Icons';
+import { useSheets } from '../../context/GoogleSheetsContext';
 
-let EXPENSE_CATEGORIES = null;
-let EXPENSES_DETAIL = null;
+let STATIC_EXPENSE_CATEGORIES = null;
+let STATIC_EXPENSES_DETAIL = null;
 try {
   const pnlModule = require('../../data/pnlData');
-  EXPENSE_CATEGORIES = pnlModule.EXPENSE_CATEGORIES;
-  EXPENSES_DETAIL = pnlModule.EXPENSES_DETAIL;
+  STATIC_EXPENSE_CATEGORIES = pnlModule.EXPENSE_CATEGORIES;
+  STATIC_EXPENSES_DETAIL = pnlModule.EXPENSES_DETAIL;
 } catch (e) {}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -48,6 +49,9 @@ const DEFAULT_PLANNED = [
 
 // eslint-disable-next-line no-unused-vars
 const ExpensesDashboard = ({ onUpdateData } = {}) => {
+  const sheets = useSheets();
+  const EXPENSE_CATEGORIES = sheets?.expenseCategories || STATIC_EXPENSE_CATEGORIES;
+  const EXPENSES_DETAIL = sheets?.expensesDetail || STATIC_EXPENSES_DETAIL;
   const months = EXPENSE_CATEGORIES?.months || [
     'Январь 2026', 'Февраль 2026', 'Март 2026',
   ];

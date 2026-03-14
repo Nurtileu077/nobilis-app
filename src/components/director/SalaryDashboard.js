@@ -1,14 +1,15 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import I from '../common/Icons';
+import { useSheets } from '../../context/GoogleSheetsContext';
 
-let SALARY_DATA = null;
-let SALES_DATA = null;
-let COMPANY_DEBTS = null;
+let STATIC_SALARY_DATA = null;
+let STATIC_SALES_DATA = null;
+let STATIC_COMPANY_DEBTS = null;
 try {
   const salaryModule = require('../../data/salaryData');
-  SALARY_DATA = salaryModule.SALARY_DATA;
-  SALES_DATA = salaryModule.SALES_DATA;
-  COMPANY_DEBTS = salaryModule.COMPANY_DEBTS;
+  STATIC_SALARY_DATA = salaryModule.SALARY_DATA;
+  STATIC_SALES_DATA = salaryModule.SALES_DATA;
+  STATIC_COMPANY_DEBTS = salaryModule.COMPANY_DEBTS;
 } catch (e) {}
 
 const SALARY_LS_KEY = 'nobilis_salary_edits';
@@ -263,6 +264,10 @@ const exportCSV = (employees, salesManagers, month) => {
 
 // eslint-disable-next-line no-unused-vars
 const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateData } = {}) => {
+  const sheets = useSheets();
+  const SALARY_DATA = sheets?.salaryData || STATIC_SALARY_DATA;
+  const SALES_DATA = sheets?.salesData || STATIC_SALES_DATA;
+  const COMPANY_DEBTS = sheets?.companyDebts || STATIC_COMPANY_DEBTS;
   const months = SALARY_DATA?.months || [];
   const employees = SALARY_DATA?.employees || [];
   const salesManagers = SALES_DATA?.managers || [];

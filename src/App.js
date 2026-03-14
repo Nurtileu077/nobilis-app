@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import useAppData from './hooks/useAppData';
+import { GoogleSheetsProvider } from './context/GoogleSheetsContext';
 import { subscribeToPush } from './utils/pushSubscription';
 import { DOCUMENT_TYPES, PACKAGE_TYPES, SUPPORT_STAGES, COUNTRIES, STUDENT_STATUSES } from './data/constants';
 import { UNIVERSITIES_DB, COUNTRY_INFO } from './data/universities';
@@ -54,6 +55,7 @@ import ROPDashboard from './components/sales/ROPDashboard';
 import SalesManagerDashboard from './components/sales/SalesManagerDashboard';
 import CallcenterDashboard from './components/sales/CallcenterDashboard';
 import IntegrationsPanel from './components/sales/IntegrationsPanel';
+import GoogleSheetsSync from './components/common/GoogleSheetsSync';
 
 // ============================================================
 // NAV ITEMS CONFIG
@@ -2133,6 +2135,7 @@ export default function NobilisAcademy() {
   // LAYOUT
   // ============================================================
   return (
+    <GoogleSheetsProvider>
     <div className="flex h-screen bg-[#f8faf9]">
       <Sidebar user={{...user, avatar: user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : user.role === 'teacher' ? (data.teachers.find(x => x.id === user.id)?.avatar) : data.curatorAvatar}} view={view} navItems={navItems} onNavigate={(v) => { setView(v); setStudentPage(null); }} onLogout={logout} isOpen={sidebarOpen} onToggle={() => setSidebarOpen(false)} onAvatarClick={() => { setForm({ avatarTargetRole: user.role, avatarTargetId: user.id, avatarPreview: user.role === 'curator' ? data.curatorAvatar : null }); setModal('avatarUpload'); }} taskCount={(data.globalTasks || []).filter(t => !t.done).length} />
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -2155,6 +2158,9 @@ export default function NobilisAcademy() {
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <PushSubscribeBanner />
+          {(user.role === 'director' || user.role === 'academic_director') && view === 'dashboard' && (
+            <div className="mb-4"><GoogleSheetsSync /></div>
+          )}
           {renderContent()}
         </main>
       </div>
@@ -2180,5 +2186,6 @@ export default function NobilisAcademy() {
         </div>
       )}
     </div>
+    </GoogleSheetsProvider>
   );
 }
