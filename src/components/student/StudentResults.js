@@ -28,6 +28,59 @@ const StudentResults = ({ student, onSetSelected, onSetModal }) => {
         </div>
       </div>
 
+      {/* English test result */}
+      {student.englishTestResult && (
+        <div className="bg-white rounded-2xl p-6 shadow-sm border">
+          <h3 className="text-lg font-semibold mb-4">Тест на знание английского</h3>
+          <div className="p-4 bg-gray-50 rounded-xl">
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="font-medium">Уровень: {student.englishTestResult.levelName}</div>
+                <div className="text-sm text-gray-500">{new Date(student.englishTestResult.date).toLocaleDateString('ru-RU')}</div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-[#1a3a32]">{student.englishTestResult.score}/{student.englishTestResult.total}</div>
+                <div className="text-sm text-gray-500">{Math.round(student.englishTestResult.score / student.englishTestResult.total * 100)}%</div>
+              </div>
+            </div>
+          </div>
+          {/* English test history */}
+          {student.englishTestHistory?.length > 1 && (
+            <div className="mt-3 space-y-2">
+              <div className="text-sm text-gray-500">История попыток:</div>
+              {student.englishTestHistory.slice().reverse().map((r, i) => (
+                <div key={i} className="flex justify-between p-2 bg-gray-50 rounded-lg text-sm">
+                  <span>{r.levelName} — {r.score}/{r.total}</span>
+                  <span className="text-gray-400">{new Date(r.date).toLocaleDateString('ru-RU')}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Career orientation result */}
+      {student.testResult && (
+        <div className="bg-white rounded-2xl p-6 shadow-sm border">
+          <h3 className="text-lg font-semibold mb-4">Профориентация (RIASEC)</h3>
+          <div className="p-4 bg-gray-50 rounded-xl">
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="font-medium">{student.testResult}</div>
+                {student.testRiasecCode && <div className="text-sm text-gray-500">Код: {student.testRiasecCode}</div>}
+              </div>
+              {student.testCareers?.length > 0 && (
+                <div className="flex flex-wrap gap-1 justify-end max-w-[60%]">
+                  {student.testCareers.slice(0, 3).map(c => (
+                    <span key={c} className="text-xs bg-[#c9a227]/20 text-[#c9a227] px-2 py-0.5 rounded-full">{c}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl p-6 shadow-sm border">
         <h3 className="text-lg font-semibold mb-4">Официальные экзамены</h3>
         {official.length > 0 ? (

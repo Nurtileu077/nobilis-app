@@ -1,9 +1,9 @@
-import { DOCUMENT_TYPES, GALLUP_QUESTIONS, CAREER_PROFILES, DAYS_ORDER, DAYS_RU, ANSWER_LABELS, STORAGE_KEY } from '../data/constants';
+import { DOCUMENT_TYPES, HOLLAND_QUESTIONS, HOLLAND_PROFILES, DAYS_ORDER, DAYS_RU, ANSWER_LABELS, STORAGE_KEY } from '../data/constants';
 
 describe('Constants', () => {
   describe('STORAGE_KEY', () => {
     it('has the correct storage key', () => {
-      expect(STORAGE_KEY).toBe('nobilis_v2');
+      expect(STORAGE_KEY).toBe('nobilis_v3');
     });
   });
 
@@ -26,13 +26,13 @@ describe('Constants', () => {
     });
   });
 
-  describe('GALLUP_QUESTIONS', () => {
-    it('has exactly 20 questions', () => {
-      expect(GALLUP_QUESTIONS).toHaveLength(20);
+  describe('HOLLAND_QUESTIONS', () => {
+    it('has exactly 42 questions', () => {
+      expect(HOLLAND_QUESTIONS).toHaveLength(42);
     });
 
     it('each question has id, text, and cat', () => {
-      GALLUP_QUESTIONS.forEach(q => {
+      HOLLAND_QUESTIONS.forEach(q => {
         expect(q.id).toBeDefined();
         expect(typeof q.text).toBe('string');
         expect(typeof q.cat).toBe('string');
@@ -40,29 +40,38 @@ describe('Constants', () => {
     });
 
     it('has unique question IDs', () => {
-      const ids = GALLUP_QUESTIONS.map(q => q.id);
+      const ids = HOLLAND_QUESTIONS.map(q => q.id);
       expect(new Set(ids).size).toBe(ids.length);
     });
 
-    it('IDs are sequential from 1 to 20', () => {
-      GALLUP_QUESTIONS.forEach((q, i) => {
+    it('IDs are sequential from 1 to 42', () => {
+      HOLLAND_QUESTIONS.forEach((q, i) => {
         expect(q.id).toBe(i + 1);
+      });
+    });
+
+    it('has 7 questions per RIASEC type', () => {
+      const types = ['R', 'I', 'A', 'S', 'E', 'C'];
+      types.forEach(t => {
+        expect(HOLLAND_QUESTIONS.filter(q => q.cat === t)).toHaveLength(7);
       });
     });
   });
 
-  describe('CAREER_PROFILES', () => {
-    it('has exactly 5 profiles', () => {
-      expect(Object.keys(CAREER_PROFILES)).toHaveLength(5);
+  describe('HOLLAND_PROFILES', () => {
+    it('has exactly 6 profiles (RIASEC)', () => {
+      expect(Object.keys(HOLLAND_PROFILES)).toHaveLength(6);
     });
 
     it('each profile has required fields', () => {
-      Object.values(CAREER_PROFILES).forEach(p => {
-        expect(p.cats).toBeDefined();
-        expect(Array.isArray(p.cats)).toBe(true);
+      Object.values(HOLLAND_PROFILES).forEach(p => {
+        expect(p.name).toBeDefined();
+        expect(p.emoji).toBeDefined();
         expect(p.color).toBeDefined();
         expect(p.desc).toBeDefined();
         expect(p.careers).toBeDefined();
+        expect(Array.isArray(p.careers)).toBe(true);
+        expect(p.faculties).toBeDefined();
         expect(p.unis).toBeDefined();
         expect(p.countries).toBeDefined();
       });
@@ -86,10 +95,10 @@ describe('Constants', () => {
   });
 
   describe('ANSWER_LABELS', () => {
-    it('has 7 labels for Likert scale', () => {
-      expect(ANSWER_LABELS).toHaveLength(7);
-      expect(ANSWER_LABELS[0]).toBe('Совсем нет');
-      expect(ANSWER_LABELS[6]).toBe('Полностью да');
+    it('has 5 labels for Likert scale', () => {
+      expect(ANSWER_LABELS).toHaveLength(5);
+      expect(ANSWER_LABELS[0]).toBe('Совсем не про меня');
+      expect(ANSWER_LABELS[4]).toBe('Полностью про меня');
     });
   });
 });

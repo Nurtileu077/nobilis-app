@@ -11,6 +11,58 @@ const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'YOUR_SUPABAS
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // =============================================
+// СОТРУДНИКИ — Supabase Auth Accounts
+// =============================================
+// Для инициализации в Supabase Dashboard:
+// 1. Перейдите в Authentication → Users
+// 2. Создайте пользователей с email/password ниже
+// 3. Добавьте в .env:  REACT_APP_SUPABASE_URL и REACT_APP_SUPABASE_ANON_KEY
+
+export const STAFF_SUPABASE = [
+  {
+    id: 'dir1',
+    name: 'Нуртилеу',
+    role: 'director',
+    email: 'nurtileu@nobilis.kz',
+    login: 'nurtileu',
+    password: 'Nobilis2024!',
+    phone: '+7 700 100-00-00',
+  },
+  {
+    id: 'ad1',
+    name: 'Салтанат',
+    role: 'academic_director',
+    email: 'saltanat@nobilis.kz',
+    login: 'saltanat',
+    password: 'Nobilis2024@',
+    phone: '+7 700 200-00-00',
+  },
+  {
+    id: 'rop1',
+    name: 'Мадияр',
+    role: 'rop',
+    email: 'madiyar@nobilis.kz',
+    login: 'madiyar',
+    password: 'Nobilis2024#',
+    phone: '+7 700 300-00-00',
+  },
+];
+
+// Supabase login helper
+export const supabaseLogin = async (email, password) => {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) return { user: null, error: error.message };
+  // Map supabase user to app staff
+  const staff = STAFF_SUPABASE.find(s => s.email === data.user.email);
+  if (!staff) return { user: null, error: 'Пользователь не найден в системе' };
+  return { user: { role: staff.role, id: staff.id, name: staff.name }, error: null };
+};
+
+export const supabaseLogout = async () => {
+  await supabase.auth.signOut();
+};
+
+// =============================================
 // ТИПЫ ДОКУМЕНТОВ
 // =============================================
 export const documentTypes = {
