@@ -35,7 +35,7 @@ export default function useAppData() {
   const initialLoadDone = useRef(false);
 
   // Data version — bump this when initialData changes to force Supabase refresh
-  const DATA_VERSION = 4;
+  const DATA_VERSION = 5;
 
   // Load data from Supabase on mount
   useEffect(() => {
