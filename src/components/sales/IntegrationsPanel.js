@@ -2,11 +2,15 @@ import React, { useState, useCallback } from 'react';
 // eslint-disable-next-line no-unused-vars
 import I from '../common/Icons';
 import { createMeetingAutomation } from '../../lib/meetingAutomation';
+import { testTelegramConnection, sendTestMessage, fetchChatIds } from '../../lib/telegramAPI';
 
 const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
   const integrations = data?.integrations || {};
   const [activeTab, setActiveTab] = useState('bitrix24');
   const [testStatus, setTestStatus] = useState({});
+  const [telegramChats, setTelegramChats] = useState(null);
+  const [telegramChatsLoading, setTelegramChatsLoading] = useState(false);
+  const [telegramTestDetail, setTelegramTestDetail] = useState(null);
 
   const services = [
     { id: 'bitrix24', name: 'Битрикс24', desc: 'CRM, лиды, телефония, записи звонков', icon: '🔗', color: '#2FC6F6' },
@@ -39,6 +43,37 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
         setTestStatus(prev => ({ ...prev, [serviceId]: 'error' }));
       }
       setTimeout(() => setTestStatus(prev => ({ ...prev, [serviceId]: null })), 4000);
+      return;
+    }
+
+    // Real Telegram test
+    if (serviceId === 'telegram') {
+      const cfg = integrations.telegram || {};
+      try {
+        const result = await testTelegramConnection(cfg.botToken);
+        if (!result.success) {
+          setTestStatus(prev => ({ ...prev, telegram: 'error' }));
+          setTelegramTestDetail(result.error);
+        } else {
+          // Bot token valid — try sending test message to first chat
+          setTelegramTestDetail(`Бот: @${result.username}`);
+          if (cfg.chatIds?.length > 0) {
+            const sendResult = await sendTestMessage(cfg.botToken, cfg.chatIds[0]);
+            setTestStatus(prev => ({ ...prev, telegram: sendResult.success ? 'success' : 'error' }));
+            if (!sendResult.success) setTelegramTestDetail(sendResult.error);
+          } else {
+            setTestStatus(prev => ({ ...prev, telegram: 'success' }));
+            setTelegramTestDetail(`Бот @${result.username} подключён. Добавьте Chat ID для отправки сообщений.`);
+          }
+        }
+      } catch {
+        setTestStatus(prev => ({ ...prev, telegram: 'error' }));
+        setTelegramTestDetail('Ошибка сети');
+      }
+      setTimeout(() => {
+        setTestStatus(prev => ({ ...prev, telegram: null }));
+        setTelegramTestDetail(null);
+      }, 5000);
       return;
     }
 
@@ -199,13 +234,39 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
     );
   };
 
+  const handleFetchChatIds = useCallback(async () => {
+    const cfg = integrations.telegram || {};
+    if (!cfg.botToken) {
+      setTelegramChats([]);
+      return;
+    }
+    setTelegramChatsLoading(true);
+    try {
+      const result = await fetchChatIds(cfg.botToken);
+      if (result.success) {
+        setTelegramChats(result.chats);
+        if (result.hint) setTelegramTestDetail(result.hint);
+      } else {
+        setTelegramTestDetail(result.error);
+      }
+    } catch {
+      setTelegramTestDetail('Ошибка сети');
+    }
+    setTelegramChatsLoading(false);
+  }, [integrations]);
+
   const renderTelegram = () => {
     const cfg = integrations.telegram || {};
     return (
       <div className="space-y-4">
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
-          <strong>Как подключить:</strong> Создайте бота через @BotFather в Telegram.
-          Скопируйте токен и вставьте ниже. Добавьте бота в нужные чаты.
+          <strong>Как подключить:</strong>
+          <ol className="mt-2 space-y-1 list-decimal list-inside">
+            <li>Создайте бота через @BotFather в Telegram и скопируйте токен</li>
+            <li>Вставьте токен ниже</li>
+            <li>Добавьте бота в нужный групповой чат и напишите любое сообщение</li>
+            <li>Нажмите &laquo;Найти чаты&raquo; чтобы автоматически получить Chat ID</li>
+          </ol>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Bot Token</label>
@@ -215,10 +276,47 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Chat ID (через запятую)</label>
-          <input type="text" defaultValue={(cfg.chatIds || []).join(', ')} placeholder="-1001234567890, 987654321"
-            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
-            onBlur={e => handleSave('telegram', { chatIds: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} />
+          <div className="flex gap-2">
+            <input type="text" defaultValue={(cfg.chatIds || []).join(', ')} placeholder="-1001234567890, 987654321"
+              className="flex-1 px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+              onBlur={e => handleSave('telegram', { chatIds: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} />
+            <button onClick={handleFetchChatIds} disabled={telegramChatsLoading || !cfg.botToken}
+              className="px-4 py-2.5 text-sm bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap">
+              {telegramChatsLoading ? 'Поиск...' : 'Найти чаты'}
+            </button>
+          </div>
         </div>
+
+        {/* Found chats */}
+        {telegramChats && telegramChats.length > 0 && (
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-2">
+            <h4 className="font-medium text-sm text-green-800">Найденные чаты (нажмите чтобы добавить):</h4>
+            {telegramChats.map(chat => (
+              <button key={chat.id} onClick={() => {
+                const existing = cfg.chatIds || [];
+                const idStr = String(chat.id);
+                if (!existing.includes(idStr)) {
+                  handleSave('telegram', { chatIds: [...existing, idStr] });
+                }
+              }}
+                className="flex items-center gap-2 w-full p-2 bg-white rounded-lg border hover:border-green-400 transition-colors text-left">
+                <span className="text-sm font-medium">{chat.title}</span>
+                <span className="text-xs text-gray-400">{chat.type} | ID: {chat.id}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        {telegramChats && telegramChats.length === 0 && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+            Чаты не найдены. Добавьте бота в группу или напишите ему личное сообщение, затем нажмите &laquo;Найти чаты&raquo; снова.
+          </div>
+        )}
+
+        {/* Test detail message */}
+        {telegramTestDetail && (
+          <div className="text-sm text-gray-600 bg-gray-50 rounded-xl p-3">{telegramTestDetail}</div>
+        )}
+
         <div className="space-y-2">
           <h4 className="font-medium text-sm">Уведомления:</h4>
           {[
