@@ -6,6 +6,7 @@ import { testTelegramConnection, sendTestMessage, fetchChatIds } from '../../lib
 import { testGoogleDriveConnection } from '../../lib/googleDriveAPI';
 import { testGoogleCalendarConnection } from '../../lib/googleCalendarAPI';
 import { testWhatsAppConnection } from '../../lib/whatsappAPI';
+import { testTelemostConnection } from '../../lib/telemostAPI';
 
 const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
   const integrations = data?.integrations || {};
@@ -17,6 +18,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
 
   const services = [
     { id: 'bitrix24', name: 'Битрикс24', desc: 'CRM, лиды, телефония, записи звонков', icon: '🔗', color: '#2FC6F6' },
+    { id: 'telemost', name: 'Яндекс Телемост', desc: 'Видеовстречи, запись звонков', icon: '📹', color: '#FC3F1D' },
     { id: 'googleMeet', name: 'Google Meet', desc: 'Автоматические видеовстречи', icon: '📹', color: '#00897B' },
     { id: 'telegram', name: 'Telegram Bot', desc: 'Уведомления, отчёты, команды', icon: '✈️', color: '#0088CC' },
     { id: 'googleDrive', name: 'Google Drive', desc: 'Хранение документов, договоров', icon: '📁', color: '#4285F4' },
@@ -90,6 +92,19 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
         setTestStatus(prev => ({ ...prev, googleDrive: 'error' }));
       }
       setTimeout(() => setTestStatus(prev => ({ ...prev, googleDrive: null })), 4000);
+      return;
+    }
+
+    // Real Yandex Telemost test
+    if (serviceId === 'telemost') {
+      try {
+        const cfg = integrations.telemost || {};
+        const result = await testTelemostConnection(cfg.oauthToken);
+        setTestStatus(prev => ({ ...prev, telemost: result.success ? 'success' : 'error' }));
+      } catch {
+        setTestStatus(prev => ({ ...prev, telemost: 'error' }));
+      }
+      setTimeout(() => setTestStatus(prev => ({ ...prev, telemost: null })), 4000);
       return;
     }
 
@@ -190,6 +205,65 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             </p>
           </div>
         )}
+      </div>
+    );
+  };
+
+  const renderTelemost = () => {
+    const cfg = integrations.telemost || {};
+    return (
+      <div className="space-y-4">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-800">
+          <strong>Как подключить:</strong>
+          <ol className="mt-2 space-y-1 list-decimal list-inside">
+            <li>Подключите <a href="https://360.yandex.ru/business/" target="_blank" rel="noopener noreferrer" className="underline">Яндекс 360 для бизнеса</a> для домена</li>
+            <li>Создайте OAuth-приложение на <a href="https://oauth.yandex.ru/" target="_blank" rel="noopener noreferrer" className="underline">oauth.yandex.ru</a></li>
+            <li>Добавьте право <code>telemost-api:conferences.create</code></li>
+            <li>Получите OAuth-токен и вставьте ниже</li>
+          </ol>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">OAuth токен</label>
+          <input type="password" defaultValue={cfg.oauthToken || ''} placeholder="y0_AgAAAAA..."
+            className="w-full px-4 py-2.5 border rounded-xl text-sm font-mono focus:ring-2 focus:ring-red-400 focus:border-transparent"
+            onBlur={e => handleSave('telemost', { oauthToken: e.target.value })} />
+          <p className="text-xs text-gray-400 mt-1">OAuth токен от Яндекс ID с правами на Телемост API</p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.autoCreateForSchedule !== false}
+              className="rounded border-gray-300 text-red-500 focus:ring-red-400"
+              onChange={e => handleSave('telemost', { autoCreateForSchedule: e.target.checked })} />
+            <span className="text-sm">Авто-создание для расписания</span>
+          </label>
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.autoCreateForBitrix !== false}
+              className="rounded border-gray-300 text-red-500 focus:ring-red-400"
+              onChange={e => handleSave('telemost', { autoCreateForBitrix: e.target.checked })} />
+            <span className="text-sm">Авто-создание для CRM встреч</span>
+          </label>
+        </div>
+
+        {/* Connection flow diagram */}
+        <div className="bg-gradient-to-r from-red-50 to-blue-50 border border-red-200 rounded-xl p-4">
+          <h4 className="font-medium text-sm mb-3 text-gray-800">Схема автоматизации</h4>
+          <div className="flex items-center justify-center gap-2 text-sm">
+            <div className="bg-white px-3 py-2 rounded-lg border shadow-sm text-center">
+              <div className="font-medium">Битрикс24</div>
+              <div className="text-xs text-gray-400">Создание встречи</div>
+            </div>
+            <svg className="w-6 h-6 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            <div className="bg-white px-3 py-2 rounded-lg border shadow-sm text-center">
+              <div className="font-medium">Телемост</div>
+              <div className="text-xs text-gray-400">Генерация ссылки</div>
+            </div>
+            <svg className="w-6 h-6 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            <div className="bg-white px-3 py-2 rounded-lg border shadow-sm text-center">
+              <div className="font-medium">CRM</div>
+              <div className="text-xs text-gray-400">Ссылка в сделке</div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   };
@@ -635,6 +709,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
           </div>
           <div className="p-6">
             {s.id === 'bitrix24' && renderBitrix24()}
+            {s.id === 'telemost' && renderTelemost()}
             {s.id === 'googleMeet' && renderGoogleMeet()}
             {s.id === 'telegram' && renderTelegram()}
             {s.id === 'googleDrive' && renderGoogleDrive()}
@@ -656,10 +731,10 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
           ))}
         </div>
         {/* Auto-connect indicator */}
-        {integrations.bitrix24?.enabled && integrations.googleMeet?.enabled && (
+        {integrations.bitrix24?.enabled && (integrations.telemost?.enabled || integrations.googleMeet?.enabled) && (
           <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-xs text-white/60">Bitrix24 + Google Meet: автоматическая связка активна</span>
+            <span className="text-xs text-white/60">Bitrix24 + {integrations.telemost?.enabled ? 'Телемост' : 'Google Meet'}: автоматическая связка активна</span>
           </div>
         )}
       </div>

@@ -1,21 +1,23 @@
 // =============================================
 // NOBILIS ACADEMY - MEETING AUTOMATION SERVICE
 // =============================================
-// Автоматизация: Bitrix24 CRM <-> Google Meet
-// При создании встречи в CRM автоматически генерируется Meet ссылка
-// Meet ссылка записывается обратно в сделку/лид Bitrix24
+// Автоматизация: Bitrix24 CRM <-> Google Meet / Яндекс Телемост
+// При создании встречи в CRM автоматически генерируется ссылка на видеовстречу
+// Ссылка записывается обратно в сделку/лид Bitrix24
 
 import { createBitrixClient } from './bitrixAPI';
 import { createGoogleMeetClient } from './googleMeetAPI';
+import { createTelemostClient } from './telemostAPI';
 
 // =============================================
 // ОСНОВНОЙ СЕРВИС АВТОМАТИЗАЦИИ
 // =============================================
 
 export class MeetingAutomation {
-  constructor(bitrixConfig, googleMeetConfig) {
+  constructor(bitrixConfig, googleMeetConfig, telemostConfig) {
     this.bitrix = null;
     this.meet = null;
+    this.telemost = null;
     this.errors = [];
 
     try {
@@ -24,6 +26,14 @@ export class MeetingAutomation {
       }
     } catch (e) {
       this.errors.push(`Bitrix24: ${e.message}`);
+    }
+
+    try {
+      if (telemostConfig?.oauthToken) {
+        this.telemost = createTelemostClient(telemostConfig);
+      }
+    } catch (e) {
+      this.errors.push(`Телемост: ${e.message}`);
     }
 
     try {
@@ -44,7 +54,13 @@ export class MeetingAutomation {
   }
 
   get isMeetConfigured() {
-    return this.meet !== null;
+    return this.telemost !== null || this.meet !== null;
+  }
+
+  get videoProvider() {
+    if (this.telemost) return 'telemost';
+    if (this.meet) return 'google-meet';
+    return null;
   }
 
   // =============================================
@@ -69,8 +85,19 @@ export class MeetingAutomation {
       errors: [],
     };
 
-    // 1. Создать Google Meet ссылку
-    if (this.meet) {
+    // 1. Создать ссылку на видеовстречу (Телемост или Google Meet)
+    if (this.telemost) {
+      try {
+        const telemostResult = await this.telemost.createMeeting({
+          cohosts: contactEmails,
+        });
+        results.meetLink = telemostResult.joinUrl;
+        results.meetEventId = telemostResult.conferenceId;
+        results.provider = 'telemost';
+      } catch (e) {
+        results.errors.push(`Телемост: ${e.message}`);
+      }
+    } else if (this.meet) {
       try {
         const start = new Date(startTime);
         const end = new Date(start.getTime() + duration * 60 * 1000);
@@ -85,6 +112,7 @@ export class MeetingAutomation {
 
         results.meetLink = meetResult.meetLink;
         results.meetEventId = meetResult.eventId;
+        results.provider = 'google-meet';
       } catch (e) {
         results.errors.push(`Google Meet: ${e.message}`);
       }
@@ -118,12 +146,13 @@ export class MeetingAutomation {
 
         results.bitrixActivityId = activityId;
 
-        // 3. Добавить комментарий в timeline сделки с Meet ссылкой
+        // 3. Добавить комментарий в timeline сделки со ссылкой на встречу
         if (results.meetLink) {
+          const providerName = results.provider === 'telemost' ? 'Яндекс Телемост' : 'Google Meet';
           await this.bitrix.addTimelineComment(
             ownerTypeId,
             ownerId,
-            `Создана онлайн-встреча: ${subject}\nGoogle Meet: ${results.meetLink}\nВремя: ${formatDisplayDate(start)} — ${formatDisplayTime(end)}`
+            `Создана онлайн-встреча: ${subject}\n${providerName}: ${results.meetLink}\nВремя: ${formatDisplayDate(start)} — ${formatDisplayTime(end)}`
           ).catch(() => {}); // Не блокируем если комментарий не добавился
         }
       } catch (e) {
@@ -164,29 +193,39 @@ export class MeetingAutomation {
     }));
   }
 
-  // Добавить Meet ссылку к существующей встрече в Bitrix24
+  // Добавить ссылку на видеовстречу к существующей встрече в Bitrix24
   async addMeetLinkToActivity(activityId, { subject, startTime, endTime, contactEmails = [] }) {
-    if (!this.meet) throw new Error('Google Meet не подключён');
+    if (!this.telemost && !this.meet) throw new Error('Видеосервис не подключён (Телемост или Google Meet)');
     if (!this.bitrix) throw new Error('Bitrix24 не подключён');
 
-    // Создать Google Meet
-    const meetResult = await this.meet.createMeeting({
-      summary: subject,
-      startTime,
-      endTime,
-      attendees: contactEmails,
-    });
+    let meetLink;
+    let providerName;
+
+    if (this.telemost) {
+      const result = await this.telemost.createMeeting({ cohosts: contactEmails });
+      meetLink = result.joinUrl;
+      providerName = 'Яндекс Телемост';
+    } else {
+      const meetResult = await this.meet.createMeeting({
+        summary: subject,
+        startTime,
+        endTime,
+        attendees: contactEmails,
+      });
+      meetLink = meetResult.meetLink;
+      providerName = 'Google Meet';
+    }
 
     // Обновить описание активности в Bitrix24
     const activity = await this.bitrix.getActivity(activityId);
     const currentDesc = activity.DESCRIPTION || '';
-    const updatedDesc = `${currentDesc}\n\nGoogle Meet: ${meetResult.meetLink}`.trim();
+    const updatedDesc = `${currentDesc}\n\n${providerName}: ${meetLink}`.trim();
 
     await this.bitrix.updateActivity(activityId, {
       DESCRIPTION: updatedDesc,
     });
 
-    return meetResult.meetLink;
+    return meetLink;
   }
 
   // =============================================
@@ -228,20 +267,32 @@ export class MeetingAutomation {
   }
 
   async testMeetConnection() {
-    if (!this.meet) return { success: false, error: 'Не настроен Service Account' };
-    try {
-      // Тестовое создание и удаление события
-      const now = new Date();
-      const later = new Date(now.getTime() + 30 * 60 * 1000);
-      const result = await this.meet.createMeeting({
-        summary: 'Тест подключения Nobilis',
-        startTime: now.toISOString(),
-        endTime: later.toISOString(),
-      });
-      return { success: true, meetLink: result.meetLink };
-    } catch (e) {
-      return { success: false, error: e.message };
+    // Приоритет: Телемост → Google Meet
+    if (this.telemost) {
+      try {
+        const result = await this.telemost.createMeeting();
+        return { success: true, meetLink: result.joinUrl, provider: 'telemost' };
+      } catch (e) {
+        return { success: false, error: e.message, provider: 'telemost' };
+      }
     }
+
+    if (this.meet) {
+      try {
+        const now = new Date();
+        const later = new Date(now.getTime() + 30 * 60 * 1000);
+        const result = await this.meet.createMeeting({
+          summary: 'Тест подключения Nobilis',
+          startTime: now.toISOString(),
+          endTime: later.toISOString(),
+        });
+        return { success: true, meetLink: result.meetLink, provider: 'google-meet' };
+      } catch (e) {
+        return { success: false, error: e.message, provider: 'google-meet' };
+      }
+    }
+
+    return { success: false, error: 'Не настроен ни Телемост, ни Google Meet' };
   }
 }
 
@@ -272,8 +323,11 @@ function formatDisplayTime(date) {
 
 function extractMeetLink(text) {
   if (!text) return null;
-  const match = text.match(/https:\/\/meet\.google\.com\/[\w-]+/);
-  return match ? match[0] : null;
+  // Поддержка Яндекс Телемост и Google Meet ссылок
+  const telemostMatch = text.match(/https:\/\/telemost\.yandex\.ru\/j\/[\w-]+/);
+  if (telemostMatch) return telemostMatch[0];
+  const meetMatch = text.match(/https:\/\/meet\.google\.com\/[\w-]+/);
+  return meetMatch ? meetMatch[0] : null;
 }
 
 // Фабрика из настроек интеграций приложения
@@ -283,6 +337,8 @@ export function createMeetingAutomation(integrations = {}) {
     {
       serviceAccountKey: integrations.googleCalendar?.serviceAccountKey || integrations.googleMeet?.serviceAccountKey,
       calendarId: integrations.googleCalendar?.calendarId || integrations.googleMeet?.calendarId,
-    }
+      delegateEmail: integrations.googleCalendar?.delegateEmail || integrations.googleMeet?.delegateEmail,
+    },
+    integrations.telemost || {}
   );
 }

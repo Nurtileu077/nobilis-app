@@ -4390,6 +4390,7 @@ export const getInitialData = () => {
     // ---- INTEGRATION SETTINGS ----
     integrations: {
       bitrix24: { enabled: false, webhookUrl: '', apiToken: '', domain: 'nobilis.bitrix24.kz', syncLeads: true, syncCalls: true },
+      telemost: { enabled: false, oauthToken: '', autoCreateForSchedule: true, autoCreateForBitrix: true },
       telegram: { enabled: false, botToken: '', chatIds: [], notifications: { newLead: true, dealClosed: true, dailyReport: true } },
       googleDrive: { enabled: false, folderId: '', serviceAccountKey: '', autoUploadContracts: true, autoUploadReports: true },
       googleCalendar: { enabled: false, calendarId: '', serviceAccountKey: '', timeZone: 'Asia/Almaty', syncLessons: true, syncMeetings: true },
