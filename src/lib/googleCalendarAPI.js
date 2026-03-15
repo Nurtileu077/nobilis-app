@@ -6,10 +6,11 @@
 const PROXY_URL = '/api/google-calendar';
 
 class GoogleCalendarClient {
-  constructor(serviceAccountKey, calendarId = 'primary', timeZone = 'Asia/Almaty') {
+  constructor(serviceAccountKey, calendarId = 'primary', timeZone = 'Asia/Almaty', delegateEmail = '') {
     this.serviceAccountKey = serviceAccountKey;
     this.calendarId = calendarId;
     this.timeZone = timeZone;
+    this.delegateEmail = delegateEmail;
   }
 
   async call(action, params = {}) {
@@ -19,6 +20,7 @@ class GoogleCalendarClient {
       body: JSON.stringify({
         serviceAccountKey: this.serviceAccountKey,
         calendarId: this.calendarId,
+        delegateEmail: this.delegateEmail,
         timeZone: this.timeZone,
         action,
         ...params,
@@ -64,7 +66,7 @@ export async function testGoogleCalendarConnection(serviceAccountKey, calendarId
 }
 
 export function createGoogleCalendarClient(config) {
-  const { serviceAccountKey, calendarId, timeZone } = config || {};
+  const { serviceAccountKey, calendarId, timeZone, delegateEmail } = config || {};
   if (!serviceAccountKey) {
     throw new Error('Google Calendar Service Account не настроен');
   }
@@ -78,7 +80,7 @@ export function createGoogleCalendarClient(config) {
     }
   }
 
-  return new GoogleCalendarClient(parsedKey, calendarId || 'primary', timeZone || 'Asia/Almaty');
+  return new GoogleCalendarClient(parsedKey, calendarId || 'primary', timeZone || 'Asia/Almaty', delegateEmail || '');
 }
 
 export default GoogleCalendarClient;

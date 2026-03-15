@@ -16,6 +16,7 @@ export default async function handler(req, res) {
   const {
     serviceAccountKey,
     calendarId = 'primary',
+    delegateEmail,
     summary,
     description,
     startTime,
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
       : serviceAccountKey;
 
     // Generate JWT token for Google API auth
-    const accessToken = await getAccessToken(saKey);
+    const accessToken = await getAccessToken(saKey, delegateEmail);
 
     // Create calendar event with Google Meet conference
     const event = {
@@ -112,7 +113,7 @@ export default async function handler(req, res) {
 }
 
 // Generate OAuth2 access token from Service Account JWT
-async function getAccessToken(saKey) {
+async function getAccessToken(saKey, delegateEmail) {
   const now = Math.floor(Date.now() / 1000);
   const scope = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events';
 
@@ -126,8 +127,11 @@ async function getAccessToken(saKey) {
     exp: now + 3600,
   };
 
-  // If there's a subject (delegate), add it
-  if (saKey.subject) {
+  // Use delegateEmail (from UI) or subject (from SA key) for domain-wide delegation
+  // Required for Google Workspace corporate accounts to create Meet links
+  if (delegateEmail) {
+    claim.sub = delegateEmail;
+  } else if (saKey.subject) {
     claim.sub = saKey.subject;
   }
 

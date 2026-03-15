@@ -15,6 +15,7 @@ export default async function handler(req, res) {
   const {
     serviceAccountKey,
     calendarId = 'primary',
+    delegateEmail,
     timeZone = 'Asia/Almaty',
     action,
     ...params
@@ -33,7 +34,7 @@ export default async function handler(req, res) {
       ? JSON.parse(serviceAccountKey)
       : serviceAccountKey;
 
-    const accessToken = await getAccessToken(saKey);
+    const accessToken = await getAccessToken(saKey, delegateEmail);
     const baseUrl = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}`;
 
     if (action === 'list') {
@@ -150,7 +151,7 @@ export default async function handler(req, res) {
 }
 
 // Generate OAuth2 access token from Service Account JWT
-async function getAccessToken(saKey) {
+async function getAccessToken(saKey, delegateEmail) {
   const now = Math.floor(Date.now() / 1000);
   const scope = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events';
 
@@ -163,7 +164,10 @@ async function getAccessToken(saKey) {
     exp: now + 3600,
   };
 
-  if (saKey.subject) {
+  // Use delegateEmail for domain-wide delegation (Google Workspace)
+  if (delegateEmail) {
+    claim.sub = delegateEmail;
+  } else if (saKey.subject) {
     claim.sub = saKey.subject;
   }
 

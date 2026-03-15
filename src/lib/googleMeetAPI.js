@@ -7,9 +7,10 @@
 const PROXY_URL = '/api/google-meet';
 
 class GoogleMeetClient {
-  constructor(serviceAccountKey, calendarId = 'primary') {
+  constructor(serviceAccountKey, calendarId = 'primary', delegateEmail = '') {
     this.serviceAccountKey = serviceAccountKey;
     this.calendarId = calendarId;
+    this.delegateEmail = delegateEmail;
   }
 
   // Создать встречу с Google Meet ссылкой
@@ -20,6 +21,7 @@ class GoogleMeetClient {
       body: JSON.stringify({
         serviceAccountKey: this.serviceAccountKey,
         calendarId: this.calendarId,
+        delegateEmail: this.delegateEmail,
         summary,
         description,
         startTime,
@@ -58,7 +60,7 @@ export async function createMeetLink({ serviceAccountKey, calendarId, subject, t
 
 // Фабрика для создания клиента из настроек интеграции
 export function createGoogleMeetClient(integrationConfig) {
-  const { serviceAccountKey, calendarId } = integrationConfig || {};
+  const { serviceAccountKey, calendarId, delegateEmail } = integrationConfig || {};
   if (!serviceAccountKey) {
     throw new Error('Google Calendar Service Account не настроен');
   }
@@ -72,7 +74,7 @@ export function createGoogleMeetClient(integrationConfig) {
     }
   }
 
-  return new GoogleMeetClient(parsedKey, calendarId || 'primary');
+  return new GoogleMeetClient(parsedKey, calendarId || 'primary', delegateEmail || '');
 }
 
 export default GoogleMeetClient;

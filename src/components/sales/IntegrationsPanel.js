@@ -205,6 +205,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             <li>Включите Google Calendar API</li>
             <li>Создайте Service Account и скачайте JSON-ключ</li>
             <li>Предоставьте Service Account доступ к календарю (через Google Calendar настройки общего доступа)</li>
+            <li><strong>Для корпоративных аккаунтов (Google Workspace):</strong> настройте Domain-Wide Delegation в <a href="https://admin.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Admin Console</a> и укажите Email делегата ниже</li>
           </ol>
         </div>
         <div>
@@ -220,6 +221,13 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
             onBlur={e => handleSave('googleMeet', { calendarId: e.target.value })} />
           <p className="text-xs text-gray-400 mt-1">Оставьте &quot;primary&quot; для основного календаря Service Account</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email делегата (для корпоративных аккаунтов)</label>
+          <input type="email" defaultValue={cfg.delegateEmail || ''} placeholder="user@yourdomain.com"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('googleMeet', { delegateEmail: e.target.value })} />
+          <p className="text-xs text-gray-400 mt-1">Обязательно для Google Workspace. Укажите email реального пользователя домена для создания Google Meet ссылок. Требует настройки Domain-Wide Delegation в Google Admin Console.</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Часовой пояс по умолчанию</label>
@@ -450,6 +458,13 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
             onBlur={e => handleSave('googleCalendar', { calendarId: e.target.value })} />
           <p className="text-xs text-gray-400 mt-1">Найти в Google Calendar → Настройки → Интеграция → ID календаря</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email делегата (для корпоративных аккаунтов)</label>
+          <input type="email" defaultValue={cfg.delegateEmail || ''} placeholder="user@yourdomain.com"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('googleCalendar', { delegateEmail: e.target.value })} />
+          <p className="text-xs text-gray-400 mt-1">Для Google Workspace: email пользователя домена. Требует Domain-Wide Delegation.</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Часовой пояс</label>
