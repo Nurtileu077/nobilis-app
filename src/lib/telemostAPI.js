@@ -25,7 +25,15 @@ class TelemostClient {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.details || error.error || `Telemost API error: ${response.status}`);
+      // Build detailed error message
+      let msg = error.details || error.error || `Telemost API error: ${response.status}`;
+      if (error.hint) msg += `\n${error.hint}`;
+      if (error.tokenInfo) {
+        const ti = error.tokenInfo;
+        if (ti.login) msg += `\nАккаунт: ${ti.login}`;
+        if (ti.error) msg += `\nОшибка токена: ${ti.error}`;
+      }
+      throw new Error(msg);
     }
 
     return response.json();

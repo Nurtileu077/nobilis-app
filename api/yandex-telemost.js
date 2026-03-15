@@ -33,27 +33,48 @@ export default async function handler(req, res) {
 
   try {
     if (action === 'create') {
+      // First try with minimal body (no waiting_room_level) for maximum compatibility
       const body = {};
-
-      // Disable waiting room by default for easy access
-      body.waiting_room_level = 'PUBLIC';
 
       if (cohosts.length > 0) {
         body.cohosts = cohosts.map(email => ({ email }));
       }
 
-      const response = await fetch(TELEMOST_API, {
+      let response = await fetch(TELEMOST_API, {
         method: 'POST',
         headers,
         body: JSON.stringify(body),
       });
 
+      // If 403 with empty body, try checking token validity via a simple request
       if (!response.ok) {
         const errorText = await response.text();
+
+        // Additional diagnostics: check token info
+        let tokenInfo = null;
+        try {
+          const tokenCheck = await fetch('https://login.yandex.ru/info?format=json', {
+            headers: { 'Authorization': `OAuth ${oauthToken}` },
+          });
+          tokenInfo = await tokenCheck.json();
+        } catch (e) {
+          tokenInfo = { error: e.message };
+        }
+
         return res.status(response.status).json({
           error: 'Yandex Telemost API error',
           status: response.status,
           details: errorText,
+          tokenInfo: tokenInfo ? {
+            login: tokenInfo.login,
+            client_id: tokenInfo.client_id,
+            psuid: tokenInfo.psuid,
+            is_org: !!tokenInfo.is_avatar_empty === false,
+            error: tokenInfo.error
+          } : null,
+          hint: response.status === 403
+            ? 'Возможные причины: 1) Токен не имеет права telemost-api:conferences.create, 2) Аккаунт не подключён к Яндекс 360 для бизнеса, 3) У пользователя нет лицензии Телемост в организации'
+            : undefined,
         });
       }
 
