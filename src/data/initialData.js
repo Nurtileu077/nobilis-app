@@ -4331,11 +4331,11 @@ export const getInitialData = () => {
       { id: 'oth1', name: "Асем уборщица", login: "asem", password: "Nob2024am!", role: "other", subject: "Уборка", hourlyRate: 0, hoursWorked: 0, totalLessons: 0, lessons: [], syllabus: [] },
     ],
     schedule: [
-      { id: '1', subject: "Подготовка к IELTS", teacherId: '1', day: "Понедельник", time: "16:00", duration: 90, room: "201", students: ['1', '2'] },
-      { id: '2', subject: "Профориентация", teacherId: null, day: "Среда", time: "15:00", duration: 60, room: "105", students: ['1', '2', '3'], isCurator: true },
-      { id: '3', subject: "SAT Math", teacherId: '2', day: "Пятница", time: "17:00", duration: 90, room: "203", students: ['1', '3'] },
-      { id: '4', subject: "Portfolio Workshop", teacherId: '3', day: "Вторник", time: "16:00", duration: 120, room: "Studio", students: ['2'] },
-      { id: '5', subject: "Academic Writing", teacherId: '1', day: "Четверг", time: "15:30", duration: 90, room: "201", students: ['1', '2', '3'] }
+      { id: '1', subject: "Подготовка к IELTS", teacherId: '1', day: "Понедельник", time: "16:00", duration: 90, room: "201", format: "offline", meetLink: "", students: ['1', '2'] },
+      { id: '2', subject: "Профориентация", teacherId: null, day: "Среда", time: "15:00", duration: 60, room: "105", format: "offline", meetLink: "", students: ['1', '2', '3'], isCurator: true },
+      { id: '3', subject: "SAT Math", teacherId: '2', day: "Пятница", time: "17:00", duration: 90, room: "203", format: "offline", meetLink: "", students: ['1', '3'] },
+      { id: '4', subject: "Portfolio Workshop", teacherId: '3', day: "Вторник", time: "16:00", duration: 120, room: "", format: "online", meetLink: "https://meet.google.com/abc-defg-hij", students: ['2'] },
+      { id: '5', subject: "Academic Writing", teacherId: '1', day: "Четверг", time: "15:30", duration: 90, room: "201", format: "offline", meetLink: "", students: ['1', '2', '3'] }
     ],
     mockTests: [
       { id: '1', type: "ielts", name: "Пробный IELTS Январь", date: "2025-01-11", time: "10:00", room: "301", students: ['1', '2', '3'] },
