@@ -105,7 +105,7 @@ const DirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected }) => {
           return (
             <div className="space-y-4">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="rounded-xl p-4" style={{ background: 'linear-gradient(135deg,#1a3a32,#2d5a4a)' }}>
+                <div className="rounded-xl p-4 bg-gradient-nobilis">
                   <div className="text-xs text-green-200/60 font-medium">Выручка</div>
                   <div className="text-xl font-bold text-white mt-1">{fmtMoney(rev)} ₸</div>
                   <div className="text-xs text-green-200/40 mt-1">{planPct}% от плана</div>

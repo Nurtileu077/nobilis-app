@@ -377,7 +377,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
         <div className="flex items-center gap-3">
           <div
             className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-md flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg,#1a3a32,#2d6a56)' }}
+            className="bg-gradient-nobilis-deep"
           >
             <I.Results className="w-5 h-5 text-white" />
           </div>
@@ -417,7 +417,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
           <button
             onClick={() => handleExport(false)}
             className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-xl text-white shadow-sm transition-all hover:opacity-90"
-            style={{ background: 'linear-gradient(135deg,#1a3a32,#2d6a56)' }}
+            className="bg-gradient-nobilis-deep"
           >
             <I.Download className="w-4 h-4" />
             <span>Excel (все)</span>
@@ -431,7 +431,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
         {/* Revenue */}
         <div
           className="rounded-2xl p-5 shadow-lg text-white relative overflow-hidden"
-          style={{ background: 'linear-gradient(135deg,#1a3a32 0%,#2d6a56 60%,#3a8a6a 100%)' }}
+          className="bg-gradient-nobilis-rich"
         >
           <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white opacity-5" />
           <div className="absolute -left-4 -bottom-4 w-20 h-20 rounded-full bg-white opacity-5" />
@@ -765,7 +765,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
             <button
               onClick={handleSave}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl text-white shadow-sm transition-all hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg,#1a3a32,#2d6a56)' }}
+              className="bg-gradient-nobilis-deep"
             >
               <I.Save className="w-4 h-4" />
               Сохранить
@@ -988,7 +988,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
             <button
               onClick={() => setShowTxForm(v => !v)}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl text-white shadow-sm transition-all hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg,#1a3a32,#2d6a56)' }}
+              className="bg-gradient-nobilis-deep"
             >
               <I.Plus className="w-4 h-4" />
               <span>Добавить</span>
@@ -1064,8 +1064,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
                 <button
                   onClick={addTransaction}
                   disabled={!txForm.amount}
-                  className="w-full px-4 py-2 text-sm font-semibold rounded-xl text-white shadow-sm transition-all hover:opacity-90 disabled:opacity-40"
-                  style={{ background: txForm.sign === '+' ? 'linear-gradient(135deg,#14532d,#16a34a)' : 'linear-gradient(135deg,#7f1d1d,#dc2626)' }}
+                  className={`w-full px-4 py-2 text-sm font-semibold rounded-xl text-white shadow-sm transition-all hover:opacity-90 disabled:opacity-40 ${txForm.sign === '+' ? 'bg-gradient-success' : 'bg-gradient-danger'}`}
                 >
                   {txForm.sign === '+' ? 'Добавить ↑' : 'Вычесть ↓'}
                 </button>
@@ -1218,8 +1217,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
 
       {/* ══ CUMULATIVE TOTALS ════════════════════════════════════════════════ */}
       <div
-        className="rounded-2xl p-6 shadow-xl mb-6"
-        style={{ background: 'linear-gradient(135deg,#0f2219 0%,#1a3a32 40%,#2d6a56 80%,#3a8a6a 100%)' }}
+        className="rounded-2xl p-6 shadow-xl mb-6 bg-gradient-nobilis-dark"
       >
         <div className="flex items-center gap-3 mb-6">
           <div className="w-9 h-9 rounded-xl bg-white bg-opacity-10 flex items-center justify-center">
@@ -1278,7 +1276,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
           <div className="flex items-center gap-3 mb-5">
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
-              style={{ background: 'linear-gradient(135deg,#7f1d1d,#dc2626)' }}
+              className="bg-gradient-danger"
             >
               <I.Money className="w-5 h-5 text-white" />
             </div>
@@ -1362,7 +1360,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
           {/* Total */}
           <div
             className="rounded-2xl p-4 flex items-center justify-between"
-            style={{ background: 'linear-gradient(135deg,#7f1d1d,#dc2626)' }}
+            className="bg-gradient-danger"
           >
             <span className="text-sm font-bold text-white uppercase tracking-wide">Итого долгов</span>
             <div className="text-right">

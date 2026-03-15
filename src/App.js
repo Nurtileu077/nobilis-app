@@ -12,6 +12,7 @@ import Sidebar from './components/common/Sidebar';
 import Modal from './components/common/Modal';
 import I from './components/common/Icons';
 import UniPhoto from './components/UniPhoto';
+import PwaInstallBanner from './components/common/PwaInstallBanner';
 
 // Student views
 import StudentDashboard from './components/student/StudentDashboard';
@@ -2136,20 +2137,19 @@ export default function NobilisAcademy() {
   // ============================================================
   return (
     <GoogleSheetsProvider>
-    <div className="flex h-screen bg-[#f8faf9]">
+    <div className="flex h-screen bg-gray-50">
       <Sidebar user={{...user, avatar: user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : user.role === 'teacher' ? (data.teachers.find(x => x.id === user.id)?.avatar) : data.curatorAvatar}} view={view} navItems={navItems} onNavigate={(v) => { setView(v); setStudentPage(null); }} onLogout={logout} isOpen={sidebarOpen} onToggle={() => setSidebarOpen(false)} onAvatarClick={() => { setForm({ avatarTargetRole: user.role, avatarTargetId: user.id, avatarPreview: user.role === 'curator' ? data.curatorAvatar : null }); setModal('avatarUpload'); }} taskCount={(data.globalTasks || []).filter(t => !t.done).length} />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile header */}
         <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b shadow-sm">
-          <button onClick={() => { setSidebarOpen(true); }} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-            <I.Menu />
+          <button onClick={() => { setSidebarOpen(true); }} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg" aria-label="Открыть меню">
+            <I.Menu aria-hidden="true" />
           </button>
           <div className="font-serif font-bold text-nobilis-green">NOBILIS</div>
           {(() => {
             const mobileAvatar = user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : user.role === 'teacher' ? (data.teachers.find(x => x.id === user.id)?.avatar) : data.curatorAvatar;
             return (
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold overflow-hidden cursor-pointer"
-                style={{ background: mobileAvatar ? 'transparent' : 'linear-gradient(135deg, #c9a227 0%, #a68620 100%)' }}
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold overflow-hidden cursor-pointer ${!mobileAvatar ? 'bg-gradient-gold' : ''}`}
                 onClick={() => { setForm({ avatarTargetRole: user.role, avatarTargetId: user.id, avatarPreview: mobileAvatar || null }); setModal('avatarUpload'); }}>
                 {mobileAvatar ? <img src={mobileAvatar} alt="" className="w-full h-full object-cover" /> : getInitials(user.name)}
               </div>
@@ -2157,6 +2157,7 @@ export default function NobilisAcademy() {
           })()}
         </header>
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          <PwaInstallBanner />
           <PushSubscribeBanner />
           {(user.role === 'director' || user.role === 'academic_director') && view === 'dashboard' && (
             <div className="mb-4"><GoogleSheetsSync /></div>

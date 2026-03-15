@@ -29,5 +29,21 @@
   "orientation": "portrait-primary",
   "lang": "ru",
   "categories": ["education"],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Nobilis Academy - Образовательная платформа"
+    },
+    {
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Nobilis Academy - Панель управления"
+    }
+  ]
 }

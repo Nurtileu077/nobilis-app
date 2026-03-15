@@ -53,9 +53,8 @@ const Sidebar = ({ user, view, navItems, onNavigate, onLogout, isOpen, onToggle,
                 key={item.id}
                 onClick={() => { onNavigate(item.id); if (onToggle) onToggle(); }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all nav-item ${
-                  view === item.id ? 'text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'
+                  view === item.id ? 'text-white shadow-md bg-gradient-nobilis' : 'text-gray-600 hover:bg-gray-50'
                 }`}
-                style={view === item.id ? { background: 'linear-gradient(135deg, #1a3a32 0%, #2d5a4a 100%)' } : {}}
                 aria-current={view === item.id ? 'page' : undefined}
                 role="listitem"
               >
@@ -79,8 +78,7 @@ const Sidebar = ({ user, view, navItems, onNavigate, onLogout, isOpen, onToggle,
         <div className="p-4 border-t">
           <div className="flex items-center gap-3 mb-4 px-2">
             <button
-              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer overflow-hidden hover:ring-2 hover:ring-nobilis-gold transition-all"
-              style={{ background: user.avatar ? 'transparent' : 'linear-gradient(135deg, #c9a227 0%, #a68620 100%)' }}
+              className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer overflow-hidden hover:ring-2 hover:ring-nobilis-gold transition-all ${!user.avatar ? 'bg-gradient-gold' : ''}`}
               onClick={onAvatarClick}
               aria-label={`Профиль ${user.name}`}
             >

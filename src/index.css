@@ -49,55 +49,40 @@ body {
   }
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(100%); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse-slow {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
+/* Animations - keyframes defined in tailwind.config.js */
+/* Only shimmer stays here since it's used in CSS .login-bg class */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+/* Brand gradients */
+.bg-gradient-nobilis {
+  background: linear-gradient(135deg, #1a3a32 0%, #2d5a4a 100%);
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
+.bg-gradient-nobilis-deep {
+  background: linear-gradient(135deg, #1a3a32 0%, #2d6a56 100%);
 }
 
-.animate-slideIn {
-  animation: slideIn 0.3s ease-out;
+.bg-gradient-nobilis-rich {
+  background: linear-gradient(135deg, #1a3a32 0%, #2d6a56 60%, #3a8a6a 100%);
 }
 
-.animate-slideUp {
-  animation: slideUp 0.3s ease-out;
+.bg-gradient-nobilis-dark {
+  background: linear-gradient(135deg, #0f2219 0%, #1a3a32 40%, #2d6a56 80%, #3a8a6a 100%);
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 2s ease-in-out infinite;
+.bg-gradient-danger {
+  background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%);
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+.bg-gradient-success {
+  background: linear-gradient(135deg, #14532d 0%, #16a34a 100%);
+}
+
+.bg-gradient-gold {
+  background: linear-gradient(135deg, #c9a227 0%, #a68620 100%);
 }
 
 /* Buttons */
