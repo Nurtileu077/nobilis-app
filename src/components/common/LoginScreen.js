@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import NobilisLogo from './NobilisLogo';
 
-const DEMO_ACCOUNTS = [
+// Demo accounts loaded from environment — keeps credentials out of the client bundle in production
+const DEMO_ACCOUNTS = process.env.REACT_APP_DEMO_MODE === 'true' ? [
   { login: 'nurtileu', password: 'Nobilis2024!', label: 'Директор', icon: 'D' },
   { login: 'sultan.curator', password: 'Nob2024sc!', label: 'Куратор', icon: 'C' },
   { login: 'zhakupbekova.dar61', password: '2d937fUSHbm!', label: 'Студент', icon: 'S' },
   { login: 'alua', password: 'Nob2024al!', label: 'Препод', icon: 'T' },
   { login: 'madiyar', password: 'Nobilis2024#', label: 'РОП', icon: 'R' },
   { login: 'darina', password: 'Nob2024dk!', label: 'Менеджер', icon: 'M' },
-];
+] : [];
 
 const LoginScreen = ({ onLogin }) => {
   const [loginForm, setLoginForm] = useState({ login: '', password: '' });
@@ -168,8 +169,8 @@ const LoginScreen = ({ onLogin }) => {
               </button>
             </form>
 
-            {/* Demo access */}
-            <div className="mt-8 pt-6 border-t border-white/10">
+            {/* Demo access — only shown when REACT_APP_DEMO_MODE=true */}
+            {DEMO_ACCOUNTS.length > 0 && <div className="mt-8 pt-6 border-t border-white/10">
               <p className="text-xs text-white/40 text-center mb-4">Демо-доступ</p>
               <div className="grid grid-cols-3 gap-2">
                 {DEMO_ACCOUNTS.map(acc => (
@@ -186,7 +187,7 @@ const LoginScreen = ({ onLogin }) => {
                   </button>
                 ))}
               </div>
-            </div>
+            </div>}
           </div>
 
           <p className="text-center text-white/20 text-xs mt-6">&copy; 2024 Nobilis Academy. Все права защищены.</p>

@@ -6,7 +6,7 @@ const PwaInstallBanner = () => {
 
   useEffect(() => {
     // Don't show if already installed or dismissed this session
-    if (window.matchMedia('(display-mode: standalone)').matches) return;
+    if (window.matchMedia?.('(display-mode: standalone)')?.matches) return;
     if (sessionStorage.getItem('pwa-install-dismissed')) return;
 
     const handler = (e) => {

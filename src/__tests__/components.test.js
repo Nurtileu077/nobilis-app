@@ -1,5 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+
+// Enable demo mode before importing LoginScreen
+process.env.REACT_APP_DEMO_MODE = 'true';
+
 import LoginScreen from '../components/common/LoginScreen';
 import Modal from '../components/common/Modal';
 import Sidebar from '../components/common/Sidebar';
@@ -8,17 +12,17 @@ import I from '../components/common/Icons';
 
 // ---- NobilisLogo ----
 describe('NobilisLogo', () => {
-  it('renders an SVG with default size', () => {
-    const { container } = render(<NobilisLogo />);
-    const svg = container.querySelector('svg');
-    expect(svg).toBeInTheDocument();
-    expect(svg).toHaveStyle({ width: '40px', height: '40px' });
+  it('renders an image with default size', () => {
+    render(<NobilisLogo />);
+    const img = screen.getByAltText('Nobilis Academy Logo');
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveStyle({ width: '40px', height: '40px' });
   });
 
   it('renders with custom size', () => {
-    const { container } = render(<NobilisLogo size={80} />);
-    const svg = container.querySelector('svg');
-    expect(svg).toHaveStyle({ width: '80px', height: '80px' });
+    render(<NobilisLogo size={80} />);
+    const img = screen.getByAltText('Nobilis Academy Logo');
+    expect(img).toHaveStyle({ width: '80px', height: '80px' });
   });
 });
 
@@ -113,8 +117,8 @@ describe('LoginScreen', () => {
   it('fills form when demo account is clicked', () => {
     render(<LoginScreen onLogin={() => {}} />);
     fireEvent.click(screen.getByText('Куратор'));
-    expect(screen.getByPlaceholderText('Введите логин')).toHaveValue('curator');
-    expect(screen.getByPlaceholderText('Введите пароль')).toHaveValue('curator2024');
+    expect(screen.getByPlaceholderText('Введите логин')).toHaveValue('sultan.curator');
+    expect(screen.getByPlaceholderText('Введите пароль')).toHaveValue('Nob2024sc!');
   });
 
   it('calls onLogin with credentials and shows error', () => {
@@ -141,16 +145,15 @@ describe('LoginScreen', () => {
     expect(screen.queryByText('Неверный логин или пароль')).not.toBeInTheDocument();
   });
 
-  it('supports Enter key to login', () => {
+  it('supports Enter key to login via form submit', () => {
     const onLogin = jest.fn(() => null);
     render(<LoginScreen onLogin={onLogin} />);
 
-    const loginInput = screen.getByPlaceholderText('Введите логин');
-    fireEvent.change(loginInput, { target: { value: 'curator' } });
-    fireEvent.change(screen.getByPlaceholderText('Введите пароль'), { target: { value: 'curator2024' } });
-    fireEvent.keyDown(loginInput, { key: 'Enter' });
+    fireEvent.change(screen.getByPlaceholderText('Введите логин'), { target: { value: 'test' } });
+    fireEvent.change(screen.getByPlaceholderText('Введите пароль'), { target: { value: 'test123' } });
+    fireEvent.submit(screen.getByText('Войти в систему').closest('form'));
 
-    expect(onLogin).toHaveBeenCalled();
+    expect(onLogin).toHaveBeenCalledWith('test', 'test123');
   });
 
   it('renders NOBILIS branding', () => {

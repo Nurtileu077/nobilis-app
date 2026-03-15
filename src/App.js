@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import useAppData from './hooks/useAppData';
 import { GoogleSheetsProvider } from './context/GoogleSheetsContext';
 import { subscribeToPush } from './utils/pushSubscription';
@@ -6,57 +6,63 @@ import { DOCUMENT_TYPES, PACKAGE_TYPES, SUPPORT_STAGES, COUNTRIES, STUDENT_STATU
 import { UNIVERSITIES_DB, COUNTRY_INFO } from './data/universities';
 import { formatDate, formatDateTime, daysUntil, getPackageProgress, getInitials, getAttendancePercent } from './data/utils';
 
-// Common components
+// Common components (always loaded)
 import LoginScreen from './components/common/LoginScreen';
 import Sidebar from './components/common/Sidebar';
 import Modal from './components/common/Modal';
 import I from './components/common/Icons';
 import UniPhoto from './components/UniPhoto';
 import PwaInstallBanner from './components/common/PwaInstallBanner';
-
-// Student views
-import StudentDashboard from './components/student/StudentDashboard';
-import StudentSchedule from './components/student/StudentSchedule';
-import StudentTest from './components/student/StudentTest';
-import StudentResults from './components/student/StudentResults';
-import StudentMockTests from './components/student/StudentMockTests';
-import StudentLetters from './components/student/StudentLetters';
-import StudentInternships from './components/student/StudentInternships';
-import StudentDocuments from './components/student/StudentDocuments';
-import StudentEnglishTest from './components/student/StudentEnglishTest';
-
-// Curator views
-import CuratorDashboard from './components/curator/CuratorDashboard';
-import CuratorStudents from './components/curator/CuratorStudents';
-import CuratorAttendance from './components/curator/CuratorAttendance';
-import CuratorSchedule from './components/curator/CuratorSchedule';
-import CuratorMockTests from './components/curator/CuratorMockTests';
-import CuratorTeachers from './components/curator/CuratorTeachers';
-import CuratorSalary from './components/curator/CuratorSalary';
-import CuratorSupport from './components/curator/CuratorSupport';
-import CuratorInternships from './components/curator/CuratorInternships';
-import CuratorTasks from './components/curator/CuratorTasks';
-
-// Teacher views
-import TeacherDashboard from './components/teacher/TeacherDashboard';
-import TeacherSchedule from './components/teacher/TeacherSchedule';
-import TeacherStudents from './components/teacher/TeacherStudents';
-import TeacherSyllabus from './components/teacher/TeacherSyllabus';
-import TeacherLessons from './components/teacher/TeacherLessons';
-
-// Director & management views
-import DirectorDashboard from './components/director/DirectorDashboard';
-import AcademicDirectorDashboard from './components/director/AcademicDirectorDashboard';
-import SalaryDashboard from './components/director/SalaryDashboard';
-import PnLDashboard from './components/director/PnLDashboard';
-import ExpensesDashboard from './components/director/ExpensesDashboard';
-
-// Sales views
-import ROPDashboard from './components/sales/ROPDashboard';
-import SalesManagerDashboard from './components/sales/SalesManagerDashboard';
-import CallcenterDashboard from './components/sales/CallcenterDashboard';
-import IntegrationsPanel from './components/sales/IntegrationsPanel';
 import GoogleSheetsSync from './components/common/GoogleSheetsSync';
+
+// Lazy-loaded role-specific views (code splitting per role)
+const StudentDashboard = lazy(() => import('./components/student/StudentDashboard'));
+const StudentSchedule = lazy(() => import('./components/student/StudentSchedule'));
+const StudentTest = lazy(() => import('./components/student/StudentTest'));
+const StudentResults = lazy(() => import('./components/student/StudentResults'));
+const StudentMockTests = lazy(() => import('./components/student/StudentMockTests'));
+const StudentLetters = lazy(() => import('./components/student/StudentLetters'));
+const StudentInternships = lazy(() => import('./components/student/StudentInternships'));
+const StudentDocuments = lazy(() => import('./components/student/StudentDocuments'));
+const StudentEnglishTest = lazy(() => import('./components/student/StudentEnglishTest'));
+
+const CuratorDashboard = lazy(() => import('./components/curator/CuratorDashboard'));
+const CuratorStudents = lazy(() => import('./components/curator/CuratorStudents'));
+const CuratorAttendance = lazy(() => import('./components/curator/CuratorAttendance'));
+const CuratorSchedule = lazy(() => import('./components/curator/CuratorSchedule'));
+const CuratorMockTests = lazy(() => import('./components/curator/CuratorMockTests'));
+const CuratorTeachers = lazy(() => import('./components/curator/CuratorTeachers'));
+const CuratorSalary = lazy(() => import('./components/curator/CuratorSalary'));
+const CuratorSupport = lazy(() => import('./components/curator/CuratorSupport'));
+const CuratorInternships = lazy(() => import('./components/curator/CuratorInternships'));
+const CuratorTasks = lazy(() => import('./components/curator/CuratorTasks'));
+
+const TeacherDashboard = lazy(() => import('./components/teacher/TeacherDashboard'));
+const TeacherSchedule = lazy(() => import('./components/teacher/TeacherSchedule'));
+const TeacherStudents = lazy(() => import('./components/teacher/TeacherStudents'));
+const TeacherSyllabus = lazy(() => import('./components/teacher/TeacherSyllabus'));
+const TeacherLessons = lazy(() => import('./components/teacher/TeacherLessons'));
+
+const DirectorDashboard = lazy(() => import('./components/director/DirectorDashboard'));
+const AcademicDirectorDashboard = lazy(() => import('./components/director/AcademicDirectorDashboard'));
+const SalaryDashboard = lazy(() => import('./components/director/SalaryDashboard'));
+const PnLDashboard = lazy(() => import('./components/director/PnLDashboard'));
+const ExpensesDashboard = lazy(() => import('./components/director/ExpensesDashboard'));
+
+const ROPDashboard = lazy(() => import('./components/sales/ROPDashboard'));
+const SalesManagerDashboard = lazy(() => import('./components/sales/SalesManagerDashboard'));
+const CallcenterDashboard = lazy(() => import('./components/sales/CallcenterDashboard'));
+const IntegrationsPanel = lazy(() => import('./components/sales/IntegrationsPanel'));
+
+// Loading fallback for Suspense
+const ViewLoader = () => (
+  <div className="flex items-center justify-center py-20">
+    <div className="text-center">
+      <div className="w-8 h-8 border-2 border-nobilis-gold border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+      <p className="text-gray-400 text-sm">Загрузка...</p>
+    </div>
+  </div>
+);
 
 // ============================================================
 // NAV ITEMS CONFIG
@@ -2172,7 +2178,9 @@ export default function NobilisAcademy() {
           {(user.role === 'director' || user.role === 'academic_director') && view === 'dashboard' && (
             <div className="mb-4"><GoogleSheetsSync /></div>
           )}
-          {renderContent()}
+          <Suspense fallback={<ViewLoader />}>
+            {renderContent()}
+          </Suspense>
         </main>
       </div>
       {renderModal()}

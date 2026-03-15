@@ -3,7 +3,7 @@ import { DOCUMENT_TYPES, HOLLAND_QUESTIONS, HOLLAND_PROFILES, DAYS_ORDER, DAYS_R
 describe('Constants', () => {
   describe('STORAGE_KEY', () => {
     it('has the correct storage key', () => {
-      expect(STORAGE_KEY).toBe('nobilis_v3');
+      expect(STORAGE_KEY).toBe('nobilis_v7');
     });
   });
 

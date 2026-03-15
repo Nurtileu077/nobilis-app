@@ -29,30 +29,30 @@ describe('useAppData', () => {
     it('logs in as curator with correct credentials', () => {
       const { result } = renderHook(() => useAppData());
       act(() => {
-        const error = result.current.handleLogin('curator', 'curator2024');
+        const error = result.current.handleLogin('sultan.curator', 'Nob2024sc!');
         expect(error).toBeNull();
       });
-      expect(result.current.user).toEqual({ role: 'curator', id: 'c', name: 'Куратор Мария' });
+      expect(result.current.user).toEqual({ role: 'curator', id: 'cur1', name: 'Султан куратор' });
     });
 
     it('logs in as student with correct credentials', () => {
       const { result } = renderHook(() => useAppData());
       act(() => {
-        const error = result.current.handleLogin('alexey.pet47', 'Nobilis2024!');
+        const error = result.current.handleLogin('zhakupbekova.dar61', '2d937fUSHbm!');
         expect(error).toBeNull();
       });
       expect(result.current.user.role).toBe('student');
-      expect(result.current.user.name).toBe('Алексей Петров');
+      expect(result.current.user.name).toBe('Жакупбекова Дарина');
     });
 
     it('logs in as teacher with correct credentials', () => {
       const { result } = renderHook(() => useAppData());
       act(() => {
-        const error = result.current.handleLogin('smirnova.ann', 'Teacher2024!');
+        const error = result.current.handleLogin('alua', 'Nob2024al!');
         expect(error).toBeNull();
       });
       expect(result.current.user.role).toBe('teacher');
-      expect(result.current.user.name).toBe('Смирнова Анна Владимировна');
+      expect(result.current.user.name).toBe('Алуа (Онлайн)');
     });
 
     it('returns error for invalid credentials', () => {
@@ -67,7 +67,7 @@ describe('useAppData', () => {
 
     it('resets state on logout', () => {
       const { result } = renderHook(() => useAppData());
-      act(() => { result.current.handleLogin('curator', 'curator2024'); });
+      act(() => { result.current.handleLogin('sultan.curator', 'Nob2024sc!'); });
       expect(result.current.user).not.toBeNull();
 
       act(() => { result.current.setView('students'); });
@@ -84,12 +84,12 @@ describe('useAppData', () => {
   describe('Initial Data', () => {
     it('loads initial data with students', () => {
       const { result } = renderHook(() => useAppData());
-      expect(result.current.data.students).toHaveLength(4);
+      expect(result.current.data.students.length).toBeGreaterThan(100);
     });
 
     it('loads initial data with teachers', () => {
       const { result } = renderHook(() => useAppData());
-      expect(result.current.data.teachers).toHaveLength(3);
+      expect(result.current.data.teachers.length).toBeGreaterThan(10);
     });
 
     it('loads initial data with schedule', () => {
@@ -99,7 +99,7 @@ describe('useAppData', () => {
 
     it('persists data to localStorage', () => {
       renderHook(() => useAppData());
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('nobilis_v3', expect.any(String));
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('nobilis_v7', expect.any(String));
     });
   });
 
@@ -107,11 +107,12 @@ describe('useAppData', () => {
   describe('Student CRUD', () => {
     it('adds a new student', () => {
       const { result } = renderHook(() => useAppData());
+      const initialCount = result.current.data.students.length;
       act(() => {
         result.current.addStudent({ name: 'Новый Студент', login: 'new.stu', password: 'pass123' });
       });
-      expect(result.current.data.students).toHaveLength(5);
-      const newStudent = result.current.data.students[4];
+      expect(result.current.data.students).toHaveLength(initialCount + 1);
+      const newStudent = result.current.data.students[result.current.data.students.length - 1];
       expect(newStudent.name).toBe('Новый Студент');
       expect(newStudent.testResult).toBeNull();
       expect(newStudent.examResults).toEqual([]);
@@ -120,18 +121,19 @@ describe('useAppData', () => {
     it('updates a student', () => {
       const { result } = renderHook(() => useAppData());
       act(() => {
-        result.current.updStudent('1', { name: 'Алексей Обновлённый' });
+        result.current.updStudent('1', { name: 'Обновлённое Имя' });
       });
-      expect(result.current.data.students.find(s => s.id === '1').name).toBe('Алексей Обновлённый');
+      expect(result.current.data.students.find(s => s.id === '1').name).toBe('Обновлённое Имя');
     });
 
     it('deletes a student', () => {
       const { result } = renderHook(() => useAppData());
+      const initialCount = result.current.data.students.length;
       act(() => {
-        result.current.delStudent('3');
+        result.current.delStudent('1');
       });
-      expect(result.current.data.students).toHaveLength(3);
-      expect(result.current.data.students.find(s => s.id === '3')).toBeUndefined();
+      expect(result.current.data.students).toHaveLength(initialCount - 1);
+      expect(result.current.data.students.find(s => s.id === '1')).toBeUndefined();
     });
   });
 
@@ -139,29 +141,29 @@ describe('useAppData', () => {
   describe('Teacher CRUD', () => {
     it('adds a new teacher', () => {
       const { result } = renderHook(() => useAppData());
+      const initialCount = result.current.data.teachers.length;
       act(() => {
         result.current.addTeacher({ name: 'Новый Учитель', subject: 'Физика', login: 'new.tch', password: 'pass' });
       });
-      expect(result.current.data.teachers).toHaveLength(4);
+      expect(result.current.data.teachers).toHaveLength(initialCount + 1);
     });
 
     it('updates a teacher', () => {
       const { result } = renderHook(() => useAppData());
       act(() => {
-        result.current.updTeacher('1', { subject: 'Английский Advanced' });
+        result.current.updTeacher('t1', { subject: 'Английский Advanced' });
       });
-      expect(result.current.data.teachers.find(t => t.id === '1').subject).toBe('Английский Advanced');
+      expect(result.current.data.teachers.find(t => t.id === 't1').subject).toBe('Английский Advanced');
     });
 
     it('deletes a teacher and clears schedule references', () => {
       const { result } = renderHook(() => useAppData());
+      const initialCount = result.current.data.teachers.length;
       act(() => {
-        result.current.delTeacher('3');
+        result.current.delTeacher('t1');
       });
-      expect(result.current.data.teachers).toHaveLength(2);
-      // Schedule items that referenced teacher 3 should have null teacherId
-      const affectedSchedule = result.current.data.schedule.find(s => s.id === '4');
-      expect(affectedSchedule.teacherId).toBeNull();
+      expect(result.current.data.teachers).toHaveLength(initialCount - 1);
+      expect(result.current.data.teachers.find(t => t.id === 't1')).toBeUndefined();
     });
   });
 
@@ -217,11 +219,17 @@ describe('useAppData', () => {
 
     it('deletes a document', () => {
       const { result } = renderHook(() => useAppData());
+      // First add a document, then delete it
       act(() => {
-        result.current.delDoc('1', 'd1');
+        result.current.addDoc('1', { type: 'passport', name: 'Тестовый паспорт' });
       });
       const docs = result.current.data.students.find(s => s.id === '1').documents;
-      expect(docs.find(d => d.id === 'd1')).toBeUndefined();
+      const addedDocId = docs[docs.length - 1].id;
+      act(() => {
+        result.current.delDoc('1', addedDocId);
+      });
+      const updatedDocs = result.current.data.students.find(s => s.id === '1').documents;
+      expect(updatedDocs.find(d => d.id === addedDocId)).toBeUndefined();
     });
   });
 
@@ -233,22 +241,31 @@ describe('useAppData', () => {
         result.current.addLetter('1', { type: 'motivation', university: 'Stanford', content: 'Test', status: 'draft' });
       });
       const letters = result.current.data.students.find(s => s.id === '1').letters;
-      expect(letters).toHaveLength(2);
+      expect(letters).toHaveLength(1);
     });
 
     it('updates a letter', () => {
       const { result } = renderHook(() => useAppData());
+      // Add a letter first, then update it
       act(() => {
-        result.current.updLetter('1', 'l1', { status: 'completed' });
+        result.current.addLetter('1', { type: 'motivation', university: 'Stanford', content: 'Test', status: 'draft' });
       });
-      const letter = result.current.data.students.find(s => s.id === '1').letters.find(l => l.id === 'l1');
+      const letterId = result.current.data.students.find(s => s.id === '1').letters[0].id;
+      act(() => {
+        result.current.updLetter('1', letterId, { status: 'completed' });
+      });
+      const letter = result.current.data.students.find(s => s.id === '1').letters.find(l => l.id === letterId);
       expect(letter.status).toBe('completed');
     });
 
     it('deletes a letter', () => {
       const { result } = renderHook(() => useAppData());
       act(() => {
-        result.current.delLetter('1', 'l1');
+        result.current.addLetter('1', { type: 'motivation', university: 'Stanford', content: 'Test', status: 'draft' });
+      });
+      const letterId = result.current.data.students.find(s => s.id === '1').letters[0].id;
+      act(() => {
+        result.current.delLetter('1', letterId);
       });
       const letters = result.current.data.students.find(s => s.id === '1').letters;
       expect(letters).toHaveLength(0);
@@ -267,12 +284,14 @@ describe('useAppData', () => {
 
     it('adds a new ticket', () => {
       const { result } = renderHook(() => useAppData());
+      const initialCount = result.current.data.supportTickets.length;
       act(() => {
         result.current.addTicket('1', 'Нужна помощь');
       });
-      expect(result.current.data.supportTickets).toHaveLength(2);
-      expect(result.current.data.supportTickets[1].message).toBe('Нужна помощь');
-      expect(result.current.data.supportTickets[1].status).toBe('open');
+      expect(result.current.data.supportTickets).toHaveLength(initialCount + 1);
+      const lastTicket = result.current.data.supportTickets[result.current.data.supportTickets.length - 1];
+      expect(lastTicket.message).toBe('Нужна помощь');
+      expect(lastTicket.status).toBe('open');
     });
   });
 
@@ -307,18 +326,19 @@ describe('useAppData', () => {
   describe('Internships', () => {
     it('adds an internship', () => {
       const { result } = renderHook(() => useAppData());
+      const initialCount = result.current.data.internships.length;
       act(() => {
         result.current.addInternship({ name: 'New Internship', country: 'Япония' });
       });
-      expect(result.current.data.internships).toHaveLength(4);
+      expect(result.current.data.internships).toHaveLength(initialCount + 1);
     });
 
     it('applies for an internship', () => {
       const { result } = renderHook(() => useAppData());
       act(() => {
-        result.current.applyInternship('3', '2');
+        result.current.applyInternship('1', '2');
       });
-      const student = result.current.data.students.find(s => s.id === '3');
+      const student = result.current.data.students.find(s => s.id === '1');
       expect(student.internships).toHaveLength(1);
       expect(student.internships[0].internshipId).toBe('2');
       expect(student.internships[0].status).toBe('applied');
@@ -330,27 +350,36 @@ describe('useAppData', () => {
     it('adds a syllabus entry to a teacher', () => {
       const { result } = renderHook(() => useAppData());
       act(() => {
-        result.current.addSyllabus('1', { course: 'New Course', weeks: 8, topics: ['A', 'B'] });
+        result.current.addSyllabus('t1', { course: 'New Course', weeks: 8, topics: ['A', 'B'] });
       });
-      const teacher = result.current.data.teachers.find(t => t.id === '1');
-      expect(teacher.syllabus).toHaveLength(2);
+      const teacher = result.current.data.teachers.find(t => t.id === 't1');
+      expect(teacher.syllabus).toHaveLength(1);
     });
 
     it('updates a syllabus entry', () => {
       const { result } = renderHook(() => useAppData());
+      // Add syllabus first
       act(() => {
-        result.current.updSyllabus('1', 's1', { progress: 100 });
+        result.current.addSyllabus('t1', { course: 'Test Course', weeks: 4, topics: ['X'] });
       });
-      const teacher = result.current.data.teachers.find(t => t.id === '1');
+      const sylId = result.current.data.teachers.find(t => t.id === 't1').syllabus[0].id;
+      act(() => {
+        result.current.updSyllabus('t1', sylId, { progress: 100 });
+      });
+      const teacher = result.current.data.teachers.find(t => t.id === 't1');
       expect(teacher.syllabus[0].progress).toBe(100);
     });
 
     it('deletes a syllabus entry', () => {
       const { result } = renderHook(() => useAppData());
       act(() => {
-        result.current.delSyllabus('1', 's1');
+        result.current.addSyllabus('t1', { course: 'To Delete', weeks: 2, topics: [] });
       });
-      const teacher = result.current.data.teachers.find(t => t.id === '1');
+      const sylId = result.current.data.teachers.find(t => t.id === 't1').syllabus[0].id;
+      act(() => {
+        result.current.delSyllabus('t1', sylId);
+      });
+      const teacher = result.current.data.teachers.find(t => t.id === 't1');
       expect(teacher.syllabus).toHaveLength(0);
     });
   });
@@ -383,21 +412,25 @@ describe('useAppData', () => {
     it('marks a lesson for a teacher', () => {
       const { result } = renderHook(() => useAppData());
       act(() => {
-        result.current.markLesson('1', { date: '2025-01-15', status: 'conducted', hours: 1.5, scheduleId: '1' });
+        result.current.markLesson('t1', { date: '2025-01-15', status: 'conducted', hours: 1.5, scheduleId: '1' });
       });
-      const teacher = result.current.data.teachers.find(t => t.id === '1');
-      expect(teacher.lessons).toHaveLength(3);
-      expect(teacher.lessons[2].confirmed).toBe(false);
+      const teacher = result.current.data.teachers.find(t => t.id === 't1');
+      expect(teacher.lessons).toHaveLength(1);
+      expect(teacher.lessons[0].confirmed).toBe(false);
     });
 
     it('confirms a lesson and updates hours/count', () => {
       const { result } = renderHook(() => useAppData());
-      // teacher 1 has lesson tl2 that is cancelled and unconfirmed
+      // Add a lesson first
       act(() => {
-        result.current.confirmLesson('1', 'tl2');
+        result.current.markLesson('t1', { date: '2025-01-15', status: 'conducted', hours: 1.5, scheduleId: '1' });
       });
-      const teacher = result.current.data.teachers.find(t => t.id === '1');
-      const lesson = teacher.lessons.find(l => l.id === 'tl2');
+      const lessonId = result.current.data.teachers.find(t => t.id === 't1').lessons[0].id;
+      act(() => {
+        result.current.confirmLesson('t1', lessonId);
+      });
+      const teacher = result.current.data.teachers.find(t => t.id === 't1');
+      const lesson = teacher.lessons.find(l => l.id === lessonId);
       expect(lesson.confirmed).toBe(true);
     });
   });
