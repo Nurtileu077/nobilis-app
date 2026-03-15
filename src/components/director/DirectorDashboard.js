@@ -16,10 +16,10 @@ const fmtMoney = (n) => {
 };
 
 const StatCard = ({ icon: Icon, label, value, gradient, accent }) => (
-  <div className={`rounded-2xl p-5 shadow-sm ${gradient ? 'bg-gradient-to-br from-[#1a3a32] to-[#2d5a4a] text-white' : 'bg-white border text-gray-800'} card-hover`}>
+  <div className={`rounded-2xl p-5 shadow-sm ${gradient ? 'bg-gradient-to-br from-nobilis-green to-nobilis-green-light text-white' : 'bg-white border text-gray-800'} card-hover`}>
     <div className="flex items-start justify-between">
       <div>
-        <div className={`text-3xl font-bold ${gradient ? 'text-white' : accent || 'text-[#1a3a32]'}`}>{value}</div>
+        <div className={`text-3xl font-bold ${gradient ? 'text-white' : accent || 'text-nobilis-green'}`}>{value}</div>
         <div className={`text-sm mt-1 ${gradient ? 'text-green-200' : 'text-gray-500'}`}>{label}</div>
       </div>
       <div className={`p-2 rounded-xl ${gradient ? 'bg-white/10' : 'bg-[#f0f7f4]'}`}>
@@ -66,7 +66,7 @@ const DirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected }) => {
           icon={I.Briefcase}
           label="Сотрудников"
           value={activeEmployees}
-          accent="text-[#c9a227]"
+          accent="text-nobilis-gold"
         />
         <StatCard
           icon={I.Tasks}
@@ -155,11 +155,11 @@ const DirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected }) => {
             </div>
           );
         })() : (
-          <div className="bg-[#f8faf9] rounded-xl p-6 text-center border border-dashed border-[#1a3a32]/20">
-            <div className="text-[#1a3a32]/40 mb-2">
+          <div className="bg-[#f8faf9] rounded-xl p-6 text-center border border-dashed border-nobilis-green/20">
+            <div className="text-nobilis-green/40 mb-2">
               <I.Documents />
             </div>
-            <p className="text-gray-500 font-medium">Финансы — загрузите данные в <span className="font-mono text-[#c9a227] bg-amber-50 px-2 py-0.5 rounded">/data/pnl/</span></p>
+            <p className="text-gray-500 font-medium">Финансы — загрузите данные в <span className="font-mono text-nobilis-gold bg-amber-50 px-2 py-0.5 rounded">/data/pnl/</span></p>
             <p className="text-sm text-gray-400 mt-1">Отчёты P&amp;L, задолженности и платежи появятся здесь</p>
           </div>
         )}
@@ -185,7 +185,7 @@ const DirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected }) => {
                     if (student) { onSetSelected(student); onSetModal('studentDetail'); }
                   }}
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1a3a32] to-[#2d5a4a] text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-nobilis-green to-nobilis-green-light text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
                     {getInitials(entry.studentName)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -221,7 +221,7 @@ const DirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected }) => {
                     className="flex items-center gap-3 p-3 bg-[#f8faf9] rounded-xl hover:bg-[#f0f7f4] transition-colors cursor-pointer"
                     onClick={() => { onSetSelected(t); onSetModal('teacherDetail'); }}
                   >
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#c9a227] to-[#a8851e] text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-nobilis-gold to-[#a8851e] text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
                       {getInitials(t.name)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -230,7 +230,7 @@ const DirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected }) => {
                     </div>
                     <div className="text-right flex-shrink-0">
                       {t.hoursWorked != null && (
-                        <div className="text-sm font-semibold text-[#1a3a32]">{t.hoursWorked} ч.</div>
+                        <div className="text-sm font-semibold text-nobilis-green">{t.hoursWorked} ч.</div>
                       )}
                       {t.hourlyRate != null && (
                         <div className="text-xs text-gray-400">{t.hourlyRate?.toLocaleString('ru-RU')} тг/ч</div>
@@ -252,28 +252,28 @@ const DirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected }) => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <button
             onClick={() => { onSetForm({}); onSetModal('addStudent'); }}
-            className="flex items-center gap-2 p-4 bg-[#f8faf9] rounded-xl hover:bg-[#f0f7f4] text-left font-medium text-sm transition-all card-hover border border-transparent hover:border-[#1a3a32]/10"
+            className="flex items-center gap-2 p-4 bg-[#f8faf9] rounded-xl hover:bg-[#f0f7f4] text-left font-medium text-sm transition-all card-hover border border-transparent hover:border-nobilis-green/10"
           >
-            <span className="text-[#1a3a32]"><I.Plus /></span>
+            <span className="text-nobilis-green"><I.Plus /></span>
             Студент
           </button>
           <button
             onClick={() => { onSetForm({}); onSetModal('addTeacher'); }}
-            className="flex items-center gap-2 p-4 bg-[#f8faf9] rounded-xl hover:bg-[#f0f7f4] text-left font-medium text-sm transition-all card-hover border border-transparent hover:border-[#1a3a32]/10"
+            className="flex items-center gap-2 p-4 bg-[#f8faf9] rounded-xl hover:bg-[#f0f7f4] text-left font-medium text-sm transition-all card-hover border border-transparent hover:border-nobilis-green/10"
           >
-            <span className="text-[#c9a227]"><I.Users /></span>
+            <span className="text-nobilis-gold"><I.Users /></span>
             Сотрудник
           </button>
           <button
             onClick={() => { onSetForm({ subject: '', teacherId: '', day: 'Понедельник', time: '16:00', duration: 90, room: '', students: [] }); onSetModal('addSchedule'); }}
-            className="flex items-center gap-2 p-4 bg-[#f8faf9] rounded-xl hover:bg-[#f0f7f4] text-left font-medium text-sm transition-all card-hover border border-transparent hover:border-[#1a3a32]/10"
+            className="flex items-center gap-2 p-4 bg-[#f8faf9] rounded-xl hover:bg-[#f0f7f4] text-left font-medium text-sm transition-all card-hover border border-transparent hover:border-nobilis-green/10"
           >
             <span className="text-blue-500"><I.Calendar /></span>
             Расписание
           </button>
           <button
             onClick={() => { onSetForm({ type: 'ielts', name: '', date: '', time: '10:00', room: '', students: [] }); onSetModal('addMockTest'); }}
-            className="flex items-center gap-2 p-4 bg-[#f8faf9] rounded-xl hover:bg-[#f0f7f4] text-left font-medium text-sm transition-all card-hover border border-transparent hover:border-[#1a3a32]/10"
+            className="flex items-center gap-2 p-4 bg-[#f8faf9] rounded-xl hover:bg-[#f0f7f4] text-left font-medium text-sm transition-all card-hover border border-transparent hover:border-nobilis-green/10"
           >
             <span className="text-purple-500"><I.MockTest /></span>
             Пробный тест

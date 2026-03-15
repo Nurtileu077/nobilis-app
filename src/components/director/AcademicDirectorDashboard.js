@@ -52,7 +52,7 @@ const AcademicDirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected 
         </div>
         <button
           onClick={() => { onSetForm({}); onSetModal('addTeacher'); }}
-          className="flex items-center gap-2 px-4 py-2 bg-[#1a3a32] text-white rounded-xl text-sm font-medium hover:bg-[#2d5a4a] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-nobilis-green text-white rounded-xl text-sm font-medium hover:bg-nobilis-green-light transition-colors"
         >
           <I.Plus />
           <span className="hidden sm:inline">Добавить преподавателя</span>
@@ -63,22 +63,22 @@ const AcademicDirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white rounded-2xl p-5 shadow-sm border card-hover">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-[#1a3a32]/10 flex items-center justify-center text-[#1a3a32]">
+            <div className="w-10 h-10 rounded-xl bg-nobilis-green/10 flex items-center justify-center text-nobilis-green">
               <I.Users />
             </div>
             <span className="text-sm text-gray-500 font-medium">Всего студентов</span>
           </div>
-          <div className="text-3xl font-bold text-[#1a3a32]">{students.length}</div>
+          <div className="text-3xl font-bold text-nobilis-green">{students.length}</div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 shadow-sm border card-hover">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-[#c9a227]/10 flex items-center justify-center text-[#c9a227]">
+            <div className="w-10 h-10 rounded-xl bg-nobilis-gold/10 flex items-center justify-center text-nobilis-gold">
               <I.Book />
             </div>
             <span className="text-sm text-gray-500 font-medium">Преподавателей</span>
           </div>
-          <div className="text-3xl font-bold text-[#c9a227]">{teachers.length}</div>
+          <div className="text-3xl font-bold text-nobilis-gold">{teachers.length}</div>
         </div>
 
         <div className="bg-white rounded-2xl p-5 shadow-sm border card-hover">
@@ -135,7 +135,7 @@ const AcademicDirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected 
                     className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 cursor-pointer transition-all card-hover"
                     onClick={() => { onSetSelected(teacher); onSetModal('teacherDetail'); }}
                   >
-                    <div className="w-9 h-9 rounded-full bg-[#1a3a32] text-white flex items-center justify-center text-sm font-semibold flex-shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-nobilis-green text-white flex items-center justify-center text-sm font-semibold flex-shrink-0">
                       {getInitials(teacher.name)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -143,8 +143,8 @@ const AcademicDirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected 
                       <div className="text-xs text-gray-500 truncate">{teacher.subject}</div>
                     </div>
                     <div className="text-right flex-shrink-0">
-                      <div className="text-sm font-semibold text-[#1a3a32]">{teacher.hoursWorked || 0} ч.</div>
-                      <div className="text-xs text-[#c9a227]">{(teacher.hourlyRate || 0).toLocaleString()} тг/ч</div>
+                      <div className="text-sm font-semibold text-nobilis-green">{teacher.hoursWorked || 0} ч.</div>
+                      <div className="text-xs text-nobilis-gold">{(teacher.hourlyRate || 0).toLocaleString()} тг/ч</div>
                     </div>
                   </div>
                 );
@@ -155,7 +155,7 @@ const AcademicDirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected 
           )}
           <button
             onClick={() => { onSetForm({}); onSetModal('addTeacher'); }}
-            className="mt-4 w-full py-2 border border-dashed border-[#1a3a32]/30 text-[#1a3a32] rounded-xl text-sm hover:bg-[#1a3a32]/5 transition-colors flex items-center justify-center gap-1"
+            className="mt-4 w-full py-2 border border-dashed border-nobilis-green/30 text-nobilis-green rounded-xl text-sm hover:bg-nobilis-green/5 transition-colors flex items-center justify-center gap-1"
           >
             <I.Plus />
             Добавить преподавателя
@@ -220,7 +220,7 @@ const AcademicDirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected 
           </h3>
           <button
             onClick={() => { onSetForm({ subject: '', teacherId: '', day: 'Понедельник', time: '16:00', duration: 90, room: '', students: [] }); onSetModal('addSchedule'); }}
-            className="text-sm text-[#1a3a32] hover:underline flex items-center gap-1"
+            className="text-sm text-nobilis-green hover:underline flex items-center gap-1"
           >
             <I.Plus />
             Добавить
@@ -238,7 +238,7 @@ const AcademicDirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected 
                 >
                   <div className="w-20 flex-shrink-0">
                     <div className="text-xs text-gray-400 truncate">{cls.day}</div>
-                    <div className="font-semibold text-[#1a3a32]">{cls.time}</div>
+                    <div className="font-semibold text-nobilis-green">{cls.time}</div>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-gray-800 truncate">{cls.subject}</div>
@@ -267,16 +267,16 @@ const AcademicDirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <button
             onClick={() => { onSetForm({}); onSetModal('addTeacher'); }}
-            className="p-4 bg-[#1a3a32]/5 rounded-xl hover:bg-[#1a3a32]/10 text-left transition-all card-hover"
+            className="p-4 bg-nobilis-green/5 rounded-xl hover:bg-nobilis-green/10 text-left transition-all card-hover"
           >
-            <div className="text-[#1a3a32] mb-1"><I.Users /></div>
+            <div className="text-nobilis-green mb-1"><I.Users /></div>
             <div className="text-sm font-medium text-gray-700">+ Преподаватель</div>
           </button>
           <button
             onClick={() => { onSetForm({ subject: '', teacherId: '', day: 'Понедельник', time: '16:00', duration: 90, room: '', students: [] }); onSetModal('addSchedule'); }}
-            className="p-4 bg-[#c9a227]/5 rounded-xl hover:bg-[#c9a227]/10 text-left transition-all card-hover"
+            className="p-4 bg-nobilis-gold/5 rounded-xl hover:bg-nobilis-gold/10 text-left transition-all card-hover"
           >
-            <div className="text-[#c9a227] mb-1"><I.Calendar /></div>
+            <div className="text-nobilis-gold mb-1"><I.Calendar /></div>
             <div className="text-sm font-medium text-gray-700">+ Расписание</div>
           </button>
           <button

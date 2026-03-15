@@ -23,11 +23,11 @@ const TeacherLessons = ({ teacher, schedule, students, onSetModal, onSetForm, on
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white rounded-xl p-3 shadow-sm border text-center">
-          <div className="text-2xl font-bold text-[#1a3a32]">{teacher.totalLessons || 0}</div>
+          <div className="text-2xl font-bold text-nobilis-green">{teacher.totalLessons || 0}</div>
           <div className="text-xs text-gray-500">Проведено</div>
         </div>
         <div className="bg-white rounded-xl p-3 shadow-sm border text-center">
-          <div className="text-2xl font-bold text-[#c9a227]">{teacher.hoursWorked || 0}</div>
+          <div className="text-2xl font-bold text-nobilis-gold">{teacher.hoursWorked || 0}</div>
           <div className="text-xs text-gray-500">Часов</div>
         </div>
         <div className="bg-white rounded-xl p-3 shadow-sm border text-center">

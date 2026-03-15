@@ -163,7 +163,7 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest, 
           <div className="p-6">
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="text-center p-4 bg-gray-50 rounded-xl">
-                <div className="text-2xl font-bold text-[#1a3a32]">{result.score}</div>
+                <div className="text-2xl font-bold text-nobilis-green">{result.score}</div>
                 <div className="text-xs text-gray-500 mt-1">Правильных</div>
               </div>
               <div className="text-center p-4 bg-gray-50 rounded-xl">
@@ -199,12 +199,12 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest, 
               </div>
             ) : student.englishRetakeAllowed ? (
               <button onClick={handleReset}
-                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#1a3a32] hover:text-[#1a3a32] transition-colors">
+                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-nobilis-green hover:text-nobilis-green transition-colors">
                 Пройти заново
               </button>
             ) : (
               <button onClick={handleRequestRetake}
-                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#c9a227] hover:text-[#c9a227] transition-colors">
+                className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-nobilis-gold hover:text-nobilis-gold transition-colors">
                 Запросить пересдачу
               </button>
             )}
@@ -296,7 +296,7 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest, 
             </div>
           </div>
           <button onClick={() => setStarted(true)}
-            className="px-8 py-3 btn-gold text-[#1a3a32] font-bold rounded-xl text-lg">
+            className="px-8 py-3 btn-gold text-nobilis-green font-bold rounded-xl text-lg">
             Начать тест
           </button>
         </div>
@@ -330,13 +330,13 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest, 
           <span>{answeredCount}/30 ответов</span>
         </div>
         <div className="h-2 bg-gray-200 rounded-full">
-          <div className="h-2 bg-gradient-to-r from-[#1a3a32] to-[#c9a227] rounded-full transition-all" style={{ width: `${progress}%` }} />
+          <div className="h-2 bg-gradient-to-r from-nobilis-green to-nobilis-gold rounded-full transition-all" style={{ width: `${progress}%` }} />
         </div>
         <div className="flex flex-wrap gap-1.5 mt-3">
           {ENGLISH_QUESTIONS.map((qq, i) => (
             <button key={qq.id} onClick={() => setCurrentQ(i)}
               className={`w-7 h-7 rounded-full text-xs font-medium transition-all ${
-                i === currentQ ? 'bg-[#1a3a32] text-white scale-110' :
+                i === currentQ ? 'bg-nobilis-green text-white scale-110' :
                 answers[qq.id] !== undefined ? 'bg-green-500 text-white' :
                 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}>
@@ -357,11 +357,11 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest, 
             <button key={idx} onClick={() => handleAnswer(q.id, idx)}
               className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
                 answers[q.id] === idx
-                  ? 'border-[#1a3a32] bg-[#1a3a32]/5 text-[#1a3a32] font-medium'
+                  ? 'border-nobilis-green bg-nobilis-green/5 text-nobilis-green font-medium'
                   : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
               }`}>
               <span className={`inline-flex w-8 h-8 rounded-full items-center justify-center text-sm font-bold mr-3 ${
-                answers[q.id] === idx ? 'bg-[#1a3a32] text-white' : 'bg-gray-100 text-gray-500'
+                answers[q.id] === idx ? 'bg-nobilis-green text-white' : 'bg-gray-100 text-gray-500'
               }`}>
                 {String.fromCharCode(65 + idx)}
               </span>
@@ -383,7 +383,7 @@ const StudentEnglishTest = ({ student, onSubmitEnglishTest, onResetEnglishTest, 
           </button>
         ) : (
           <button onClick={handleSubmit} disabled={answeredCount < 1}
-            className="flex-1 py-3 bg-[#c9a227] text-[#1a3a32] font-bold rounded-xl hover:bg-[#e8c547] transition-colors disabled:opacity-50">
+            className="flex-1 py-3 bg-nobilis-gold text-nobilis-green font-bold rounded-xl hover:bg-nobilis-gold-light transition-colors disabled:opacity-50">
             Завершить тест
           </button>
         )}

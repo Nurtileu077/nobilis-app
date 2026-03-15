@@ -15,7 +15,7 @@ const StudentSchedule = ({ student, schedule, teachers, onSetSelected, onSetModa
           return (
             <div key={x.id} className="flex items-center gap-4 p-4 border-b hover:bg-gray-50 cursor-pointer transition-all"
               onClick={() => { onSetSelected(x); onSetModal('scheduleDetail'); }}>
-              <div className="w-28 font-medium text-[#1a3a32]">{x.day}</div>
+              <div className="w-28 font-medium text-nobilis-green">{x.day}</div>
               <div className="w-20 text-lg font-semibold">{x.time}</div>
               <div className="flex-1">
                 <div className="font-medium">{x.subject}</div>

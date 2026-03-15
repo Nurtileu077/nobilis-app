@@ -26,11 +26,11 @@ const CuratorDashboard = ({ data, onResolveTicket, onSetModal, onSetForm }) => {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
-          <div className="text-3xl font-bold text-[#1a3a32]">{data.students.length}</div>
+          <div className="text-3xl font-bold text-nobilis-green">{data.students.length}</div>
           <div className="text-sm text-gray-500">Студентов</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
-          <div className="text-3xl font-bold text-[#c9a227]">{data.teachers.length}</div>
+          <div className="text-3xl font-bold text-nobilis-gold">{data.teachers.length}</div>
           <div className="text-sm text-gray-500">Преподавателей</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">

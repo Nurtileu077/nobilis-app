@@ -75,7 +75,7 @@ const EmptyState = ({ icon, text }) => (
 
 const SectionTitle = ({ accent, children }) => (
   <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
-    <span className={`w-2 h-5 rounded inline-block ${accent || 'bg-[#1a3a32]'}`} />
+    <span className={`w-2 h-5 rounded inline-block ${accent || 'bg-nobilis-green'}`} />
     {children}
   </h3>
 );
@@ -113,7 +113,7 @@ const LeadsTab = ({ leads, onSetModal, onSetForm }) => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Поиск по имени, телефону…"
-            className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3a32]/20"
+            className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-nobilis-green/20"
           />
         </div>
 
@@ -149,7 +149,7 @@ const LeadsTab = ({ leads, onSetModal, onSetForm }) => {
 
         <button
           onClick={() => { onSetForm({}); onSetModal('addLead'); }}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a3a32] text-white text-sm font-medium hover:bg-[#1a3a32]/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-nobilis-green text-white text-sm font-medium hover:bg-nobilis-green/90 transition-colors"
         >
           <I.Plus />
           Новый лид
@@ -174,7 +174,7 @@ const LeadsTab = ({ leads, onSetModal, onSetForm }) => {
                   className="w-full text-left px-5 py-4 hover:bg-gray-50/70 transition-colors"
                 >
                   <div className="flex flex-wrap items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[#1a3a32]/10 flex items-center justify-center text-[#1a3a32] font-bold text-sm shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-nobilis-green/10 flex items-center justify-center text-nobilis-green font-bold text-sm shrink-0">
                       {(lead.name || '?').charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -245,7 +245,7 @@ const LeadsTab = ({ leads, onSetModal, onSetForm }) => {
                         <div className="space-y-1.5">
                           {lead.history.map((h, i) => (
                             <div key={i} className="flex items-start gap-2 text-sm">
-                              <span className="mt-0.5 text-[#1a3a32]"><I.Clock /></span>
+                              <span className="mt-0.5 text-nobilis-green"><I.Clock /></span>
                               <span className="text-gray-400 shrink-0">{fmtDate(h.date)}</span>
                               <span className="text-gray-600">{h.text}</span>
                             </div>
@@ -258,14 +258,14 @@ const LeadsTab = ({ leads, onSetModal, onSetForm }) => {
                     <div className="flex flex-wrap gap-2 pt-1">
                       <button
                         onClick={() => { onSetForm(lead); onSetModal('editLead'); }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1a3a32] text-white text-xs font-medium hover:bg-[#1a3a32]/90 transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-nobilis-green text-white text-xs font-medium hover:bg-nobilis-green/90 transition-colors"
                       >
                         <I.Edit />
                         Редактировать
                       </button>
                       <button
                         onClick={() => { onSetForm({ leadId: lead.id }); onSetModal('addMeeting'); }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#c9a227] text-white text-xs font-medium hover:bg-[#c9a227]/90 transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-nobilis-gold text-white text-xs font-medium hover:bg-nobilis-gold/90 transition-colors"
                       >
                         <I.Calendar />
                         Назначить встречу
@@ -344,7 +344,7 @@ const MeetingsTab = ({ meetings, onSetModal, onSetForm }) => {
               onClick={() => setPeriod(k)}
               className={`px-4 py-2 transition-colors ${
                 period === k
-                  ? 'bg-[#1a3a32] text-white font-medium'
+                  ? 'bg-nobilis-green text-white font-medium'
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
@@ -355,7 +355,7 @@ const MeetingsTab = ({ meetings, onSetModal, onSetForm }) => {
         <div className="ml-auto">
           <button
             onClick={() => { onSetForm({}); onSetModal('addMeeting'); }}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#c9a227] text-white text-sm font-medium hover:bg-[#c9a227]/90 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-nobilis-gold text-white text-sm font-medium hover:bg-nobilis-gold/90 transition-colors"
           >
             <I.Plus />
             Встреча
@@ -371,7 +371,7 @@ const MeetingsTab = ({ meetings, onSetModal, onSetForm }) => {
             <div key={date}>
               {/* day header */}
               <div className="flex items-center gap-3 mb-3">
-                <div className="bg-[#1a3a32] text-white rounded-xl px-3 py-1 text-sm font-semibold">
+                <div className="bg-nobilis-green text-white rounded-xl px-3 py-1 text-sm font-semibold">
                   {fmtDate(date)}
                 </div>
                 <div className="flex-1 h-px bg-gray-100" />
@@ -387,7 +387,7 @@ const MeetingsTab = ({ meetings, onSetModal, onSetForm }) => {
                       className="bg-white rounded-2xl border shadow-sm px-5 py-4 flex flex-wrap items-center gap-4 hover:shadow-md transition-shadow"
                     >
                       {/* time */}
-                      <div className="text-xl font-bold text-[#1a3a32] w-14 shrink-0">
+                      <div className="text-xl font-bold text-nobilis-green w-14 shrink-0">
                         {fmtTime(m.datetime)}
                       </div>
 
@@ -497,7 +497,7 @@ const ReportTab = ({ leads, meetings, salesTeam }) => {
               onClick={() => setPeriod(k)}
               className={`px-4 py-2 transition-colors ${
                 period === k
-                  ? 'bg-[#1a3a32] text-white font-medium'
+                  ? 'bg-nobilis-green text-white font-medium'
                   : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
@@ -509,14 +509,14 @@ const ReportTab = ({ leads, meetings, salesTeam }) => {
 
       {/* summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-[#1a3a32] to-[#1a3a32]/80 text-white rounded-2xl p-5 shadow-sm">
+        <div className="bg-gradient-to-br from-nobilis-green to-nobilis-green/80 text-white rounded-2xl p-5 shadow-sm">
           <div className="text-3xl font-bold">{callsMade || '—'}</div>
           <div className="text-sm text-white/70 mt-1 flex items-center gap-1">
             <I.Phone />
             Звонков
           </div>
         </div>
-        <div className="bg-gradient-to-br from-[#c9a227] to-[#c9a227]/80 text-white rounded-2xl p-5 shadow-sm">
+        <div className="bg-gradient-to-br from-nobilis-gold to-nobilis-gold/80 text-white rounded-2xl p-5 shadow-sm">
           <div className="text-3xl font-bold">{periodMeetings.length}</div>
           <div className="text-sm text-white/70 mt-1 flex items-center gap-1">
             <I.Calendar />
@@ -570,7 +570,7 @@ const ReportTab = ({ leads, meetings, salesTeam }) => {
                     return (
                       <tr key={name} className="hover:bg-gray-50/50 transition-colors">
                         <td className="py-3 flex items-center gap-2">
-                          <span className="w-5 h-5 rounded-full bg-[#1a3a32]/10 text-[#1a3a32] text-xs flex items-center justify-center font-bold">
+                          <span className="w-5 h-5 rounded-full bg-nobilis-green/10 text-nobilis-green text-xs flex items-center justify-center font-bold">
                             {idx + 1}
                           </span>
                           <span className="font-medium text-gray-800">{name}</span>
@@ -602,11 +602,11 @@ const ReportTab = ({ leads, meetings, salesTeam }) => {
                     <div className="w-28 text-xs text-gray-600 truncate shrink-0">{name}</div>
                     <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-[#1a3a32] to-[#1a3a32]/70 transition-all duration-500"
+                        className="h-full rounded-full bg-gradient-to-r from-nobilis-green to-nobilis-green/70 transition-all duration-500"
                         style={{ width: `${(s.won / maxWon) * 100}%` }}
                       />
                     </div>
-                    <div className="w-8 text-xs font-semibold text-[#1a3a32] text-right shrink-0">
+                    <div className="w-8 text-xs font-semibold text-nobilis-green text-right shrink-0">
                       {s.won}
                     </div>
                   </div>
@@ -619,7 +619,7 @@ const ReportTab = ({ leads, meetings, salesTeam }) => {
 
       {/* conversion funnel mini */}
       <div className="bg-white rounded-2xl border shadow-sm p-6">
-        <SectionTitle accent="bg-[#c9a227]">Воронка продаж</SectionTitle>
+        <SectionTitle accent="bg-nobilis-gold">Воронка продаж</SectionTitle>
         <div className="mt-4 flex flex-wrap gap-3 justify-between">
           {Object.entries(LEAD_STATUSES).map(([key, cfg]) => {
             const count = periodLeads.filter((l) => l.status === key).length;
@@ -665,7 +665,7 @@ const TeamTab = ({ salesTeam, leads, onSetModal, onSetForm }) => {
       <div className="bg-white rounded-2xl border shadow-sm p-5 card-hover space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-full ${accentClass || 'bg-[#1a3a32]'} flex items-center justify-center text-white font-bold`}>
+            <div className={`w-10 h-10 rounded-full ${accentClass || 'bg-nobilis-green'} flex items-center justify-center text-white font-bold`}>
               {(member.name || '?').charAt(0).toUpperCase()}
             </div>
             <div>
@@ -685,7 +685,7 @@ const TeamTab = ({ salesTeam, leads, onSetModal, onSetForm }) => {
 
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="bg-gray-50 rounded-xl p-2">
-            <div className="text-lg font-bold text-[#1a3a32]">{s.leads}</div>
+            <div className="text-lg font-bold text-nobilis-green">{s.leads}</div>
             <div className="text-xs text-gray-400">лидов</div>
           </div>
           <div className="bg-gray-50 rounded-xl p-2">
@@ -752,7 +752,7 @@ const TeamTab = ({ salesTeam, leads, onSetModal, onSetForm }) => {
           <SectionTitle>Менеджеры по продажам</SectionTitle>
           <button
             onClick={() => { onSetForm({ role: 'sales_manager' }); onSetModal('addSalesManager'); }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1a3a32] text-white text-xs font-medium hover:bg-[#1a3a32]/90 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-nobilis-green text-white text-xs font-medium hover:bg-nobilis-green/90 transition-colors"
           >
             <I.Plus />
             Добавить
@@ -763,7 +763,7 @@ const TeamTab = ({ salesTeam, leads, onSetModal, onSetForm }) => {
         ) : (
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
             {managers.map((m) => (
-              <MemberCard key={m.id || m.name} member={m} accentClass="bg-[#1a3a32]" />
+              <MemberCard key={m.id || m.name} member={m} accentClass="bg-nobilis-green" />
             ))}
           </div>
         )}
@@ -772,10 +772,10 @@ const TeamTab = ({ salesTeam, leads, onSetModal, onSetForm }) => {
       {/* Callcenter */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <SectionTitle accent="bg-[#c9a227]">Колл-центр</SectionTitle>
+          <SectionTitle accent="bg-nobilis-gold">Колл-центр</SectionTitle>
           <button
             onClick={() => { onSetForm({ role: 'callcenter' }); onSetModal('addCallcenter'); }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#c9a227] text-white text-xs font-medium hover:bg-[#c9a227]/90 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-nobilis-gold text-white text-xs font-medium hover:bg-nobilis-gold/90 transition-colors"
           >
             <I.Plus />
             Добавить
@@ -786,7 +786,7 @@ const TeamTab = ({ salesTeam, leads, onSetModal, onSetForm }) => {
         ) : (
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
             {callcenter.map((m) => (
-              <MemberCard key={m.id || m.name} member={m} accentClass="bg-[#c9a227]" />
+              <MemberCard key={m.id || m.name} member={m} accentClass="bg-nobilis-gold" />
             ))}
           </div>
         )}
@@ -818,7 +818,7 @@ const TeamTab = ({ salesTeam, leads, onSetModal, onSetForm }) => {
                 <div key={m.id || m.name} className="flex items-center gap-4">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
                     idx === 0
-                      ? 'bg-[#c9a227] text-white'
+                      ? 'bg-nobilis-gold text-white'
                       : idx === 1
                       ? 'bg-gray-300 text-gray-700'
                       : idx === 2
@@ -831,7 +831,7 @@ const TeamTab = ({ salesTeam, leads, onSetModal, onSetForm }) => {
                   <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
-                        idx === 0 ? 'bg-[#c9a227]' : 'bg-[#1a3a32]/60'
+                        idx === 0 ? 'bg-nobilis-gold' : 'bg-nobilis-green/60'
                       }`}
                       style={{ width: `${Math.min(m.stats.conv, 100)}%` }}
                     />
@@ -895,7 +895,7 @@ const ROPDashboard = ({ data = {}, user, onSetModal, onSetForm, onSetView, onUpd
       {/* header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-[#1a3a32] flex items-center justify-center text-white">
+          <div className="w-11 h-11 rounded-2xl bg-nobilis-green flex items-center justify-center text-white">
             <I.Dashboard />
           </div>
           <div>
@@ -917,13 +917,13 @@ const ROPDashboard = ({ data = {}, user, onSetModal, onSetForm, onSetView, onUpd
           icon={<I.Users />}
           value={totalLeads}
           label="Всего лидов"
-          color="text-[#1a3a32]"
+          color="text-nobilis-green"
         />
         <StatCard
           icon={<I.Calendar />}
           value={meetingsToday}
           label="Встреч сегодня"
-          color="text-[#c9a227]"
+          color="text-nobilis-gold"
         />
         <StatCard
           icon={<I.Check />}
@@ -949,11 +949,11 @@ const ROPDashboard = ({ data = {}, user, onSetModal, onSetForm, onSetView, onUpd
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
                 activeTab === tab.key
-                  ? 'border-[#1a3a32] text-[#1a3a32] bg-[#1a3a32]/5'
+                  ? 'border-nobilis-green text-nobilis-green bg-nobilis-green/5'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
               }`}
             >
-              <span className={activeTab === tab.key ? 'text-[#1a3a32]' : 'text-gray-400'}>
+              <span className={activeTab === tab.key ? 'text-nobilis-green' : 'text-gray-400'}>
                 {tab.icon}
               </span>
               {tab.label}

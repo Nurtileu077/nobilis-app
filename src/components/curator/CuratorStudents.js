@@ -87,7 +87,7 @@ const CuratorStudents = ({
                 return (
                   <div key={s.id} className="bg-white rounded-xl shadow-sm border p-4 hover:shadow-md transition-all">
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-[#1a3a32] to-[#2d5a4a] flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm overflow-hidden">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-nobilis-green to-nobilis-green-light flex items-center justify-center text-white font-semibold flex-shrink-0 text-sm overflow-hidden">
                         {s.avatar ? <img src={s.avatar} alt="" className="w-full h-full object-cover" /> : getInitials(s.name)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -136,7 +136,7 @@ const CuratorStudents = ({
                         Быстрый просмотр
                       </button>
                       <button onClick={() => onOpenStudentPage(s.id)}
-                        className="flex-1 py-2 bg-[#1a3a32] text-white rounded-lg text-sm hover:bg-[#2d5a4a] transition-colors">
+                        className="flex-1 py-2 bg-nobilis-green text-white rounded-lg text-sm hover:bg-nobilis-green-light transition-colors">
                         Подробнее
                       </button>
                     </div>

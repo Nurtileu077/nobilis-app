@@ -107,9 +107,9 @@ const UploadRecommendation = ({ studentId, onSetForm, onSetModal, onDone }) => {
         <input type="text" value={subject} onChange={e => setSubject(e.target.value)} className="w-full p-3 border rounded-xl" placeholder="Английский / Директор" /></div>
       <div>
         <label className="block text-sm text-gray-600 mb-1">Файл</label>
-        <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:border-[#1a3a32] transition-colors">
+        <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:border-nobilis-green transition-colors">
           {fileName ? (
-            <span className="text-sm text-[#1a3a32]">{fileName} ({fileSize})</span>
+            <span className="text-sm text-nobilis-green">{fileName} ({fileSize})</span>
           ) : (
             <span className="text-sm text-gray-500">Нажмите для выбора файла (PDF, DOC)</span>
           )}

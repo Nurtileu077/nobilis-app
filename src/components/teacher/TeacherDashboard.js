@@ -11,11 +11,11 @@ const TeacherDashboard = ({ teacher, schedule, onSetSelected, onSetModal }) => {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
-          <div className="text-3xl font-bold text-[#1a3a32]">{teacher.hoursWorked}</div>
+          <div className="text-3xl font-bold text-nobilis-green">{teacher.hoursWorked}</div>
           <div className="text-sm text-gray-500">Часов (подтв.)</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
-          <div className="text-3xl font-bold text-[#c9a227]">{teacher.totalLessons}</div>
+          <div className="text-3xl font-bold text-nobilis-gold">{teacher.totalLessons}</div>
           <div className="text-sm text-gray-500">Уроков</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">

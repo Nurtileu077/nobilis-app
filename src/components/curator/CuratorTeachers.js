@@ -15,7 +15,7 @@ const CuratorTeachers = ({ teachers, onSetModal, onSetForm, onSetSelected, onDel
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
       {teachers.map(t => (
         <div key={t.id} className="flex items-center gap-4 p-4 border-b hover:bg-gray-50 transition-all">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c9a227] to-[#a68620] flex items-center justify-center text-white font-semibold">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-nobilis-gold to-nobilis-gold-dark flex items-center justify-center text-white font-semibold">
             {getInitials(t.name)}
           </div>
           <div className="flex-1">

@@ -30,7 +30,7 @@ const TeacherSyllabus = ({ teacher, students, onSetModal, onSetForm, onSetSelect
               <div className="mb-4">
                 <div className="flex justify-between text-sm mb-1"><span>Прогресс</span><span>{s.progress}%</span></div>
                 <div className="h-2 bg-gray-200 rounded-full">
-                  <div className="h-2 bg-[#c9a227] rounded-full transition-all" style={{ width: `${s.progress}%` }} />
+                  <div className="h-2 bg-nobilis-gold rounded-full transition-all" style={{ width: `${s.progress}%` }} />
                 </div>
               </div>
               <div className="text-sm text-gray-500 mb-3">{s.weeks} недель</div>

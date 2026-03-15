@@ -10,7 +10,7 @@ const StudentResults = ({ student, onSetSelected, onSetModal }) => {
     <div className="space-y-6 animate-fadeIn">
       <h1 className="text-2xl font-bold text-gray-800">Мои результаты</h1>
 
-      <div className="bg-gradient-to-r from-[#1a3a32] to-[#2d5a4a] rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-nobilis-green to-nobilis-green-light rounded-2xl p-6 text-white">
         <h3 className="font-semibold mb-4 flex items-center gap-2"><I.Target /> Мои цели</h3>
         <div className="grid grid-cols-2 gap-4">
           {student.targetIelts && (
@@ -39,7 +39,7 @@ const StudentResults = ({ student, onSetSelected, onSetModal }) => {
                 <div className="text-sm text-gray-500">{new Date(student.englishTestResult.date).toLocaleDateString('ru-RU')}</div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-[#1a3a32]">{student.englishTestResult.score}/{student.englishTestResult.total}</div>
+                <div className="text-2xl font-bold text-nobilis-green">{student.englishTestResult.score}/{student.englishTestResult.total}</div>
                 <div className="text-sm text-gray-500">{Math.round(student.englishTestResult.score / student.englishTestResult.total * 100)}%</div>
               </div>
             </div>
@@ -72,7 +72,7 @@ const StudentResults = ({ student, onSetSelected, onSetModal }) => {
               {student.testCareers?.length > 0 && (
                 <div className="flex flex-wrap gap-1 justify-end max-w-[60%]">
                   {student.testCareers.slice(0, 3).map(c => (
-                    <span key={c} className="text-xs bg-[#c9a227]/20 text-[#c9a227] px-2 py-0.5 rounded-full">{c}</span>
+                    <span key={c} className="text-xs bg-nobilis-gold/20 text-nobilis-gold px-2 py-0.5 rounded-full">{c}</span>
                   ))}
                 </div>
               )}
@@ -93,7 +93,7 @@ const StudentResults = ({ student, onSetSelected, onSetModal }) => {
                     <div className="font-medium">{e.name}</div>
                     <div className="text-sm text-gray-500">{formatDate(e.date)}</div>
                   </div>
-                  <div className="text-2xl font-bold text-[#1a3a32]">{e.score}</div>
+                  <div className="text-2xl font-bold text-nobilis-green">{e.score}</div>
                 </div>
                 {e.breakdown && (
                   <div className="mt-3 grid grid-cols-4 gap-2 text-sm">
@@ -121,7 +121,7 @@ const StudentResults = ({ student, onSetSelected, onSetModal }) => {
                   <div className="font-medium">{e.name}</div>
                   <div className="text-sm text-gray-500">{formatDate(e.date)}</div>
                 </div>
-                <div className="text-xl font-bold text-[#c9a227]">{e.score}</div>
+                <div className="text-xl font-bold text-nobilis-gold">{e.score}</div>
               </div>
             ))}
           </div>

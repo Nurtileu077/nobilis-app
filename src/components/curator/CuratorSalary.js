@@ -30,7 +30,7 @@ const CuratorSalary = ({ teachers, onConfirmLesson, onUpdateTeacher }) => {
     <div className="space-y-6 animate-fadeIn">
       <h1 className="text-2xl font-bold text-gray-800">Зарплаты</h1>
 
-      <div className="bg-gradient-to-r from-[#1a3a32] to-[#2d5a4a] rounded-2xl p-6 text-white">
+      <div className="bg-gradient-to-r from-nobilis-green to-nobilis-green-light rounded-2xl p-6 text-white">
         <div className="text-sm text-white/70">Общий фонд за месяц</div>
         <div className="text-3xl font-bold">{total.toLocaleString()} тг</div>
       </div>
@@ -48,7 +48,7 @@ const CuratorSalary = ({ teachers, onConfirmLesson, onUpdateTeacher }) => {
                   <div className="text-sm text-gray-500">{t.subject}</div>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <div className="text-lg font-bold text-[#1a3a32]">{(conf * t.hourlyRate).toLocaleString()} тг</div>
+                  <div className="text-lg font-bold text-nobilis-green">{(conf * t.hourlyRate).toLocaleString()} тг</div>
                   <div className="text-xs text-gray-400">к выплате</div>
                 </div>
               </div>
@@ -64,7 +64,7 @@ const CuratorSalary = ({ teachers, onConfirmLesson, onUpdateTeacher }) => {
                       <button onClick={() => setEditingRate(null)} className="text-red-500 font-bold text-xs">✕</button>
                     </span>
                   ) : (
-                    <span className="font-medium cursor-pointer hover:text-[#c9a227] transition-colors" onClick={() => startEdit(t)}>
+                    <span className="font-medium cursor-pointer hover:text-nobilis-gold transition-colors" onClick={() => startEdit(t)}>
                       {t.hourlyRate} тг/ч
                     </span>
                   )}

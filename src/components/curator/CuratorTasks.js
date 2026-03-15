@@ -210,7 +210,7 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
             <div className="space-y-1">
               <button onClick={() => setFilterAssignee('all')}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-all ${
-                  filterAssignee === 'all' ? 'bg-[#1a3a32] text-white' : 'hover:bg-gray-50 text-gray-700'
+                  filterAssignee === 'all' ? 'bg-nobilis-green text-white' : 'hover:bg-gray-50 text-gray-700'
                 }`}>
                 <span>Все задачи</span>
                 <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
@@ -220,11 +220,11 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
               {allPeople.filter(p => taskCounts[p.id]).map(p => (
                 <button key={p.id} onClick={() => setFilterAssignee(p.id)}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-all ${
-                    filterAssignee === p.id ? 'bg-[#1a3a32] text-white' : 'hover:bg-gray-50 text-gray-700'
+                    filterAssignee === p.id ? 'bg-nobilis-green text-white' : 'hover:bg-gray-50 text-gray-700'
                   }`}>
                   <div className="flex items-center gap-2 min-w-0">
                     <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      p.role === 'curator' ? 'bg-[#c9a227]' : p.role === 'teacher' ? 'bg-blue-500' : 'bg-green-500'
+                      p.role === 'curator' ? 'bg-nobilis-gold' : p.role === 'teacher' ? 'bg-blue-500' : 'bg-green-500'
                     }`} />
                     <span className="truncate">{p.name.split(' ').slice(0, 2).join(' ')}</span>
                   </div>
@@ -240,7 +240,7 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
                     <button key={p.id} onClick={() => setFilterAssignee(p.id)}
                       className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-gray-400 hover:bg-gray-50 transition-all">
                       <span className={`w-2 h-2 rounded-full ${
-                        p.role === 'curator' ? 'bg-[#c9a227]' : p.role === 'teacher' ? 'bg-blue-500' : 'bg-green-500'
+                        p.role === 'curator' ? 'bg-nobilis-gold' : p.role === 'teacher' ? 'bg-blue-500' : 'bg-green-500'
                       } opacity-40`} />
                       <span className="truncate">{p.name.split(' ').slice(0, 2).join(' ')}</span>
                     </button>
@@ -256,7 +256,7 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
           {/* Stats bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="bg-white rounded-xl p-3 shadow-sm border text-center">
-              <div className="text-xl font-bold text-[#1a3a32]">{tasks.length}</div>
+              <div className="text-xl font-bold text-nobilis-green">{tasks.length}</div>
               <div className="text-xs text-gray-500">Всего</div>
             </div>
             <div className="bg-white rounded-xl p-3 shadow-sm border text-center">
@@ -307,7 +307,7 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
                     <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
                       <span className="flex items-center gap-1">
                         <span className={`w-2 h-2 rounded-full ${
-                          allPeople.find(p => p.id === task.assigneeId)?.role === 'curator' ? 'bg-[#c9a227]' :
+                          allPeople.find(p => p.id === task.assigneeId)?.role === 'curator' ? 'bg-nobilis-gold' :
                           allPeople.find(p => p.id === task.assigneeId)?.role === 'teacher' ? 'bg-blue-500' : 'bg-green-500'
                         }`} />
                         {task.assigneeName}

@@ -1045,7 +1045,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
                   value={txForm.amount}
                   onChange={e => setTxForm(p => ({ ...p, amount: e.target.value }))}
                   placeholder="500 000"
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1a3a32]/20"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-nobilis-green/20"
                 />
               </div>
               {/* Description */}
@@ -1056,7 +1056,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
                   value={txForm.desc}
                   onChange={e => setTxForm(p => ({ ...p, desc: e.target.value }))}
                   placeholder="Комментарий к операции"
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1a3a32]/20"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-nobilis-green/20"
                 />
               </div>
               {/* Submit */}

@@ -266,7 +266,7 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
           onClick={() => handleLeadClick(lead.id)}
           className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
         >
-          <div className="w-9 h-9 rounded-full bg-[#1a3a32]/10 flex items-center justify-center text-[#1a3a32] font-bold text-sm flex-shrink-0">
+          <div className="w-9 h-9 rounded-full bg-nobilis-green/10 flex items-center justify-center text-nobilis-green font-bold text-sm flex-shrink-0">
             {(lead.name || '?').charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
@@ -304,7 +304,7 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
               {lead.amount && (
                 <div>
                   <p className="text-xs text-gray-400 mb-0.5">Сумма сделки</p>
-                  <p className="font-semibold text-[#1a3a32]">{formatMoney(lead.amount)}</p>
+                  <p className="font-semibold text-nobilis-green">{formatMoney(lead.amount)}</p>
                 </div>
               )}
               {lead.createdAt && (
@@ -348,13 +348,13 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => { onSetForm?.({ leadId: lead.id, leadName: lead.name }); onSetModal?.('addMeeting'); }}
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-[#1a3a32] text-white hover:bg-[#1a3a32]/90 transition-colors"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-nobilis-green text-white hover:bg-nobilis-green/90 transition-colors"
               >
                 <I.Calendar /> Встреча
               </button>
               <button
                 onClick={() => { onSetForm?.({ leadId: lead.id, leadName: lead.name }); onSetModal?.('addNote'); }}
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-[#c9a227]/10 text-[#c9a227] hover:bg-[#c9a227]/20 transition-colors border border-[#c9a227]/30"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-nobilis-gold/10 text-nobilis-gold hover:bg-nobilis-gold/20 transition-colors border border-nobilis-gold/30"
               >
                 <I.Edit /> Заметка
               </button>
@@ -373,11 +373,11 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
 
   const renderMeetingCard = (m) => (
     <div key={m.id} className="flex gap-3 p-3 rounded-xl border border-gray-100 hover:border-gray-200 transition-colors bg-white">
-      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#c9a227]/10 flex flex-col items-center justify-center text-center">
-        <span className="text-xs font-bold text-[#c9a227] leading-none">
+      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-nobilis-gold/10 flex flex-col items-center justify-center text-center">
+        <span className="text-xs font-bold text-nobilis-gold leading-none">
           {m.date ? new Date(m.date).getDate() : '—'}
         </span>
-        <span className="text-[10px] text-[#c9a227] leading-none">
+        <span className="text-[10px] text-nobilis-gold leading-none">
           {m.date ? new Date(m.date).toLocaleString('ru-RU', { month: 'short' }) : ''}
         </span>
       </div>
@@ -426,10 +426,10 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
     <div className="space-y-6 animate-fadeIn">
 
       {/* ── HEADER ─────────────────────────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-[#1a3a32] to-[#1a3a32]/80 rounded-2xl px-6 py-5 text-white shadow-lg">
+      <div className="bg-gradient-to-r from-nobilis-green to-nobilis-green/80 rounded-2xl px-6 py-5 text-white shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-[#c9a227] flex items-center justify-center text-white font-bold text-xl shadow-md">
+            <div className="w-12 h-12 rounded-full bg-nobilis-gold flex items-center justify-center text-white font-bold text-xl shadow-md">
               {(user?.name || 'М').charAt(0).toUpperCase()}
             </div>
             <div>
@@ -439,7 +439,7 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
           </div>
           <div className="text-right hidden sm:block">
             <p className="text-sm text-white/60">Сегодня</p>
-            <p className="text-base font-semibold text-[#c9a227]">
+            <p className="text-base font-semibold text-nobilis-gold">
               {new Date().toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' })}
             </p>
           </div>
@@ -449,13 +449,13 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
       {/* ── STATS CARDS ────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 card-hover">
-          <div className="flex items-center gap-2 mb-2 text-[#1a3a32]"><I.Users /></div>
-          <div className="text-3xl font-bold text-[#1a3a32]">{myLeads.length}</div>
+          <div className="flex items-center gap-2 mb-2 text-nobilis-green"><I.Users /></div>
+          <div className="text-3xl font-bold text-nobilis-green">{myLeads.length}</div>
           <div className="text-xs text-gray-500 mt-1">Моих лидов</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 card-hover">
-          <div className="flex items-center gap-2 mb-2 text-[#c9a227]"><I.Calendar /></div>
-          <div className="text-3xl font-bold text-[#c9a227]">{meetingsToday}</div>
+          <div className="flex items-center gap-2 mb-2 text-nobilis-gold"><I.Calendar /></div>
+          <div className="text-3xl font-bold text-nobilis-gold">{meetingsToday}</div>
           <div className="text-xs text-gray-500 mt-1">Встреч сегодня</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 card-hover">
@@ -483,7 +483,7 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
                 onClick={() => setActiveTab(t.id)}
                 className={`flex items-center gap-2 px-5 py-4 text-sm font-medium whitespace-nowrap transition-all border-b-2 ${
                   active
-                    ? 'border-[#1a3a32] text-[#1a3a32] bg-[#1a3a32]/5'
+                    ? 'border-nobilis-green text-nobilis-green bg-nobilis-green/5'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -530,12 +530,12 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
                   value={searchLeads}
                   onChange={e => setSearchLeads(e.target.value)}
                   placeholder="Поиск по имени, телефону..."
-                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1a3a32]/20"
+                  className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-nobilis-green/20"
                 />
               </div>
               <button
                 onClick={openAddLead}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#1a3a32] text-white text-sm font-medium rounded-xl hover:bg-[#1a3a32]/90 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 bg-nobilis-green text-white text-sm font-medium rounded-xl hover:bg-nobilis-green/90 transition-colors"
               >
                 <I.Plus /> Лид
               </button>
@@ -557,8 +557,8 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
           <div className="p-5 space-y-4">
             {/* today banner */}
             {todayMeetings.length > 0 && (
-              <div className="bg-[#c9a227]/10 border border-[#c9a227]/30 rounded-xl p-4">
-                <p className="text-xs font-semibold text-[#c9a227] mb-3 uppercase tracking-wide flex items-center gap-1.5">
+              <div className="bg-nobilis-gold/10 border border-nobilis-gold/30 rounded-xl p-4">
+                <p className="text-xs font-semibold text-nobilis-gold mb-3 uppercase tracking-wide flex items-center gap-1.5">
                   <I.Clock /> Сегодня · {todayMeetings.length} встреч
                 </p>
                 <div className="space-y-2">
@@ -579,7 +579,7 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
                   onClick={() => setMeetingFilter(f.id)}
                   className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all ${
                     meetingFilter === f.id
-                      ? 'bg-[#1a3a32] text-white border-[#1a3a32]'
+                      ? 'bg-nobilis-green text-white border-nobilis-green'
                       : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
                   }`}
                 >
@@ -588,7 +588,7 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
               ))}
               <button
                 onClick={openAddMeeting}
-                className="ml-auto flex items-center gap-1.5 px-4 py-1.5 bg-[#c9a227] text-white text-xs font-medium rounded-full hover:bg-[#c9a227]/90 transition-colors"
+                className="ml-auto flex items-center gap-1.5 px-4 py-1.5 bg-nobilis-gold text-white text-xs font-medium rounded-full hover:bg-nobilis-gold/90 transition-colors"
               >
                 <I.Plus /> Встреча
               </button>
@@ -610,7 +610,7 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
             {/* call stats today */}
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-gray-50 rounded-xl p-3 text-center">
-                <div className="text-2xl font-bold text-[#1a3a32]">{callsToday.length}</div>
+                <div className="text-2xl font-bold text-nobilis-green">{callsToday.length}</div>
                 <div className="text-xs text-gray-500 mt-0.5">Звонков сегодня</div>
               </div>
               <div className="bg-green-50 rounded-xl p-3 text-center">
@@ -637,7 +637,7 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
               </p>
               <button
                 onClick={openAddCall}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#1a3a32] text-white text-sm font-medium rounded-xl hover:bg-[#1a3a32]/90 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 bg-nobilis-green text-white text-sm font-medium rounded-xl hover:bg-nobilis-green/90 transition-colors"
               >
                 <I.Plus /> Звонок
               </button>
@@ -667,9 +667,9 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
                   {new Date().toLocaleString('ru-RU', { month: 'long', year: 'numeric' })}
                 </p>
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1a3a32]/5 border border-[#1a3a32]/10">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-nobilis-green/5 border border-nobilis-green/10">
                 <I.Flag />
-                <span className="text-xs font-semibold text-[#1a3a32]">Активный месяц</span>
+                <span className="text-xs font-semibold text-nobilis-green">Активный месяц</span>
               </div>
             </div>
 
@@ -724,7 +724,7 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
             </div>
 
             {/* revenue & commission block */}
-            <div className="bg-gradient-to-br from-[#1a3a32] to-[#1a3a32]/80 rounded-2xl p-5 text-white">
+            <div className="bg-gradient-to-br from-nobilis-green to-nobilis-green/80 rounded-2xl p-5 text-white">
               <div className="flex items-center gap-2 mb-4">
                 <I.Money />
                 <span className="font-bold text-base">Выручка и комиссия</span>
@@ -733,13 +733,13 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <p className="text-xs text-white/60 mb-0.5">Выручка в этом месяце</p>
-                  <p className="text-xl font-bold text-[#c9a227]">
+                  <p className="text-xl font-bold text-nobilis-gold">
                     {revenueThisMonth > 0 ? formatMoney(revenueThisMonth) : '—'}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-white/60 mb-0.5">Моя комиссия</p>
-                  <p className="text-xl font-bold text-[#c9a227]">
+                  <p className="text-xl font-bold text-nobilis-gold">
                     {revenueThisMonth > 0 ? formatMoney(commission.amount) : '—'}
                   </p>
                 </div>
@@ -764,7 +764,7 @@ const SalesManagerDashboard = ({ user, data, onSetModal, onSetForm, onSetView, o
                           : 'rgba(255,255,255,0.08)',
                       }}
                     >
-                      <span className="text-[#c9a227] font-bold text-sm">{t.label}</span>
+                      <span className="text-nobilis-gold font-bold text-sm">{t.label}</span>
                       <span className="text-xs text-white/50">
                         {t.max === Infinity
                           ? `от ${(t.min / 1000).toFixed(0)}k`

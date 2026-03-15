@@ -46,7 +46,7 @@ const GoogleSheetsSync = () => {
         </div>
         <div className="flex items-center gap-2">
           {loading && (
-            <div className="w-4 h-4 border-2 border-[#1a3a32] border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-nobilis-green border-t-transparent rounded-full animate-spin" />
           )}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2"
             style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
@@ -78,7 +78,7 @@ const GoogleSheetsSync = () => {
           <button
             onClick={() => refresh()}
             disabled={loading}
-            className="w-full mt-2 py-2 px-4 bg-[#1a3a32] text-white text-sm font-medium rounded-lg hover:bg-[#2d5a4a] disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+            className="w-full mt-2 py-2 px-4 bg-nobilis-green text-white text-sm font-medium rounded-lg hover:bg-nobilis-green-light disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

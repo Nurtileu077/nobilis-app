@@ -15,7 +15,7 @@ const TeacherStudents = ({ teacher, schedule, students, onSetSelected, onSetModa
           return (
             <div key={s.id} className="flex items-center gap-4 p-4 border-b hover:bg-gray-50 cursor-pointer transition-all"
               onClick={() => { onSetSelected(s); onSetModal('studentDetailTeacher'); }}>
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#1a3a32] to-[#2d5a4a] flex items-center justify-center text-white font-semibold">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-nobilis-green to-nobilis-green-light flex items-center justify-center text-white font-semibold">
                 {getInitials(s.name)}
               </div>
               <div className="flex-1">
@@ -24,7 +24,7 @@ const TeacherStudents = ({ teacher, schedule, students, onSetSelected, onSetModa
               </div>
               <div className="text-right">
                 <div className="text-sm">Посещ: <span className="font-medium">{getAttendancePercent(s.attendance)}%</span></div>
-                <div className="text-sm">Пробный: <span className="font-medium text-[#c9a227]">{lastMock?.score || '\u2014'}</span></div>
+                <div className="text-sm">Пробный: <span className="font-medium text-nobilis-gold">{lastMock?.score || '\u2014'}</span></div>
               </div>
               <div className="text-right">
                 {s.targetIelts && <div className="text-sm">Цель IELTS: <span className="font-medium text-blue-600">{s.targetIelts}</span></div>}

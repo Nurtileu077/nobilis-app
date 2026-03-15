@@ -132,7 +132,7 @@ const EditableCell = ({ value, onSave, edited, className = '' }) => {
         onChange={e => setDraft(e.target.value)}
         onBlur={commit}
         onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') cancel(); }}
-        className="w-24 px-2 py-1 rounded-lg border-2 border-[#c9a227] text-right font-semibold text-sm outline-none bg-yellow-50"
+        className="w-24 px-2 py-1 rounded-lg border-2 border-nobilis-gold text-right font-semibold text-sm outline-none bg-yellow-50"
         onClick={e => e.stopPropagation()}
       />
     );
@@ -143,7 +143,7 @@ const EditableCell = ({ value, onSave, edited, className = '' }) => {
       onDoubleClick={startEdit}
       title="Двойной клик — редактировать"
       className={`cursor-pointer select-none rounded px-1 transition-all duration-150 ${
-        edited ? 'ring-2 ring-[#c9a227] bg-yellow-50 rounded-md px-2' : 'hover:bg-gray-100'
+        edited ? 'ring-2 ring-nobilis-gold bg-yellow-50 rounded-md px-2' : 'hover:bg-gray-100'
       } ${className}`}
     >
       {fmt(value)} тг
@@ -166,7 +166,7 @@ const BarChart = ({ data, selectedKey, onSelect, height = 200 }) => {
             className="flex-1 flex flex-col items-center gap-1 cursor-pointer group"
             onClick={() => onSelect(key)}
           >
-            <div className={`text-xs font-medium transition-colors ${isSelected ? 'text-[#1a3a32]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+            <div className={`text-xs font-medium transition-colors ${isSelected ? 'text-nobilis-green' : 'text-gray-400 group-hover:text-gray-600'}`}>
               {fmtK(value)}
             </div>
             <div className="w-full relative" style={{ height: height - 36 }}>
@@ -180,7 +180,7 @@ const BarChart = ({ data, selectedKey, onSelect, height = 200 }) => {
                 }}
               />
             </div>
-            <div className={`text-xs text-center leading-tight transition-colors ${isSelected ? 'text-[#1a3a32] font-bold' : 'text-gray-400'}`}>
+            <div className={`text-xs text-center leading-tight transition-colors ${isSelected ? 'text-nobilis-green font-bold' : 'text-gray-400'}`}>
               {shortLabel || label}
             </div>
           </div>
@@ -493,14 +493,14 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
             <button
               onClick={() => setViewMode('table')}
               title="Таблица"
-              className={`px-3 py-2 transition-colors ${viewMode === 'table' ? 'bg-[#1a3a32] text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+              className={`px-3 py-2 transition-colors ${viewMode === 'table' ? 'bg-nobilis-green text-white' : 'text-gray-500 hover:bg-gray-50'}`}
             >
               <I.Menu />
             </button>
             <button
               onClick={() => setViewMode('chart')}
               title="Графики"
-              className={`px-3 py-2 transition-colors ${viewMode === 'chart' ? 'bg-[#1a3a32] text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+              className={`px-3 py-2 transition-colors ${viewMode === 'chart' ? 'bg-nobilis-green text-white' : 'text-gray-500 hover:bg-gray-50'}`}
             >
               <I.Results />
             </button>
@@ -512,7 +512,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
               onClick={() => { setEditMode(m => !m); if (editMode) clearEdits(); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ${
                 editMode
-                  ? 'bg-yellow-50 border-[#c9a227] text-[#c9a227]'
+                  ? 'bg-yellow-50 border-nobilis-gold text-nobilis-gold'
                   : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
               }`}
             >
@@ -529,7 +529,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                 setSavedNotice(true);
                 setTimeout(() => setSavedNotice(false), 2500);
               }}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#1a3a32] text-white hover:bg-[#2d5a4a] transition-colors shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-nobilis-green text-white hover:bg-nobilis-green-light transition-colors shadow-sm"
             >
               <I.Save />
               Сохранить ({Object.keys(edits).length})
@@ -546,7 +546,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
           {/* Export */}
           <button
             onClick={() => exportCSV(employees, salesManagers, selectedMonth)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-white border border-gray-200 text-gray-600 hover:border-[#1a3a32] hover:text-[#1a3a32] transition-all shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-white border border-gray-200 text-gray-600 hover:border-nobilis-green hover:text-nobilis-green transition-all shadow-sm"
           >
             <I.Download />
             Excel
@@ -568,8 +568,8 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                 onClick={() => setSelectedMonth(m)}
                 className={`flex-shrink-0 flex flex-col items-center px-3 py-2 rounded-xl text-xs transition-all duration-200 ${
                   isSelected
-                    ? 'bg-[#1a3a32] text-white shadow-md'
-                    : 'bg-white border border-gray-200 text-gray-500 hover:border-[#1a3a32] hover:text-[#1a3a32]'
+                    ? 'bg-nobilis-green text-white shadow-md'
+                    : 'bg-white border border-gray-200 text-gray-500 hover:border-nobilis-green hover:text-nobilis-green'
                 }`}
               >
                 <span className="font-semibold">{m.split(' ')[0].slice(0, 3)}</span>
@@ -619,8 +619,8 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
             onClick={() => setActiveTab(tab.id)}
             className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
               activeTab === tab.id
-                ? 'bg-[#1a3a32] text-white shadow-sm'
-                : 'bg-white border border-gray-200 text-gray-600 hover:border-[#1a3a32] hover:text-[#1a3a32]'
+                ? 'bg-nobilis-green text-white shadow-sm'
+                : 'bg-white border border-gray-200 text-gray-600 hover:border-nobilis-green hover:text-nobilis-green'
             }`}
           >
             {tab.label}
@@ -638,7 +638,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                 <h3 className="text-base font-semibold text-gray-800">ФОТ по месяцам</h3>
                 <p className="text-xs text-gray-400 mt-0.5">Клик по столбику — выбрать месяц</p>
               </div>
-              <div className="text-sm font-semibold text-[#1a3a32]">
+              <div className="text-sm font-semibold text-nobilis-green">
                 {fmtK(chartData.find(d => d.key === selectedMonth)?.value || 0)} тг
               </div>
             </div>
@@ -661,7 +661,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                 <h3 className="text-base font-semibold text-gray-800">Расходы по отделам</h3>
                 <p className="text-xs text-gray-400 mt-0.5">{selectedMonth}</p>
               </div>
-              <div className="text-sm font-semibold text-[#1a3a32]">{fmt(deptTotal)} тг</div>
+              <div className="text-sm font-semibold text-nobilis-green">{fmt(deptTotal)} тг</div>
             </div>
             <div className="space-y-3">
               {deptData.filter(d => d.value > 0).map(dept => (
@@ -717,8 +717,8 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
       {viewMode === 'table' && (
         <div className="space-y-4">
           {editMode && (
-            <div className="bg-yellow-50 border border-[#c9a227] rounded-xl px-4 py-3 flex items-center gap-3">
-              <span className="text-[#c9a227]">
+            <div className="bg-yellow-50 border border-nobilis-gold rounded-xl px-4 py-3 flex items-center gap-3">
+              <span className="text-nobilis-gold">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -758,7 +758,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                   />
                   <span className="font-semibold text-gray-800">{ROLE_LABELS[role] || role}</span>
                   <span className="text-sm text-gray-400">({roleEmps.length})</span>
-                  <span className="ml-auto text-sm font-bold text-[#1a3a32]">{fmt(roleTotal)} тг</span>
+                  <span className="ml-auto text-sm font-bold text-nobilis-green">{fmt(roleTotal)} тг</span>
                   <span className={`transition-transform duration-200 text-gray-400 ${isCollapsed ? '' : 'rotate-180'}`}>
                     <I.ChevronDown />
                   </span>
@@ -794,7 +794,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                         <div className="col-span-4 flex items-center gap-3 min-w-0">
                           <Avatar name={emp.name} color={ROLE_COLORS[role]} size={36} />
                           <div className="min-w-0">
-                            <div className={`font-medium text-gray-800 truncate text-sm ${hasEdits ? 'text-[#c9a227]' : ''}`}>
+                            <div className={`font-medium text-gray-800 truncate text-sm ${hasEdits ? 'text-nobilis-gold' : ''}`}>
                               {emp.name}
                               {hasEdits && <span className="ml-1.5 text-xs bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full">изм.</span>}
                             </div>
@@ -837,7 +837,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                             />
                           ) : (
                             emp._bonus > 0
-                              ? <span className="text-[#c9a227] font-semibold">+{fmt(emp._bonus)} тг</span>
+                              ? <span className="text-nobilis-gold font-semibold">+{fmt(emp._bonus)} тг</span>
                               : <span className="text-gray-300">—</span>
                           )}
                         </div>
@@ -900,14 +900,14 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                           {/* Advance button & form */}
                           <div className="mb-4">
                             {advanceForm?.empName === emp.name ? (
-                              <div className="bg-white rounded-xl border border-[#c9a227]/30 p-4 space-y-3">
+                              <div className="bg-white rounded-xl border border-nobilis-gold/30 p-4 space-y-3">
                                 <div className="text-sm font-semibold text-gray-700">Записать аванс — {emp.name}</div>
                                 <div className="grid grid-cols-2 gap-3">
                                   <div>
                                     <label className="text-xs text-gray-400">Сумма</label>
                                     <input
                                       type="number"
-                                      className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3a32]/20"
+                                      className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-nobilis-green/20"
                                       placeholder="100000"
                                       value={advanceForm.amount || ''}
                                       onChange={e => setAdvanceForm(prev => ({ ...prev, amount: e.target.value }))}
@@ -918,7 +918,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                                     <label className="text-xs text-gray-400">Примечание</label>
                                     <input
                                       type="text"
-                                      className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a3a32]/20"
+                                      className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-nobilis-green/20"
                                       placeholder="Аванс за март"
                                       value={advanceForm.note || ''}
                                       onChange={e => setAdvanceForm(prev => ({ ...prev, note: e.target.value }))}
@@ -929,7 +929,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                                 <div className="flex gap-2">
                                   <button
                                     onClick={e => { e.stopPropagation(); saveAdvance(emp.name, advanceForm.amount, advanceForm.note); }}
-                                    className="px-4 py-2 bg-[#1a3a32] text-white text-xs font-medium rounded-lg hover:bg-[#1a3a32]/90 transition-colors"
+                                    className="px-4 py-2 bg-nobilis-green text-white text-xs font-medium rounded-lg hover:bg-nobilis-green/90 transition-colors"
                                   >
                                     Сохранить
                                   </button>
@@ -944,7 +944,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                             ) : (
                               <button
                                 onClick={e => { e.stopPropagation(); setAdvanceForm({ empName: emp.name, amount: '', note: '' }); }}
-                                className="flex items-center gap-2 px-4 py-2 bg-[#c9a227]/10 border border-[#c9a227]/30 text-[#c9a227] text-xs font-medium rounded-xl hover:bg-[#c9a227]/20 transition-colors"
+                                className="flex items-center gap-2 px-4 py-2 bg-nobilis-gold/10 border border-nobilis-gold/30 text-nobilis-gold text-xs font-medium rounded-xl hover:bg-nobilis-gold/20 transition-colors"
                               >
                                 <I.Plus className="w-3 h-3" />
                                 Записать аванс
@@ -957,7 +957,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                                 <div className="text-xs text-gray-400 mb-1">Записанные авансы:</div>
                                 <div className="flex flex-wrap gap-2">
                                   {advanceHistory.filter(a => a.empName === emp.name && a.month === selectedMonth).map(a => (
-                                    <span key={a.id} className="text-xs bg-[#c9a227]/10 text-[#c9a227] px-2.5 py-1 rounded-lg font-medium">
+                                    <span key={a.id} className="text-xs bg-nobilis-gold/10 text-nobilis-gold px-2.5 py-1 rounded-lg font-medium">
                                       {a.date}: {fmt(a.amount)} тг {a.note && `(${a.note})`}
                                     </span>
                                   ))}
@@ -982,8 +982,8 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                                     onClick={e => { e.stopPropagation(); setSelectedMonth(m); }}
                                     className={`flex-shrink-0 flex flex-col items-center px-3 py-2 rounded-xl text-xs transition-all duration-200 ${
                                       isCurrentMonth
-                                        ? 'bg-[#1a3a32] text-white shadow-sm'
-                                        : 'bg-white border border-gray-200 text-gray-500 hover:border-[#1a3a32]'
+                                        ? 'bg-nobilis-green text-white shadow-sm'
+                                        : 'bg-white border border-gray-200 text-gray-500 hover:border-nobilis-green'
                                     }`}
                                   >
                                     <span className="font-semibold">{m.split(' ')[0].slice(0, 3)}</span>
@@ -991,7 +991,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                                       {fmtK(mBase)}
                                     </span>
                                     {mBonus > 0 && (
-                                      <span className={`text-xs ${isCurrentMonth ? 'text-yellow-300' : 'text-[#c9a227]'}`}>
+                                      <span className={`text-xs ${isCurrentMonth ? 'text-yellow-300' : 'text-nobilis-gold'}`}>
                                         +{fmtK(mBonus)}
                                       </span>
                                     )}
@@ -1047,7 +1047,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                         Оклады: <strong className="text-gray-700">{fmt(roleEmps.reduce((s, e) => s + e._base, 0))} тг</strong>
                       </span>
                       {roleEmps.reduce((s, e) => s + e._bonus, 0) > 0 && (
-                        <span className="text-[#c9a227]">
+                        <span className="text-nobilis-gold">
                           Премии: <strong>{fmt(roleEmps.reduce((s, e) => s + e._bonus, 0))} тг</strong>
                         </span>
                       )}
@@ -1110,10 +1110,10 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
               <div className="col-span-1 text-right text-xs text-gray-500">
                 {fmt(m.commission3pct)}
               </div>
-              <div className="col-span-1 text-right text-xs text-[#c9a227] font-medium">
+              <div className="col-span-1 text-right text-xs text-nobilis-gold font-medium">
                 {fmt(m.commission5pct)}
               </div>
-              <div className="col-span-2 text-right text-sm font-semibold text-[#1a3a32]">
+              <div className="col-span-2 text-right text-sm font-semibold text-nobilis-green">
                 {fmt(m.commission7pct)} тг
               </div>
             </div>
@@ -1130,7 +1130,7 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
                   {fmt(salesMonthData.reduce((s, m) => s + (m.totalSales || 0), 0))} тг
                 </strong>
               </span>
-              <span className="text-[#c9a227]">
+              <span className="text-nobilis-gold">
                 Комиссии 7%: <strong>
                   {fmt(salesMonthData.reduce((s, m) => s + (m.commission7pct || 0), 0))} тг
                 </strong>

@@ -38,31 +38,31 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Домен Битрикс24</label>
           <input type="text" defaultValue={cfg.domain || ''} placeholder="yourcompany.bitrix24.kz"
-            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-[#1a3a32] focus:border-transparent"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
             onBlur={e => handleSave('bitrix24', { domain: e.target.value })} />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Webhook URL</label>
           <input type="text" defaultValue={cfg.webhookUrl || ''} placeholder="https://yourcompany.bitrix24.kz/rest/1/xxx/"
-            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-[#1a3a32] focus:border-transparent"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
             onBlur={e => handleSave('bitrix24', { webhookUrl: e.target.value })} />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">API Token</label>
           <input type="password" defaultValue={cfg.apiToken || ''} placeholder="Токен авторизации"
-            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-[#1a3a32] focus:border-transparent"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
             onBlur={e => handleSave('bitrix24', { apiToken: e.target.value })} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
             <input type="checkbox" defaultChecked={cfg.syncLeads !== false}
-              className="rounded border-gray-300 text-[#1a3a32] focus:ring-[#1a3a32]"
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
               onChange={e => handleSave('bitrix24', { syncLeads: e.target.checked })} />
             <span className="text-sm">Синхронизировать лиды</span>
           </label>
           <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
             <input type="checkbox" defaultChecked={cfg.syncCalls !== false}
-              className="rounded border-gray-300 text-[#1a3a32] focus:ring-[#1a3a32]"
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
               onChange={e => handleSave('bitrix24', { syncCalls: e.target.checked })} />
             <span className="text-sm">Синхронизировать звонки</span>
           </label>
@@ -86,13 +86,13 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Bot Token</label>
           <input type="password" defaultValue={cfg.botToken || ''} placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-[#1a3a32] focus:border-transparent"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
             onBlur={e => handleSave('telegram', { botToken: e.target.value })} />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Chat ID (через запятую)</label>
           <input type="text" defaultValue={(cfg.chatIds || []).join(', ')} placeholder="-1001234567890, 987654321"
-            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-[#1a3a32] focus:border-transparent"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
             onBlur={e => handleSave('telegram', { chatIds: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} />
         </div>
         <div className="space-y-2">
@@ -106,7 +106,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
           ].map(item => (
             <label key={item.key} className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
               <input type="checkbox" defaultChecked={cfg.notifications?.[item.key] !== false}
-                className="rounded border-gray-300 text-[#1a3a32] focus:ring-[#1a3a32]"
+                className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
                 onChange={e => handleSave('telegram', { notifications: { ...(cfg.notifications || {}), [item.key]: e.target.checked } })} />
               <span className="text-sm">{item.label}</span>
             </label>
@@ -128,7 +128,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
       ],
       whatsapp: [
         { key: 'apiUrl', label: 'API URL (WABA)', placeholder: 'https://graph.facebook.com/v17.0/' },
-        { key: 'token', label: 'Access Token', placeholder: 'Токен WhatsApp Business API' },
+        { key: 'token', label: 'Access Token', placeholder: 'Токен WhatsApp Business API', secret: true },
       ],
     };
 
@@ -142,11 +142,11 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
             {field.multiline ? (
               <textarea defaultValue={cfg[field.key] || ''} placeholder={field.placeholder} rows={4}
-                className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-[#1a3a32] focus:border-transparent"
+                className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
                 onBlur={e => handleSave(serviceId, { [field.key]: e.target.value })} />
             ) : (
-              <input type="text" defaultValue={cfg[field.key] || ''} placeholder={field.placeholder}
-                className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-[#1a3a32] focus:border-transparent"
+              <input type={field.secret ? 'password' : 'text'} defaultValue={cfg[field.key] || ''} placeholder={field.placeholder}
+                className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
                 onBlur={e => handleSave(serviceId, { [field.key]: e.target.value })} />
             )}
           </div>
@@ -166,10 +166,10 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
           const isEnabled = integrations[s.id]?.enabled;
           return (
             <button key={s.id} onClick={() => setActiveTab(s.id)}
-              className={`p-4 rounded-2xl border-2 text-left transition-all ${isActive ? 'border-[#1a3a32] bg-[#1a3a32]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+              className={`p-4 rounded-2xl border-2 text-left transition-all ${isActive ? 'border-nobilis-green bg-nobilis-green/5' : 'border-gray-200 hover:border-gray-300'}`}>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xl">{s.icon}</span>
-                {isEnabled && <span className="w-2 h-2 rounded-full bg-green-500" />}
+                <span className="text-xl" aria-hidden="true">{s.icon}</span>
+                {isEnabled && <span className="w-2 h-2 rounded-full bg-green-500" aria-label="Активно" />}
               </div>
               <div className="font-medium text-sm">{s.name}</div>
               <div className="text-xs text-gray-400 mt-0.5">{isEnabled ? 'Подключено' : 'Не подключено'}</div>
@@ -194,15 +194,17 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
               {testStatus[s.id] === 'success' && <span className="text-sm text-green-600">Подключено!</span>}
               {testStatus[s.id] === 'error' && <span className="text-sm text-red-600">Ошибка</span>}
               <button onClick={() => handleTest(s.id)}
-                className="px-4 py-2 text-sm border rounded-xl hover:bg-gray-50 transition-colors">
+                className="px-4 py-2 text-sm border rounded-xl hover:bg-gray-50 transition-colors"
+                aria-label={`Тестировать подключение ${s.name}`}>
                 Тест
               </button>
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer" aria-label={`${integrations[s.id]?.enabled ? 'Отключить' : 'Включить'} ${s.name}`}>
                 <div className="relative">
                   <input type="checkbox" checked={integrations[s.id]?.enabled || false}
                     onChange={e => handleSave(s.id, { enabled: e.target.checked })}
-                    className="sr-only" />
-                  <div className={`w-11 h-6 rounded-full transition-colors ${integrations[s.id]?.enabled ? 'bg-[#1a3a32]' : 'bg-gray-300'}`}>
+                    className="sr-only"
+                    aria-label={`${integrations[s.id]?.enabled ? 'Отключить' : 'Включить'} ${s.name}`} />
+                  <div className={`w-11 h-6 rounded-full transition-colors ${integrations[s.id]?.enabled ? 'bg-nobilis-green' : 'bg-gray-300'}`}>
                     <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform mt-0.5 ${integrations[s.id]?.enabled ? 'translate-x-5.5 ml-[22px]' : 'translate-x-0.5 ml-0.5'}`} />
                   </div>
                 </div>

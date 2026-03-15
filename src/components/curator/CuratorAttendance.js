@@ -23,7 +23,7 @@ const CuratorAttendance = ({ data, attDate, attSchedule, onSetAttDate, onSetAttS
               {todaySchedule.map(s => (
                 <button key={s.id} onClick={() => onSetAttSchedule(s)}
                   className={`w-full p-3 rounded-xl text-left transition-all ${
-                    attSchedule?.id === s.id ? 'bg-[#1a3a32] text-white' : 'bg-gray-50 hover:bg-gray-100'
+                    attSchedule?.id === s.id ? 'bg-nobilis-green text-white' : 'bg-gray-50 hover:bg-gray-100'
                   }`}>
                   <div className="font-medium">{s.subject}</div>
                   <div className={`text-sm ${attSchedule?.id === s.id ? 'text-white/70' : 'text-gray-500'}`}>

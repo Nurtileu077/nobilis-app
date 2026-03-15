@@ -27,7 +27,7 @@ const StudentDashboard = ({ student, schedule, teachers, onSetModal, onSetForm, 
       </div>
 
       {todayClasses.length > 0 && (
-        <div className="bg-gradient-to-r from-[#1a3a32] to-[#2d5a4a] rounded-2xl p-4 text-white">
+        <div className="bg-gradient-to-r from-nobilis-green to-nobilis-green-light rounded-2xl p-4 text-white">
           <div className="flex items-center gap-2 mb-2"><I.Bell /><span className="font-semibold">Сегодня занятия:</span></div>
           <div className="space-y-2">
             {todayClasses.map(c => {
@@ -65,11 +65,11 @@ const StudentDashboard = ({ student, schedule, teachers, onSetModal, onSetForm, 
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
-          <div className="text-3xl font-bold text-[#1a3a32]">{getAttendancePercent(student.attendance)}%</div>
+          <div className="text-3xl font-bold text-nobilis-green">{getAttendancePercent(student.attendance)}%</div>
           <div className="text-sm text-gray-500">Посещаемость</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
-          <div className="text-3xl font-bold text-[#c9a227]">{lastExam?.score || '\u2014'}</div>
+          <div className="text-3xl font-bold text-nobilis-gold">{lastExam?.score || '\u2014'}</div>
           <div className="text-sm text-gray-500">Последний экзамен</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">

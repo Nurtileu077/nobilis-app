@@ -16,7 +16,7 @@ export default function UniPhoto({ name, flag, height = 'h-32', textSize = 'text
   }, [name]);
 
   return (
-    <div className={`${height} bg-gradient-to-br from-[#1a3a32] to-[#2d5a4a] flex items-center justify-center relative overflow-hidden`}>
+    <div className={`${height} bg-gradient-to-br from-nobilis-green to-nobilis-green-light flex items-center justify-center relative overflow-hidden`}>
       {photoUrl && !error && (
         <img
           src={photoUrl}

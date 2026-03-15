@@ -79,11 +79,11 @@ const StudentTest = ({ student, testAnswers, testQ, onSetTestAnswers, onSetTestQ
               Запрос на пересдачу отправлен. Ожидайте одобрения куратора.
             </div>
           ) : student.retakeAllowed ? (
-            <button onClick={onResetTest} className="mt-4 w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#1a3a32] hover:text-[#1a3a32] transition-colors">
+            <button onClick={onResetTest} className="mt-4 w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-nobilis-green hover:text-nobilis-green transition-colors">
               Пройти заново
             </button>
           ) : (
-            <button onClick={() => onRequestRetake(student.id, 'career')} className="mt-4 w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#c9a227] hover:text-[#c9a227] transition-colors">
+            <button onClick={() => onRequestRetake(student.id, 'career')} className="mt-4 w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-nobilis-gold hover:text-nobilis-gold transition-colors">
               Запросить пересдачу
             </button>
           )}
@@ -106,15 +106,15 @@ const StudentTest = ({ student, testAnswers, testQ, onSetTestAnswers, onSetTestQ
             <span>{Math.round(progress)}%</span>
           </div>
           <div className="h-2 bg-gray-200 rounded-full">
-            <div className="h-2 bg-[#c9a227] rounded-full transition-all" style={{ width: `${progress}%` }} />
+            <div className="h-2 bg-nobilis-gold rounded-full transition-all" style={{ width: `${progress}%` }} />
           </div>
           {/* Quick nav dots */}
           <div className="flex flex-wrap gap-1 mt-3">
             {HOLLAND_QUESTIONS.map((qq, i) => (
               <button key={qq.id} onClick={() => onSetTestQ(i)}
                 className={`w-6 h-6 rounded-full text-[10px] font-medium transition-all ${
-                  i === testQ ? 'bg-[#1a3a32] text-white scale-110' :
-                  testAnswers[qq.id] !== undefined ? 'bg-[#c9a227] text-white' :
+                  i === testQ ? 'bg-nobilis-green text-white scale-110' :
+                  testAnswers[qq.id] !== undefined ? 'bg-nobilis-gold text-white' :
                   'bg-gray-100 text-gray-400 hover:bg-gray-200'
                 }`}>
                 {i + 1}
@@ -129,12 +129,12 @@ const StudentTest = ({ student, testAnswers, testQ, onSetTestAnswers, onSetTestQ
               key={v}
               onClick={() => onSetTestAnswers(p => ({ ...p, [q.id]: v }))}
               className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
-                testAnswers[q.id] === v ? 'border-[#c9a227] bg-[#c9a227]/10' : 'border-gray-200 hover:border-gray-300'
+                testAnswers[q.id] === v ? 'border-nobilis-gold bg-nobilis-gold/10' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
               <div className="flex items-center gap-3">
                 <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                  testAnswers[q.id] === v ? 'border-[#c9a227] bg-[#c9a227]' : 'border-gray-300'
+                  testAnswers[q.id] === v ? 'border-nobilis-gold bg-nobilis-gold' : 'border-gray-300'
                 }`}>
                   {testAnswers[q.id] === v && <div className="w-2 h-2 bg-white rounded-full" />}
                 </div>
@@ -150,7 +150,7 @@ const StudentTest = ({ student, testAnswers, testQ, onSetTestAnswers, onSetTestQ
             ? <button onClick={() => onSetTestQ(p => Math.min(total - 1, p + 1))} disabled={!testAnswers[q.id]}
                 className="px-6 py-2 btn-primary text-white rounded-xl disabled:opacity-50">Далее</button>
             : <button onClick={onSubmitTest} disabled={Object.keys(testAnswers).length < total}
-                className="px-6 py-2 btn-gold text-[#1a3a32] rounded-xl disabled:opacity-50">Завершить</button>
+                className="px-6 py-2 btn-gold text-nobilis-green rounded-xl disabled:opacity-50">Завершить</button>
           }
         </div>
       </div>

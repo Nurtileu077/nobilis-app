@@ -121,7 +121,7 @@ const HourChart = ({ calls }) => {
       {hours.map(({ hour, count }) => (
         <div key={hour} className="flex flex-col items-center flex-1 gap-1">
           <div
-            className="w-full rounded-t bg-[#1a3a32]/60 hover:bg-[#1a3a32] transition-colors min-h-[2px]"
+            className="w-full rounded-t bg-nobilis-green/60 hover:bg-nobilis-green transition-colors min-h-[2px]"
             style={{ height: `${(count / maxCount) * 60}px` }}
             title={`${hour}:00 — ${count} зв.`}
           />
@@ -141,7 +141,7 @@ const LeadRow = ({ lead, onCall, onNoAnswer, onCallback, onBookMeeting }) => {
   return (
     <>
       <tr
-        className={`hover:bg-gray-50 cursor-pointer transition-colors ${expanded ? 'bg-[#1a3a32]/5' : ''}`}
+        className={`hover:bg-gray-50 cursor-pointer transition-colors ${expanded ? 'bg-nobilis-green/5' : ''}`}
         onClick={() => setExpanded((v) => !v)}
       >
         <td className={`py-3 pl-3 pr-2 border-l-4 ${borderColor}`}>
@@ -151,7 +151,7 @@ const LeadRow = ({ lead, onCall, onNoAnswer, onCallback, onBookMeeting }) => {
         <td className="py-3 px-2">
           <a
             href={`tel:${lead.phone}`}
-            className="text-sm text-[#1a3a32] font-mono hover:underline"
+            className="text-sm text-nobilis-green font-mono hover:underline"
             onClick={(e) => e.stopPropagation()}
           >
             {lead.phone || '—'}
@@ -174,7 +174,7 @@ const LeadRow = ({ lead, onCall, onNoAnswer, onCallback, onBookMeeting }) => {
       </tr>
 
       {expanded && (
-        <tr className="bg-[#1a3a32]/5">
+        <tr className="bg-nobilis-green/5">
           <td colSpan={6} className="px-4 pb-4 pt-2">
             <div className="grid md:grid-cols-2 gap-4">
               {/* Notes & history */}
@@ -209,7 +209,7 @@ const LeadRow = ({ lead, onCall, onNoAnswer, onCallback, onBookMeeting }) => {
               <div className="flex flex-wrap gap-2 items-start content-start">
                 <button
                   onClick={(e) => { e.stopPropagation(); onCall(lead); }}
-                  className="flex items-center gap-1.5 px-3 py-2 bg-[#1a3a32] text-white text-xs font-medium rounded-lg hover:bg-[#1a3a32]/90 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-nobilis-green text-white text-xs font-medium rounded-lg hover:bg-nobilis-green/90 transition-colors"
                 >
                   <I.Phone />
                   Позвонить
@@ -230,7 +230,7 @@ const LeadRow = ({ lead, onCall, onNoAnswer, onCallback, onBookMeeting }) => {
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); onBookMeeting(lead); }}
-                  className="flex items-center gap-1.5 px-3 py-2 bg-[#c9a227] text-white text-xs font-medium rounded-lg hover:bg-[#b8911f] transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-nobilis-gold text-white text-xs font-medium rounded-lg hover:bg-[#b8911f] transition-colors"
                 >
                   <I.Calendar />
                   Записать на встречу
@@ -324,7 +324,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-full bg-[#1a3a32] flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0">
+          <div className="w-11 h-11 rounded-full bg-nobilis-green flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0">
             {user?.name ? user.name.charAt(0).toUpperCase() : 'О'}
           </div>
           <div>
@@ -342,14 +342,14 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
         <div className="flex items-center gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); onSetForm({}); onSetModal('addLead'); }}
-            className="flex items-center gap-2 px-4 py-2 bg-[#1a3a32] text-white text-sm font-medium rounded-xl hover:bg-[#1a3a32]/90 transition-colors shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-nobilis-green text-white text-sm font-medium rounded-xl hover:bg-nobilis-green/90 transition-colors shadow-sm"
           >
             <I.Plus />
             Новый лид
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onSetForm({}); onSetModal('logCall'); }}
-            className="flex items-center gap-2 px-4 py-2 bg-[#c9a227] text-white text-sm font-medium rounded-xl hover:bg-[#b8911f] transition-colors shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-nobilis-gold text-white text-sm font-medium rounded-xl hover:bg-[#b8911f] transition-colors shadow-sm"
           >
             <I.Phone />
             Звонок
@@ -359,15 +359,15 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
 
       {/* ── Stats Cards ─────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard icon={I.Phone}    value={totalToday}        label="Звонков сегодня"   color="text-[#1a3a32]"   iconBg="bg-[#1a3a32]/10" />
+        <StatCard icon={I.Phone}    value={totalToday}        label="Звонков сегодня"   color="text-nobilis-green"   iconBg="bg-nobilis-green/10" />
         <StatCard icon={I.Check}    value={successfulToday}   label="Дозвонились"       color="text-green-600"   iconBg="bg-green-50"     />
         <StatCard icon={I.Bell}     value={unsuccessfulToday} label="Не дозвонились"    color="text-orange-500"  iconBg="bg-orange-50"    />
-        <StatCard icon={I.Calendar} value={meetingsToday}     label="Встреч записано"   color="text-[#c9a227]"   iconBg="bg-yellow-50"    />
+        <StatCard icon={I.Calendar} value={meetingsToday}     label="Встреч записано"   color="text-nobilis-gold"   iconBg="bg-yellow-50"    />
       </div>
 
       {/* ── Daily target banner ─────────────────────────────────────────────── */}
       {user?.dailyTarget && (
-        <div className="bg-gradient-to-r from-[#1a3a32] to-[#1a3a32]/80 rounded-2xl p-5 flex items-center gap-4 text-white">
+        <div className="bg-gradient-to-r from-nobilis-green to-nobilis-green/80 rounded-2xl p-5 flex items-center gap-4 text-white">
           <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
             <I.Target />
           </div>
@@ -375,7 +375,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
             <p className="text-sm font-semibold">Дневная цель: {user.dailyTarget} звонков</p>
             <div className="h-2 bg-white/20 rounded-full mt-2 overflow-hidden">
               <div
-                className="h-full bg-[#c9a227] rounded-full transition-all duration-500"
+                className="h-full bg-nobilis-gold rounded-full transition-all duration-500"
                 style={{ width: `${Math.min((totalToday / user.dailyTarget) * 100, 100)}%` }}
               />
             </div>
@@ -396,9 +396,9 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
           {/* section header */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-6 pt-5 pb-4 border-b border-gray-100">
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              <span className="w-2 h-5 rounded bg-[#1a3a32] inline-block shrink-0" />
+              <span className="w-2 h-5 rounded bg-nobilis-green inline-block shrink-0" />
               <h2 className="text-lg font-semibold text-gray-800">Список для обзвона</h2>
-              <span className="ml-1 bg-[#1a3a32]/10 text-[#1a3a32] text-xs font-bold rounded-full px-2 py-0.5 shrink-0">
+              <span className="ml-1 bg-nobilis-green/10 text-nobilis-green text-xs font-bold rounded-full px-2 py-0.5 shrink-0">
                 {filteredLeads.length}
               </span>
             </div>
@@ -415,7 +415,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
                   value={leadSearch}
                   onChange={(e) => setLeadSearch(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
-                  className="pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl w-36 focus:outline-none focus:ring-2 focus:ring-[#1a3a32]/30 focus:border-[#1a3a32]/50"
+                  className="pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl w-36 focus:outline-none focus:ring-2 focus:ring-nobilis-green/30 focus:border-nobilis-green/50"
                 />
               </div>
 
@@ -435,7 +435,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
                       <button
                         key={val}
                         onClick={() => { setPriorityFilter(val); setShowPriorityMenu(false); }}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${priorityFilter === val ? 'text-[#1a3a32] font-semibold' : 'text-gray-700'}`}
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${priorityFilter === val ? 'text-nobilis-green font-semibold' : 'text-gray-700'}`}
                       >
                         {lbl}
                       </button>
@@ -464,7 +464,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
                       <button
                         key={val}
                         onClick={() => { setStatusFilter(val); setShowStatusMenu(false); }}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${statusFilter === val ? 'text-[#1a3a32] font-semibold' : 'text-gray-700'}`}
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${statusFilter === val ? 'text-nobilis-green font-semibold' : 'text-gray-700'}`}
                       >
                         {lbl}
                       </button>
@@ -520,9 +520,9 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
           {/* Call Log */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="flex items-center gap-2 px-5 pt-5 pb-4 border-b border-gray-100">
-              <span className="w-2 h-5 rounded bg-[#c9a227] inline-block shrink-0" />
+              <span className="w-2 h-5 rounded bg-nobilis-gold inline-block shrink-0" />
               <h2 className="text-base font-semibold text-gray-800">История звонков</h2>
-              <span className="ml-auto bg-yellow-50 text-[#c9a227] text-xs font-bold rounded-full px-2 py-0.5">
+              <span className="ml-auto bg-yellow-50 text-nobilis-gold text-xs font-bold rounded-full px-2 py-0.5">
                 {todayCalls.length}
               </span>
             </div>
@@ -565,7 +565,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
           {/* Stats panel */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="flex items-center gap-2 px-5 pt-5 pb-4 border-b border-gray-100">
-              <span className="w-2 h-5 rounded bg-[#1a3a32] inline-block shrink-0" />
+              <span className="w-2 h-5 rounded bg-nobilis-green inline-block shrink-0" />
               <h2 className="text-base font-semibold text-gray-800">Статистика</h2>
             </div>
 
@@ -576,7 +576,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
                   key={val}
                   onClick={() => setStatsPeriod(val)}
                   className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                    statsPeriod === val ? 'bg-[#1a3a32] text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                    statsPeriod === val ? 'bg-nobilis-green text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                   }`}
                 >
                   {lbl}
@@ -588,7 +588,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
               {/* KPI row */}
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div className="bg-gray-50 rounded-xl py-3">
-                  <div className="text-xl font-bold text-[#1a3a32]">{periodCalls.length}</div>
+                  <div className="text-xl font-bold text-nobilis-green">{periodCalls.length}</div>
                   <div className="text-[10px] text-gray-500 mt-0.5">Звонков</div>
                 </div>
                 <div className="bg-gray-50 rounded-xl py-3">
@@ -596,7 +596,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
                   <div className="text-[10px] text-gray-500 mt-0.5">Дозвон</div>
                 </div>
                 <div className="bg-gray-50 rounded-xl py-3">
-                  <div className="text-xl font-bold text-[#c9a227]">{periodMeetings}</div>
+                  <div className="text-xl font-bold text-nobilis-gold">{periodMeetings}</div>
                   <div className="text-[10px] text-gray-500 mt-0.5">Встреч</div>
                 </div>
               </div>
@@ -617,7 +617,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#1a3a32] to-green-500 rounded-full transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-nobilis-green to-green-500 rounded-full transition-all duration-500"
                     style={{ width: `${periodSuccessRate}%` }}
                   />
                 </div>
@@ -650,8 +650,8 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
           </div>
 
           {/* Quick actions */}
-          <div className="bg-[#1a3a32]/5 border border-[#1a3a32]/15 rounded-2xl p-5">
-            <p className="text-xs font-semibold text-[#1a3a32] uppercase tracking-wide mb-3">Быстрые действия</p>
+          <div className="bg-nobilis-green/5 border border-nobilis-green/15 rounded-2xl p-5">
+            <p className="text-xs font-semibold text-nobilis-green uppercase tracking-wide mb-3">Быстрые действия</p>
             <div className="grid grid-cols-2 gap-2">
               {[
                 { label: 'Новый лид',   icon: I.Plus,     modal: 'addLead'          },
@@ -662,7 +662,7 @@ const CallcenterDashboard = ({ user, data, onSetModal, onSetForm, onUpdateData, 
                 <button
                   key={modal}
                   onClick={() => { onSetForm({}); onSetModal(modal); }}
-                  className="flex items-center gap-2 px-3 py-2.5 bg-white border border-[#1a3a32]/20 rounded-xl text-xs font-medium text-[#1a3a32] hover:bg-[#1a3a32]/10 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2.5 bg-white border border-nobilis-green/20 rounded-xl text-xs font-medium text-nobilis-green hover:bg-nobilis-green/10 transition-colors"
                 >
                   <Icon />
                   {label}

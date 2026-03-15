@@ -510,7 +510,7 @@ export default function NobilisAcademy() {
                     {l.fileSize && <div className="text-xs text-gray-400">{l.fileSize}</div>}
                   </div>
                 )}
-                <button onClick={handleLetterDownload} className="w-full mt-2 py-2 bg-[#1a3a32] text-white rounded-xl hover:bg-[#2d5a4a] transition-colors flex items-center justify-center gap-2">
+                <button onClick={handleLetterDownload} className="w-full mt-2 py-2 bg-nobilis-green text-white rounded-xl hover:bg-nobilis-green-light transition-colors flex items-center justify-center gap-2">
                   <I.Download /><span>Скачать</span>
                 </button>
               </div>
@@ -565,10 +565,10 @@ export default function NobilisAcademy() {
             )}
             <div><div className="text-sm text-gray-500">Название</div><div className="font-medium">{d.name}</div></div>
             <div><div className="text-sm text-gray-500">Дата</div><div className="font-medium">{formatDate(d.date)}</div></div>
-            {d.score && <div><div className="text-sm text-gray-500">Балл</div><div className="font-medium text-2xl text-[#1a3a32]">{d.score}</div></div>}
+            {d.score && <div><div className="text-sm text-gray-500">Балл</div><div className="font-medium text-2xl text-nobilis-green">{d.score}</div></div>}
             <div className="flex gap-3">
               {d.fileData ? (
-                <button onClick={handleDownload} className="flex-1 py-2 bg-[#1a3a32] text-white rounded-xl hover:bg-[#2d5a4a] transition-colors flex items-center justify-center gap-2">
+                <button onClick={handleDownload} className="flex-1 py-2 bg-nobilis-green text-white rounded-xl hover:bg-nobilis-green-light transition-colors flex items-center justify-center gap-2">
                   <I.Download /><span>Скачать</span>
                 </button>
               ) : (
@@ -613,7 +613,7 @@ export default function NobilisAcademy() {
               <div className="flex items-center justify-between mb-3">
                 <label className="text-sm font-medium text-gray-700">Пакеты услуг</label>
                 <button onClick={() => setForm(p => ({ ...p, packages: [...formPkgs, { type: 'ielts', startDate: '', endDate: '', totalLessons: 48 }] }))}
-                  className="text-sm text-[#1a3a32] hover:underline font-medium">+ Добавить пакет</button>
+                  className="text-sm text-nobilis-green hover:underline font-medium">+ Добавить пакет</button>
               </div>
               {formPkgs.map((pkg, idx) => (
                 <div key={idx} className="p-3 bg-gray-50 rounded-xl mb-2">
@@ -724,7 +724,7 @@ export default function NobilisAcademy() {
         <Modal title="Карточка студента" onClose={() => { setModal(null); setSelected(null); }}>
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1a3a32] to-[#2d5a4a] flex items-center justify-center text-white text-xl font-semibold overflow-hidden">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-nobilis-green to-nobilis-green-light flex items-center justify-center text-white text-xl font-semibold overflow-hidden">
                 {s.avatar ? <img src={s.avatar} alt="" className="w-full h-full object-cover" /> : getInitials(s.name)}
               </div>
               <div>
@@ -747,7 +747,7 @@ export default function NobilisAcademy() {
               {s.totalContractSum > 0 ? (
                 <>
                   <div className="bg-gray-50 rounded-xl p-3">
-                    <div className="text-lg font-bold text-[#1a3a32]">{(s.totalContractSum || 0).toLocaleString('ru-RU')}</div>
+                    <div className="text-lg font-bold text-nobilis-green">{(s.totalContractSum || 0).toLocaleString('ru-RU')}</div>
                     <div className="text-xs text-gray-500">Сумма (тг)</div>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
@@ -762,7 +762,7 @@ export default function NobilisAcademy() {
               ) : (
                 <>
                   <div className="bg-gray-50 rounded-xl p-3">
-                    <div className="text-xl font-bold text-[#1a3a32]">{getAttendancePercent(s.attendance)}%</div>
+                    <div className="text-xl font-bold text-nobilis-green">{getAttendancePercent(s.attendance)}%</div>
                     <div className="text-xs text-gray-500">Посещ.</div>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
@@ -770,7 +770,7 @@ export default function NobilisAcademy() {
                     <div className="text-xs text-gray-500">Пакетов</div>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3">
-                    <div className="text-xl font-bold text-[#c9a227]">{s.documents?.length || 0}</div>
+                    <div className="text-xl font-bold text-nobilis-gold">{s.documents?.length || 0}</div>
                     <div className="text-xs text-gray-500">Документов</div>
                   </div>
                 </>
@@ -797,7 +797,7 @@ export default function NobilisAcademy() {
             )}
             <div className="flex gap-3 pt-2">
               <button onClick={() => { setModal(null); setSelected(null); setStudentPage(s.id); }}
-                className="flex-1 py-3 bg-[#1a3a32] text-white rounded-xl hover:bg-[#2d5a4a] transition-colors font-medium">
+                className="flex-1 py-3 bg-nobilis-green text-white rounded-xl hover:bg-nobilis-green-light transition-colors font-medium">
                 Открыть подробно
               </button>
               <button onClick={() => { setModal(null); setSelected(null); }}
@@ -828,10 +828,10 @@ export default function NobilisAcademy() {
             {/* File upload */}
             <div>
               <label className="block text-sm text-gray-600 mb-1">Файл (с компьютера или телефона)</label>
-              <label className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-[#1a3a32] transition-colors">
+              <label className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-nobilis-green transition-colors">
                 {form.fileName ? (
                   <div className="text-center">
-                    <div className="text-sm font-medium text-[#1a3a32]">{form.fileName}</div>
+                    <div className="text-sm font-medium text-nobilis-green">{form.fileName}</div>
                     <div className="text-xs text-gray-500 mt-1">{form.fileSize}</div>
                   </div>
                 ) : (
@@ -890,7 +890,7 @@ export default function NobilisAcademy() {
     // STUDENT DETAIL (teacher view)
     if (modal === 'studentDetailTeacher' && selected) {
       const s = selected; const mocks = s.examResults?.filter(e => e.type.startsWith('mock_')).sort((a, b) => new Date(b.date) - new Date(a.date)) || [];
-      return <Modal title={s.name} onClose={() => { setModal(null); setSelected(null); }} size="lg"><div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><div className="text-sm text-gray-500">Класс</div><div className="font-medium">{s.grade}</div></div><div><div className="text-sm text-gray-500">Посещаемость</div><div className="font-medium">{s.attendance?.total > 0 ? Math.round(s.attendance.attended / s.attendance.total * 100) : 0}%</div></div></div><div><div className="text-sm text-gray-500 mb-2">Цели</div><div className="flex gap-4">{s.targetIelts && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">IELTS: {s.targetIelts}</span>}{s.targetSat && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">SAT: {s.targetSat}</span>}</div></div><div><div className="text-sm text-gray-500 mb-2">История пробных тестов</div>{mocks.length > 0 ? <div className="space-y-2">{mocks.map(e => <div key={e.id} className="flex justify-between p-3 bg-gray-50 rounded-xl"><div><div className="font-medium">{e.name}</div><div className="text-sm text-gray-500">{formatDate(e.date)}</div></div><div className="text-xl font-bold text-[#c9a227]">{e.score}</div></div>)}</div> : <p className="text-gray-500">Нет результатов</p>}</div></div></Modal>;
+      return <Modal title={s.name} onClose={() => { setModal(null); setSelected(null); }} size="lg"><div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><div className="text-sm text-gray-500">Класс</div><div className="font-medium">{s.grade}</div></div><div><div className="text-sm text-gray-500">Посещаемость</div><div className="font-medium">{s.attendance?.total > 0 ? Math.round(s.attendance.attended / s.attendance.total * 100) : 0}%</div></div></div><div><div className="text-sm text-gray-500 mb-2">Цели</div><div className="flex gap-4">{s.targetIelts && <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full">IELTS: {s.targetIelts}</span>}{s.targetSat && <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full">SAT: {s.targetSat}</span>}</div></div><div><div className="text-sm text-gray-500 mb-2">История пробных тестов</div>{mocks.length > 0 ? <div className="space-y-2">{mocks.map(e => <div key={e.id} className="flex justify-between p-3 bg-gray-50 rounded-xl"><div><div className="font-medium">{e.name}</div><div className="text-sm text-gray-500">{formatDate(e.date)}</div></div><div className="text-xl font-bold text-nobilis-gold">{e.score}</div></div>)}</div> : <p className="text-gray-500">Нет результатов</p>}</div></div></Modal>;
     }
 
     // ADD PACKAGE
@@ -934,9 +934,9 @@ export default function NobilisAcademy() {
             {/* Document upload for freeze */}
             <div>
               <label className="block text-sm text-gray-600 mb-1">Приложить документ</label>
-              <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:border-[#1a3a32] transition-colors">
+              <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:border-nobilis-green transition-colors">
                 {form.freezeFileName ? (
-                  <span className="text-sm text-[#1a3a32]">{form.freezeFileName}</span>
+                  <span className="text-sm text-nobilis-green">{form.freezeFileName}</span>
                 ) : (
                   <span className="text-sm text-gray-500">Нажмите для выбора файла</span>
                 )}
@@ -1092,9 +1092,9 @@ export default function NobilisAcademy() {
             {/* File upload */}
             <div>
               <label className="block text-sm text-gray-600 mb-1">Файл (PDF, DOC)</label>
-              <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:border-[#1a3a32] transition-colors">
+              <label className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:border-nobilis-green transition-colors">
                 {form.fileName ? (
-                  <span className="text-sm text-[#1a3a32]">{form.fileName}</span>
+                  <span className="text-sm text-nobilis-green">{form.fileName}</span>
                 ) : (
                   <span className="text-sm text-gray-500">Нажмите для выбора файла</span>
                 )}
@@ -1277,7 +1277,7 @@ export default function NobilisAcademy() {
     return (
       <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between">
         <span className="text-sm text-blue-800">Включите push-уведомления чтобы не пропускать важные события</span>
-        <button onClick={handleSubscribe} className="ml-3 px-4 py-2 bg-[#1a3a32] text-white text-sm rounded-xl hover:bg-[#2d5a4a] transition-colors whitespace-nowrap">
+        <button onClick={handleSubscribe} className="ml-3 px-4 py-2 bg-nobilis-green text-white text-sm rounded-xl hover:bg-nobilis-green-light transition-colors whitespace-nowrap">
           Включить
         </button>
       </div>
@@ -1325,15 +1325,15 @@ export default function NobilisAcademy() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Заголовок</label>
               <input value={notifTitle} onChange={e => setNotifTitle(e.target.value)} placeholder="Заголовок уведомления"
-                className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none" />
+                className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-nobilis-green/20 focus:border-nobilis-green outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Текст</label>
               <textarea value={notifBody} onChange={e => setNotifBody(e.target.value)} placeholder="Текст уведомления (необязательно)" rows={3}
-                className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none resize-none" />
+                className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-nobilis-green/20 focus:border-nobilis-green outline-none resize-none" />
             </div>
             <button onClick={sendNotification} disabled={sending || !notifTitle.trim()}
-              className="px-6 py-2 bg-[#1a3a32] text-white rounded-xl hover:bg-[#2d5a4a] disabled:opacity-50 transition-colors">
+              className="px-6 py-2 bg-nobilis-green text-white rounded-xl hover:bg-nobilis-green-light disabled:opacity-50 transition-colors">
               {sending ? 'Отправка...' : 'Отправить'}
             </button>
             {notifStatus && (
@@ -1430,7 +1430,7 @@ export default function NobilisAcademy() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border">
           <label className="block text-sm font-medium text-gray-700 mb-2">Выберите студента</label>
           <select value={matchStudent?.id || ''} onChange={e => selectStudent(students.find(s => String(s.id) === e.target.value) || null)}
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none">
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-nobilis-green/20 focus:border-nobilis-green outline-none">
             <option value="">— Выберите —</option>
             {students.map(s => <option key={s.id} value={s.id}>{s.name} {s.testResult ? `(${s.testResult})` : ''}</option>)}
           </select>
@@ -1442,12 +1442,12 @@ export default function NobilisAcademy() {
               <div>
                 <label className="block text-xs text-gray-500 mb-1">GPA</label>
                 <input type="number" step="0.1" min="0" max="4" value={matchGpa} onChange={e => setMatchGpa(e.target.value)}
-                  placeholder="3.5" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a32]/20 outline-none" />
+                  placeholder="3.5" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-nobilis-green/20 outline-none" />
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">IELTS</label>
                 <input type="number" step="0.5" min="0" max="9" value={matchIelts} onChange={e => setMatchIelts(e.target.value)}
-                  placeholder="6.5" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-[#1a3a32]/20 outline-none" />
+                  placeholder="6.5" className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-nobilis-green/20 outline-none" />
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Профиль RIASEC</label>
@@ -1459,7 +1459,7 @@ export default function NobilisAcademy() {
               <div className="flex flex-wrap gap-2">
                 {Object.entries(COUNTRY_INFO).map(([code, info]) => (
                   <button key={code} onClick={() => toggleCountry(info.name)}
-                    className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${matchCountries.includes(info.name) ? 'bg-[#1a3a32] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                    className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${matchCountries.includes(info.name) ? 'bg-nobilis-green text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
                     {info.flag} {info.name}
                   </button>
                 ))}
@@ -1472,7 +1472,7 @@ export default function NobilisAcademy() {
             <h3 className="text-lg font-semibold text-gray-800">Рекомендуемые ВУЗы ({matches.length})</h3>
             <input type="text" value={uniSearchQuery} onChange={e => setUniSearchQuery(e.target.value)}
               placeholder="Поиск по названию, городу или стране..."
-              className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none" />
+              className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-nobilis-green/20 focus:border-nobilis-green outline-none" />
             {displayedMatches.map((m, i) => (
               <div key={i} className="bg-white rounded-2xl p-5 shadow-sm border card-hover">
                 <div className="flex items-start justify-between gap-3">
@@ -1522,7 +1522,7 @@ export default function NobilisAcademy() {
       const info = COUNTRY_INFO[countryCode] || {};
       return (
         <div className="space-y-6 animate-fadeIn">
-          <button onClick={() => setSelectedUni(null)} className="flex items-center gap-2 text-[#1a3a32] hover:underline">
+          <button onClick={() => setSelectedUni(null)} className="flex items-center gap-2 text-nobilis-green hover:underline">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Назад к {info.name || 'стране'}
           </button>
@@ -1537,10 +1537,10 @@ export default function NobilisAcademy() {
                 {u.scholarship && <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex-shrink-0">Стипендия</span>}
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">Стоимость/год</div><div className="font-bold text-[#1a3a32]">${u.tuition[0].toLocaleString()}-${u.tuition[1].toLocaleString()}</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">Мин. GPA</div><div className="font-bold text-[#1a3a32]">{u.gpa}+</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">IELTS</div><div className="font-bold text-[#1a3a32]">{u.ielts}+</div></div>
-                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">Дедлайн</div><div className="font-bold text-[#1a3a32]">{u.deadline}</div></div>
+                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">Стоимость/год</div><div className="font-bold text-nobilis-green">${u.tuition[0].toLocaleString()}-${u.tuition[1].toLocaleString()}</div></div>
+                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">Мин. GPA</div><div className="font-bold text-nobilis-green">{u.gpa}+</div></div>
+                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">IELTS</div><div className="font-bold text-nobilis-green">{u.ielts}+</div></div>
+                <div className="p-3 bg-gray-50 rounded-xl text-center"><div className="text-xs text-gray-500">Дедлайн</div><div className="font-bold text-nobilis-green">{u.deadline}</div></div>
               </div>
               {u.note && <p className="text-gray-600 mb-4">{u.note}</p>}
               <div className="mb-4">
@@ -1570,7 +1570,7 @@ export default function NobilisAcademy() {
       return (
         <div className="space-y-6 animate-fadeIn">
           <div className="flex items-center justify-between">
-            <button onClick={() => { setSelectedCountry(null); setUniSearch(''); setEditMode(false); }} className="flex items-center gap-2 text-[#1a3a32] hover:underline">
+            <button onClick={() => { setSelectedCountry(null); setUniSearch(''); setEditMode(false); }} className="flex items-center gap-2 text-nobilis-green hover:underline">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
               Все страны
             </button>
@@ -1592,18 +1592,18 @@ export default function NobilisAcademy() {
               <div className="mt-3 flex flex-wrap gap-1">
                 <span className="text-sm text-gray-500 mr-1">Студенты:</span>
                 {countryStudents.map(s => (
-                  <span key={s.id} className="text-xs bg-[#1a3a32]/10 text-[#1a3a32] px-2 py-1 rounded-full">{s.name}</span>
+                  <span key={s.id} className="text-xs bg-nobilis-green/10 text-nobilis-green px-2 py-1 rounded-full">{s.name}</span>
                 ))}
               </div>
             )}
           </div>
 
           <input value={uniSearch} onChange={e => setUniSearch(e.target.value)} placeholder="Поиск университета..."
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none" />
+            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-nobilis-green/20 focus:border-nobilis-green outline-none" />
 
           {editMode && (
             <button onClick={() => { setSelected({ name: '', city: '', tuition: [0, 0], gpa: 3.0, ielts: 6.0, deadline: '', faculties: [], scholarship: false, note: '', documents: [], photo: '' }); setForm({ isNew: true, countryCode: code }); setModal('editUniversity'); }}
-              className="w-full py-3 border-2 border-dashed border-[#1a3a32] rounded-xl text-[#1a3a32] hover:bg-[#1a3a32]/5 transition-colors flex items-center justify-center gap-2">
+              className="w-full py-3 border-2 border-dashed border-nobilis-green rounded-xl text-nobilis-green hover:bg-nobilis-green/5 transition-colors flex items-center justify-center gap-2">
               <I.Plus /><span>Добавить университет</span>
             </button>
           )}
@@ -1651,7 +1651,7 @@ export default function NobilisAcademy() {
         </button>
       </div>
       <input value={uniSearch} onChange={e => setUniSearch(e.target.value)} placeholder="Поиск по странам и ВУЗам..."
-        className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[#1a3a32]/20 focus:border-[#1a3a32] outline-none bg-white shadow-sm" />
+        className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-nobilis-green/20 focus:border-nobilis-green outline-none bg-white shadow-sm" />
       {uniSearch ? (
         <div className="space-y-3">
           <div className="text-sm text-gray-500">Результаты поиска</div>
@@ -1684,7 +1684,7 @@ export default function NobilisAcademy() {
                 <p className="text-sm text-gray-500 mb-2">{unis.length} ВУЗов</p>
                 <p className="text-xs text-gray-400">{info.lang}</p>
                 {countryStudents.length > 0 && (
-                  <span className="inline-block mt-2 text-xs bg-[#1a3a32]/10 text-[#1a3a32] px-2 py-1 rounded-full">{countryStudents.length} студентов</span>
+                  <span className="inline-block mt-2 text-xs bg-nobilis-green/10 text-nobilis-green px-2 py-1 rounded-full">{countryStudents.length} студентов</span>
                 )}
               </div>
             </div>
@@ -1719,7 +1719,7 @@ export default function NobilisAcademy() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
           </button>
           <div className="flex items-center gap-4 flex-1 min-w-0">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#1a3a32] to-[#2d5a4a] flex items-center justify-center text-white text-lg font-semibold flex-shrink-0 overflow-hidden cursor-pointer"
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-nobilis-green to-nobilis-green-light flex items-center justify-center text-white text-lg font-semibold flex-shrink-0 overflow-hidden cursor-pointer"
               onClick={() => { setForm({ avatarTargetRole: 'student', avatarTargetId: s.id, avatarPreview: s.avatar || null }); setModal('avatarUpload'); }}>
               {s.avatar ? <img src={s.avatar} alt="" className="w-full h-full object-cover" /> : getInitials(s.name)}
             </div>
@@ -1750,7 +1750,7 @@ export default function NobilisAcademy() {
         <div className="flex flex-wrap gap-1 bg-white rounded-xl p-1 shadow-sm border overflow-x-auto">
           {tabs.map(t => (
             <button key={t.id} onClick={() => setDetailTab(t.id)}
-              className={`px-3 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${detailTab === t.id ? 'bg-[#1a3a32] text-white shadow' : 'text-gray-600 hover:bg-gray-100'}`}>
+              className={`px-3 py-2 rounded-lg text-sm transition-all whitespace-nowrap ${detailTab === t.id ? 'bg-nobilis-green text-white shadow' : 'text-gray-600 hover:bg-gray-100'}`}>
               {t.label}
             </button>
           ))}
@@ -1916,7 +1916,7 @@ export default function NobilisAcademy() {
                   </>
                 ) : (
                   <button onClick={() => setForm({ editingStudent: true })}
-                    className="flex-1 py-2 bg-[#c9a227] text-white rounded-xl hover:bg-[#b08b20] text-sm font-medium">
+                    className="flex-1 py-2 bg-nobilis-gold text-white rounded-xl hover:bg-[#b08b20] text-sm font-medium">
                     Изменить данные
                   </button>
                 )}
@@ -1972,7 +1972,7 @@ export default function NobilisAcademy() {
                 );
               })}
               {(!s.packages || s.packages.length === 0) && <p className="text-gray-500 text-sm text-center py-4">Нет пакетов</p>}
-              <button onClick={() => { setSelected(s); setForm({ type: 'ielts', totalLessons: 48, startDate: '', endDate: '' }); setModal('addPackage'); }} className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#1a3a32] hover:text-[#1a3a32] transition-colors">+ Добавить пакет</button>
+              <button onClick={() => { setSelected(s); setForm({ type: 'ielts', totalLessons: 48, startDate: '', endDate: '' }); setModal('addPackage'); }} className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-nobilis-green hover:text-nobilis-green transition-colors">+ Добавить пакет</button>
             </div>
           )}
 
@@ -1989,7 +1989,7 @@ export default function NobilisAcademy() {
               ))}
               <div className="flex gap-2">
                 <input type="text" placeholder="Новая задача..." value={form.taskText || ''} onChange={e => setForm(p => ({ ...p, taskText: e.target.value }))} className="flex-1 p-3 border rounded-xl text-sm input-focus" />
-                <button onClick={() => { if (form.taskText) { addTask(s.id, { text: form.taskText, assignee: 'curator' }); setForm(p => ({ ...p, taskText: '' })); } }} className="px-4 py-3 bg-[#1a3a32] text-white rounded-xl text-sm">+</button>
+                <button onClick={() => { if (form.taskText) { addTask(s.id, { text: form.taskText, assignee: 'curator' }); setForm(p => ({ ...p, taskText: '' })); } }} className="px-4 py-3 bg-nobilis-green text-white rounded-xl text-sm">+</button>
               </div>
             </div>
           )}
@@ -2003,11 +2003,11 @@ export default function NobilisAcademy() {
                     <div className="text-sm font-medium truncate">{d.name}</div>
                     <div className="text-xs text-gray-500">{formatDate(d.date)}</div>
                   </div>
-                  {d.score && <span className="text-sm font-bold text-[#c9a227]">{d.score}</span>}
+                  {d.score && <span className="text-sm font-bold text-nobilis-gold">{d.score}</span>}
                   <I.Right />
                 </div>
               ))}
-              <button onClick={() => { setSelected(s); setForm({ type: 'contract', name: '', score: '' }); setModal('addDocument'); }} className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-[#1a3a32] hover:text-[#1a3a32] transition-colors">+ Добавить документ</button>
+              <button onClick={() => { setSelected(s); setForm({ type: 'contract', name: '', score: '' }); setModal('addDocument'); }} className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-nobilis-green hover:text-nobilis-green transition-colors">+ Добавить документ</button>
             </div>
           )}
 
@@ -2033,7 +2033,7 @@ export default function NobilisAcademy() {
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-medium text-gray-700">Письма студента</h4>
                 <button onClick={() => { setSelected(s); setForm({ type: 'recommendation' }); setModal('addRecommendationLetter'); }}
-                  className="text-sm text-[#1a3a32] hover:underline">+ Добавить рек. письмо</button>
+                  className="text-sm text-nobilis-green hover:underline">+ Добавить рек. письмо</button>
               </div>
               {(s.letters || []).map(l => (
                 <div key={l.id} className="p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100"
@@ -2102,7 +2102,7 @@ export default function NobilisAcademy() {
               {/* Comment form */}
               <div className="flex gap-2 mb-4">
                 <input type="text" placeholder="Добавить комментарий..." value={form.commentText || ''} onChange={e => setForm(p => ({ ...p, commentText: e.target.value }))} className="flex-1 p-3 border rounded-xl text-sm input-focus" />
-                <button onClick={() => { if (form.commentText) { addComment(s.id, form.commentText); setForm(p => ({ ...p, commentText: '' })); } }} className="px-4 py-3 bg-[#1a3a32] text-white rounded-xl text-sm">Отправить</button>
+                <button onClick={() => { if (form.commentText) { addComment(s.id, form.commentText); setForm(p => ({ ...p, commentText: '' })); } }} className="px-4 py-3 bg-nobilis-green text-white rounded-xl text-sm">Отправить</button>
               </div>
               {/* Comments */}
               {(s.comments || []).slice().reverse().map(c => (
@@ -2116,7 +2116,7 @@ export default function NobilisAcademy() {
                 <div className="text-sm font-medium text-gray-700 mb-3">Таймлайн</div>
                 {(s.history || []).slice().reverse().map((h, i) => (
                   <div key={i} className="flex gap-3 py-2">
-                    <div className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${h.type === 'achievement' ? 'bg-[#c9a227]' : h.type === 'invitation' ? 'bg-green-500' : 'bg-gray-400'}`} />
+                    <div className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${h.type === 'achievement' ? 'bg-nobilis-gold' : h.type === 'invitation' ? 'bg-green-500' : 'bg-gray-400'}`} />
                     <div>
                       <div className="text-sm">{h.text}</div>
                       <div className="text-xs text-gray-400">{formatDate(h.date)}</div>
@@ -2144,7 +2144,7 @@ export default function NobilisAcademy() {
           <button onClick={() => { setSidebarOpen(true); }} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
             <I.Menu />
           </button>
-          <div className="font-serif font-bold text-[#1a3a32]">NOBILIS</div>
+          <div className="font-serif font-bold text-nobilis-green">NOBILIS</div>
           {(() => {
             const mobileAvatar = user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : user.role === 'teacher' ? (data.teachers.find(x => x.id === user.id)?.avatar) : data.curatorAvatar;
             return (
@@ -2168,10 +2168,10 @@ export default function NobilisAcademy() {
       {/* PWA update banner */}
       {swUpdate && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] animate-slideUp">
-          <div className="bg-[#1a3a32] text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-[#c9a227]/30">
-            <div className="w-2 h-2 bg-[#c9a227] rounded-full animate-pulse" />
+          <div className="bg-nobilis-green text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-nobilis-gold/30">
+            <div className="w-2 h-2 bg-nobilis-gold rounded-full animate-pulse" />
             <span className="text-sm">Доступно обновление</span>
-            <button onClick={handleAppUpdate} className="px-4 py-1.5 bg-[#c9a227] text-[#1a3a32] rounded-lg text-sm font-bold hover:bg-[#e8c547] transition-colors">
+            <button onClick={handleAppUpdate} className="px-4 py-1.5 bg-nobilis-gold text-nobilis-green rounded-lg text-sm font-bold hover:bg-nobilis-gold-light transition-colors">
               Обновить
             </button>
           </div>

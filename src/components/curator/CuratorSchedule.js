@@ -33,7 +33,7 @@ const CuratorSchedule = ({ schedule, teachers, onSetModal, onSetForm, onSetSelec
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className="font-bold text-[#1a3a32] text-lg">{s.time}</span>
+                        <span className="font-bold text-nobilis-green text-lg">{s.time}</span>
                         <span className="text-sm text-gray-400">{s.duration} мин</span>
                         <span className="text-xs bg-gray-100 px-2 py-0.5 rounded">Каб. {s.room}</span>
                       </div>

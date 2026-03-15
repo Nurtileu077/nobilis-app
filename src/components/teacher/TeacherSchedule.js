@@ -18,7 +18,7 @@ const TeacherSchedule = ({ teacher, schedule, students, onSetSelected, onSetModa
                 <div className="font-medium">{s.day} {s.time}</div>
                 <span className="text-sm bg-gray-100 px-3 py-1 rounded-full">Каб. {s.room}</span>
               </div>
-              <div className="text-lg font-semibold text-[#1a3a32] mb-2 cursor-pointer"
+              <div className="text-lg font-semibold text-nobilis-green mb-2 cursor-pointer"
                 onClick={() => { onSetSelected(s); onSetModal('scheduleDetail'); }}>
                 {s.subject}
               </div>
