@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 // eslint-disable-next-line no-unused-vars
 import I from '../common/Icons';
+import { createMeetingAutomation } from '../../lib/meetingAutomation';
 
 const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
   const integrations = data?.integrations || {};
@@ -9,6 +10,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
 
   const services = [
     { id: 'bitrix24', name: 'Битрикс24', desc: 'CRM, лиды, телефония, записи звонков', icon: '🔗', color: '#2FC6F6' },
+    { id: 'googleMeet', name: 'Google Meet', desc: 'Автоматические видеовстречи', icon: '📹', color: '#00897B' },
     { id: 'telegram', name: 'Telegram Bot', desc: 'Уведомления, отчёты, команды', icon: '✈️', color: '#0088CC' },
     { id: 'googleDrive', name: 'Google Drive', desc: 'Хранение документов, договоров', icon: '📁', color: '#4285F4' },
     { id: 'googleCalendar', name: 'Google Calendar', desc: 'Синхронизация встреч', icon: '📅', color: '#34A853' },
@@ -19,13 +21,33 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
     if (onUpdateIntegration) onUpdateIntegration(serviceId, settings);
   };
 
-  const handleTest = (serviceId) => {
+  const handleTest = useCallback(async (serviceId) => {
     setTestStatus(prev => ({ ...prev, [serviceId]: 'testing' }));
+
+    // Real connection tests for Bitrix24 and Google Meet
+    if (serviceId === 'bitrix24' || serviceId === 'googleMeet') {
+      try {
+        const automation = createMeetingAutomation(integrations);
+        let result;
+        if (serviceId === 'bitrix24') {
+          result = await automation.testBitrixConnection();
+        } else {
+          result = await automation.testMeetConnection();
+        }
+        setTestStatus(prev => ({ ...prev, [serviceId]: result.success ? 'success' : 'error' }));
+      } catch {
+        setTestStatus(prev => ({ ...prev, [serviceId]: 'error' }));
+      }
+      setTimeout(() => setTestStatus(prev => ({ ...prev, [serviceId]: null })), 4000);
+      return;
+    }
+
+    // Mock test for others
     setTimeout(() => {
       setTestStatus(prev => ({ ...prev, [serviceId]: integrations[serviceId]?.enabled ? 'success' : 'error' }));
       setTimeout(() => setTestStatus(prev => ({ ...prev, [serviceId]: null })), 3000);
     }, 1500);
-  };
+  }, [integrations]);
 
   const renderBitrix24 = () => {
     const cfg = integrations.bitrix24 || {};
@@ -33,7 +55,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
       <div className="space-y-4">
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
           <strong>Как подключить:</strong> В Битрикс24 откройте Приложения → Вебхуки → Входящий вебхук.
-          Скопируйте URL и вставьте ниже. Нужны права: crm, telephony, user.
+          Скопируйте URL и вставьте ниже. Нужны права: crm, telephony, user, crm.activity.
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Домен Битрикс24</label>
@@ -66,10 +88,112 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
               onChange={e => handleSave('bitrix24', { syncCalls: e.target.checked })} />
             <span className="text-sm">Синхронизировать звонки</span>
           </label>
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.autoMeetLink !== false}
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+              onChange={e => handleSave('bitrix24', { autoMeetLink: e.target.checked })} />
+            <span className="text-sm">Авто-генерация Meet ссылок</span>
+          </label>
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.syncMeetings !== false}
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+              onChange={e => handleSave('bitrix24', { syncMeetings: e.target.checked })} />
+            <span className="text-sm">Синхронизировать встречи</span>
+          </label>
         </div>
         <div className="bg-gray-50 rounded-xl p-4">
           <h4 className="font-medium text-sm mb-2">Записи звонков</h4>
           <p className="text-xs text-gray-500">Записи хранятся в Битрикс24 (Телефония → История). При синхронизации звонков ссылки на записи автоматически подтягиваются к карточке лида.</p>
+        </div>
+
+        {/* Auto-connect status */}
+        {integrations.googleMeet?.enabled && cfg.enabled && (
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+              <h4 className="font-medium text-sm text-green-800">Bitrix24 + Google Meet связаны</h4>
+            </div>
+            <p className="text-xs text-green-700">
+              При создании встречи из Bitrix24 автоматически генерируется Google Meet ссылка и записывается в сделку.
+              Менеджер и клиент получают ссылку.
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderGoogleMeet = () => {
+    const cfg = integrations.googleMeet || {};
+    return (
+      <div className="space-y-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+          <strong>Как подключить:</strong>
+          <ol className="mt-2 space-y-1 list-decimal list-inside">
+            <li>Создайте проект в <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Cloud Console</a></li>
+            <li>Включите Google Calendar API</li>
+            <li>Создайте Service Account и скачайте JSON-ключ</li>
+            <li>Предоставьте Service Account доступ к календарю (через Google Calendar настройки общего доступа)</li>
+          </ol>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Service Account Key (JSON)</label>
+          <textarea defaultValue={cfg.serviceAccountKey || ''} rows={6}
+            placeholder='{"type": "service_account", "project_id": "...", "private_key": "...", ...}'
+            className="w-full px-4 py-2.5 border rounded-xl text-sm font-mono focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('googleMeet', { serviceAccountKey: e.target.value })} />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Calendar ID</label>
+          <input type="text" defaultValue={cfg.calendarId || ''} placeholder="primary или abc@group.calendar.google.com"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('googleMeet', { calendarId: e.target.value })} />
+          <p className="text-xs text-gray-400 mt-1">Оставьте &quot;primary&quot; для основного календаря Service Account</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Часовой пояс по умолчанию</label>
+          <select defaultValue={cfg.timeZone || 'Asia/Almaty'}
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onChange={e => handleSave('googleMeet', { timeZone: e.target.value })}>
+            <option value="Asia/Almaty">Asia/Almaty (UTC+5)</option>
+            <option value="Asia/Astana">Asia/Astana (UTC+5)</option>
+            <option value="Europe/Moscow">Europe/Moscow (UTC+3)</option>
+          </select>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.autoCreateForSchedule !== false}
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+              onChange={e => handleSave('googleMeet', { autoCreateForSchedule: e.target.checked })} />
+            <span className="text-sm">Авто-создание для расписания</span>
+          </label>
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.autoCreateForBitrix !== false}
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+              onChange={e => handleSave('googleMeet', { autoCreateForBitrix: e.target.checked })} />
+            <span className="text-sm">Авто-создание для CRM встреч</span>
+          </label>
+        </div>
+
+        {/* Connection flow diagram */}
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-xl p-4">
+          <h4 className="font-medium text-sm mb-3 text-gray-800">Схема автоматизации</h4>
+          <div className="flex items-center justify-center gap-2 text-sm">
+            <div className="bg-white px-3 py-2 rounded-lg border shadow-sm text-center">
+              <div className="font-medium">Битрикс24</div>
+              <div className="text-xs text-gray-400">Создание встречи</div>
+            </div>
+            <svg className="w-6 h-6 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            <div className="bg-white px-3 py-2 rounded-lg border shadow-sm text-center">
+              <div className="font-medium">Google Meet</div>
+              <div className="text-xs text-gray-400">Генерация ссылки</div>
+            </div>
+            <svg className="w-6 h-6 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            <div className="bg-white px-3 py-2 rounded-lg border shadow-sm text-center">
+              <div className="font-medium">CRM + Клиент</div>
+              <div className="text-xs text-gray-400">Получают ссылку</div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -125,6 +249,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
       ],
       googleCalendar: [
         { key: 'calendarId', label: 'Calendar ID', placeholder: 'primary или abc@group.calendar.google.com' },
+        { key: 'serviceAccountKey', label: 'Service Account Key (JSON)', placeholder: '{"type": "service_account", ...}', multiline: true },
       ],
       whatsapp: [
         { key: 'apiUrl', label: 'API URL (WABA)', placeholder: 'https://graph.facebook.com/v17.0/' },
@@ -160,7 +285,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
       <h1 className="text-2xl font-bold text-gray-800">Интеграции</h1>
 
       {/* Service cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {services.map(s => {
           const isActive = activeTab === s.id;
           const isEnabled = integrations[s.id]?.enabled;
@@ -213,8 +338,9 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
           </div>
           <div className="p-6">
             {s.id === 'bitrix24' && renderBitrix24()}
+            {s.id === 'googleMeet' && renderGoogleMeet()}
             {s.id === 'telegram' && renderTelegram()}
-            {!['bitrix24', 'telegram'].includes(s.id) && renderGenericIntegration(s.id)}
+            {!['bitrix24', 'googleMeet', 'telegram'].includes(s.id) && renderGenericIntegration(s.id)}
           </div>
         </div>
       ))}
@@ -222,7 +348,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
       {/* Status summary */}
       <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-6 text-white">
         <h3 className="text-sm text-white/60 mb-3">Статус интеграций</h3>
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
           {services.map(s => (
             <div key={s.id} className="text-center">
               <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${integrations[s.id]?.enabled ? 'bg-green-400' : 'bg-gray-600'}`} />
@@ -230,6 +356,13 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             </div>
           ))}
         </div>
+        {/* Auto-connect indicator */}
+        {integrations.bitrix24?.enabled && integrations.googleMeet?.enabled && (
+          <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-xs text-white/60">Bitrix24 + Google Meet: автоматическая связка активна</span>
+          </div>
+        )}
       </div>
     </div>
   );
