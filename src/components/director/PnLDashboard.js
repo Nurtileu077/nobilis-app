@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import I from '../common/Icons';
 import { useSheets } from '../../context/GoogleSheetsContext';
 
@@ -153,12 +153,16 @@ export default function PnLDashboard({ onUpdateData } = {}) {
     return { month: raw.months[i], plan, revenue, totalExpenses, payroll, directExpenses, indirectExpenses, profit };
   });
 
+  // Hash of source data to detect when pnlData.js changes (invalidate cache)
+  const derivedHash = useMemo(() => JSON.stringify(derived.map(d => [d.revenue, d.totalExpenses, d.payroll, d.profit])), [derived]);
+
   // ── State ─────────────────────────────────────────────────────────────────
   const [tableData, setTableData] = useState(() => {
     // Try loading from localStorage first
     try {
       const saved = localStorage.getItem(LS_KEY);
-      if (saved) {
+      const savedHash = localStorage.getItem(LS_KEY + '_hash');
+      if (saved && savedHash === derivedHash) {
         const parsed = JSON.parse(saved);
         // Validate structure: must be array with same length
         if (Array.isArray(parsed) && parsed.length === derived.length) {
@@ -271,8 +275,9 @@ export default function PnLDashboard({ onUpdateData } = {}) {
   useEffect(() => {
     try {
       localStorage.setItem(LS_KEY, JSON.stringify(tableData));
+      localStorage.setItem(LS_KEY + '_hash', derivedHash);
     } catch (e) {}
-  }, [tableData]);
+  }, [tableData, derivedHash]);
 
   // ── Cell editing ──────────────────────────────────────────────────────────
   const handleCellDoubleClick = (rowKey, colIdx) => {
@@ -310,6 +315,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
   const handleSave = () => {
     try {
       localStorage.setItem(LS_KEY, JSON.stringify(tableData));
+      localStorage.setItem(LS_KEY + '_hash', derivedHash);
     } catch (e) {}
     setSavedNotice(true);
     setTimeout(() => setSavedNotice(false), 2500);
