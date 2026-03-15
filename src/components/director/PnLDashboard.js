@@ -376,8 +376,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
           <div
-            className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-md flex-shrink-0"
-            className="bg-gradient-nobilis-deep"
+            className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-md flex-shrink-0 bg-gradient-nobilis-deep"
           >
             <I.Results className="w-5 h-5 text-white" />
           </div>
@@ -416,8 +415,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
           {/* Export all */}
           <button
             onClick={() => handleExport(false)}
-            className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-xl text-white shadow-sm transition-all hover:opacity-90"
-            className="bg-gradient-nobilis-deep"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-xl text-white shadow-sm transition-all hover:opacity-90 bg-gradient-nobilis-deep"
           >
             <I.Download className="w-4 h-4" />
             <span>Excel (все)</span>
@@ -430,8 +428,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
 
         {/* Revenue */}
         <div
-          className="rounded-2xl p-5 shadow-lg text-white relative overflow-hidden"
-          className="bg-gradient-nobilis-rich"
+          className="rounded-2xl p-5 shadow-lg text-white relative overflow-hidden bg-gradient-nobilis-rich"
         >
           <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white opacity-5" />
           <div className="absolute -left-4 -bottom-4 w-20 h-20 rounded-full bg-white opacity-5" />
@@ -764,8 +761,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
             )}
             <button
               onClick={handleSave}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl text-white shadow-sm transition-all hover:opacity-90"
-              className="bg-gradient-nobilis-deep"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl text-white shadow-sm transition-all hover:opacity-90 bg-gradient-nobilis-deep"
             >
               <I.Save className="w-4 h-4" />
               Сохранить
@@ -987,8 +983,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
             </button>
             <button
               onClick={() => setShowTxForm(v => !v)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl text-white shadow-sm transition-all hover:opacity-90"
-              className="bg-gradient-nobilis-deep"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl text-white shadow-sm transition-all hover:opacity-90 bg-gradient-nobilis-deep"
             >
               <I.Plus className="w-4 h-4" />
               <span>Добавить</span>
@@ -1275,8 +1270,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
         <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 mb-6">
           <div className="flex items-center gap-3 mb-5">
             <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
-              className="bg-gradient-danger"
+              className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm bg-gradient-danger"
             >
               <I.Money className="w-5 h-5 text-white" />
             </div>
@@ -1359,8 +1353,7 @@ export default function PnLDashboard({ onUpdateData } = {}) {
 
           {/* Total */}
           <div
-            className="rounded-2xl p-4 flex items-center justify-between"
-            className="bg-gradient-danger"
+            className="rounded-2xl p-4 flex items-center justify-between bg-gradient-danger"
           >
             <span className="text-sm font-bold text-white uppercase tracking-wide">Итого долгов</span>
             <div className="text-right">
