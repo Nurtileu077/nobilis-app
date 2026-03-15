@@ -120,9 +120,9 @@ class BitrixClient {
       },
     };
 
-    // Add Meet link to description if provided
+    // Add video meeting link to description if provided
     if (meetLink) {
-      fields.DESCRIPTION = `${description || ''}\n\nGoogle Meet: ${meetLink}`.trim();
+      fields.DESCRIPTION = `${description || ''}\n\nВидеовстреча: ${meetLink}`.trim();
     }
 
     return this.call('crm.activity.add', { fields });

@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import I from '../common/Icons';
 import { createMeetingAutomation } from '../../lib/meetingAutomation';
 import { testTelegramConnection, sendTestMessage, fetchChatIds } from '../../lib/telegramAPI';
-import { testGoogleDriveConnection } from '../../lib/googleDriveAPI';
+import { testYandexDiskConnection } from '../../lib/yandexDiskAPI';
 import { testGoogleCalendarConnection } from '../../lib/googleCalendarAPI';
 import { testWhatsAppConnection } from '../../lib/whatsappAPI';
 import { testTelemostConnection } from '../../lib/telemostAPI';
@@ -16,13 +16,13 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
   const [telegramChatsLoading, setTelegramChatsLoading] = useState(false);
   const [telegramTestDetail, setTelegramTestDetail] = useState(null);
   const [telemostTestDetail, setTelemostTestDetail] = useState(null);
+  const [yandexDiskTestDetail, setYandexDiskTestDetail] = useState(null);
 
   const services = [
     { id: 'bitrix24', name: 'Битрикс24', desc: 'CRM, лиды, телефония, записи звонков', icon: '🔗', color: '#2FC6F6' },
     { id: 'telemost', name: 'Яндекс Телемост', desc: 'Видеовстречи, запись звонков', icon: '📹', color: '#FC3F1D' },
-    { id: 'googleMeet', name: 'Google Meet', desc: 'Автоматические видеовстречи', icon: '📹', color: '#00897B' },
+    { id: 'yandexDisk', name: 'Яндекс Диск', desc: 'Хранение документов, договоров (1 ТБ)', icon: '📁', color: '#FC3F1D' },
     { id: 'telegram', name: 'Telegram Bot', desc: 'Уведомления, отчёты, команды', icon: '✈️', color: '#0088CC' },
-    { id: 'googleDrive', name: 'Google Drive', desc: 'Хранение документов, договоров', icon: '📁', color: '#4285F4' },
     { id: 'googleCalendar', name: 'Google Calendar', desc: 'Синхронизация встреч', icon: '📅', color: '#34A853' },
     { id: 'whatsapp', name: 'WhatsApp', desc: 'Рассылки, общение с клиентами', icon: '💬', color: '#25D366' },
   ];
@@ -34,16 +34,11 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
   const handleTest = useCallback(async (serviceId) => {
     setTestStatus(prev => ({ ...prev, [serviceId]: 'testing' }));
 
-    // Real connection tests for Bitrix24 and Google Meet
-    if (serviceId === 'bitrix24' || serviceId === 'googleMeet') {
+    // Bitrix24 test
+    if (serviceId === 'bitrix24') {
       try {
         const automation = createMeetingAutomation(integrations);
-        let result;
-        if (serviceId === 'bitrix24') {
-          result = await automation.testBitrixConnection();
-        } else {
-          result = await automation.testMeetConnection();
-        }
+        const result = await automation.testBitrixConnection();
         setTestStatus(prev => ({ ...prev, [serviceId]: result.success ? 'success' : 'error' }));
       } catch {
         setTestStatus(prev => ({ ...prev, [serviceId]: 'error' }));
@@ -61,7 +56,6 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
           setTestStatus(prev => ({ ...prev, telegram: 'error' }));
           setTelegramTestDetail(result.error);
         } else {
-          // Bot token valid — try sending test message to first chat
           setTelegramTestDetail(`Бот: @${result.username}`);
           if (cfg.chatIds?.length > 0) {
             const sendResult = await sendTestMessage(cfg.botToken, cfg.chatIds[0]);
@@ -83,16 +77,25 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
       return;
     }
 
-    // Real Google Drive test
-    if (serviceId === 'googleDrive') {
+    // Yandex Disk test
+    if (serviceId === 'yandexDisk') {
       try {
-        const cfg = integrations.googleDrive || {};
-        const result = await testGoogleDriveConnection(cfg.serviceAccountKey, cfg.folderId);
-        setTestStatus(prev => ({ ...prev, googleDrive: result.success ? 'success' : 'error' }));
-      } catch {
-        setTestStatus(prev => ({ ...prev, googleDrive: 'error' }));
+        const cfg = integrations.yandexDisk || {};
+        const result = await testYandexDiskConnection(cfg.oauthToken);
+        setTestStatus(prev => ({ ...prev, yandexDisk: result.success ? 'success' : 'error' }));
+        if (result.success) {
+          setYandexDiskTestDetail(`Подключено! ${result.info}`);
+        } else {
+          setYandexDiskTestDetail(result.error || 'Неизвестная ошибка');
+        }
+      } catch (e) {
+        setTestStatus(prev => ({ ...prev, yandexDisk: 'error' }));
+        setYandexDiskTestDetail(e.message || 'Ошибка сети');
       }
-      setTimeout(() => setTestStatus(prev => ({ ...prev, googleDrive: null })), 4000);
+      setTimeout(() => {
+        setTestStatus(prev => ({ ...prev, yandexDisk: null }));
+        setYandexDiskTestDetail(null);
+      }, 8000);
       return;
     }
 
@@ -188,7 +191,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             <input type="checkbox" defaultChecked={cfg.autoMeetLink !== false}
               className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
               onChange={e => handleSave('bitrix24', { autoMeetLink: e.target.checked })} />
-            <span className="text-sm">Авто-генерация Meet ссылок</span>
+            <span className="text-sm">Авто-генерация ссылок Телемост</span>
           </label>
           <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
             <input type="checkbox" defaultChecked={cfg.syncMeetings !== false}
@@ -203,14 +206,14 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
         </div>
 
         {/* Auto-connect status */}
-        {integrations.googleMeet?.enabled && cfg.enabled && (
+        {integrations.telemost?.enabled && cfg.enabled && (
           <div className="bg-green-50 border border-green-200 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-              <h4 className="font-medium text-sm text-green-800">Bitrix24 + Google Meet связаны</h4>
+              <h4 className="font-medium text-sm text-green-800">Bitrix24 + Яндекс Телемост связаны</h4>
             </div>
             <p className="text-xs text-green-700">
-              При создании встречи из Bitrix24 автоматически генерируется Google Meet ссылка и записывается в сделку.
+              При создании встречи из Bitrix24 автоматически генерируется ссылка Яндекс Телемост и записывается в сделку.
               Менеджер и клиент получают ссылку.
             </p>
           </div>
@@ -228,7 +231,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
           <ol className="mt-2 space-y-1 list-decimal list-inside">
             <li>Подключите <a href="https://360.yandex.ru/business/" target="_blank" rel="noopener noreferrer" className="underline">Яндекс 360 для бизнеса</a> для домена</li>
             <li>Создайте OAuth-приложение на <a href="https://oauth.yandex.ru/" target="_blank" rel="noopener noreferrer" className="underline">oauth.yandex.ru</a></li>
-            <li>Добавьте право <code>telemost-api:conferences.create</code></li>
+            <li>Добавьте права: <code>telemost-api:conferences.create</code></li>
             <li>Получите OAuth-токен и вставьте ниже</li>
           </ol>
         </div>
@@ -285,85 +288,58 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
     );
   };
 
-  const renderGoogleMeet = () => {
-    const cfg = integrations.googleMeet || {};
+  const renderYandexDisk = () => {
+    const cfg = integrations.yandexDisk || {};
     return (
       <div className="space-y-4">
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-800">
           <strong>Как подключить:</strong>
           <ol className="mt-2 space-y-1 list-decimal list-inside">
-            <li>Создайте проект в <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Cloud Console</a></li>
-            <li>Включите Google Calendar API</li>
-            <li>Создайте Service Account и скачайте JSON-ключ</li>
-            <li>Предоставьте Service Account доступ к календарю (через Google Calendar настройки общего доступа)</li>
-            <li><strong>Для корпоративных аккаунтов (Google Workspace):</strong> настройте Domain-Wide Delegation в <a href="https://admin.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Admin Console</a> и укажите Email делегата ниже</li>
+            <li>Яндекс Диск уже входит в <a href="https://360.yandex.ru/business/" target="_blank" rel="noopener noreferrer" className="underline">Яндекс 360 для бизнеса</a> (1 ТБ на пользователя)</li>
+            <li>Создайте OAuth-приложение на <a href="https://oauth.yandex.ru/" target="_blank" rel="noopener noreferrer" className="underline">oauth.yandex.ru</a> (или используйте тот же что для Телемоста)</li>
+            <li>Добавьте права: <code>cloud_api:disk.read</code>, <code>cloud_api:disk.write</code></li>
+            <li>Получите OAuth-токен и вставьте ниже</li>
           </ol>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Service Account Key (JSON)</label>
-          <textarea defaultValue={cfg.serviceAccountKey || ''} rows={6}
-            placeholder='{"type": "service_account", "project_id": "...", "private_key": "...", ...}'
-            className="w-full px-4 py-2.5 border rounded-xl text-sm font-mono focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
-            onBlur={e => handleSave('googleMeet', { serviceAccountKey: e.target.value })} />
+          <label className="block text-sm font-medium text-gray-700 mb-1">OAuth токен</label>
+          <input type="password" defaultValue={cfg.oauthToken || ''} placeholder="y0_AgAAAAA..."
+            className="w-full px-4 py-2.5 border rounded-xl text-sm font-mono focus:ring-2 focus:ring-red-400 focus:border-transparent"
+            onBlur={e => handleSave('yandexDisk', { oauthToken: e.target.value })} />
+          <p className="text-xs text-gray-400 mt-1">Можно использовать тот же OAuth токен что и для Телемоста, если добавлены права на Диск</p>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Calendar ID</label>
-          <input type="text" defaultValue={cfg.calendarId || ''} placeholder="primary или abc@group.calendar.google.com"
-            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
-            onBlur={e => handleSave('googleMeet', { calendarId: e.target.value })} />
-          <p className="text-xs text-gray-400 mt-1">Оставьте &quot;primary&quot; для основного календаря Service Account</p>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email делегата (для корпоративных аккаунтов)</label>
-          <input type="email" defaultValue={cfg.delegateEmail || ''} placeholder="user@yourdomain.com"
-            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
-            onBlur={e => handleSave('googleMeet', { delegateEmail: e.target.value })} />
-          <p className="text-xs text-gray-400 mt-1">Обязательно для Google Workspace. Укажите email реального пользователя домена для создания Google Meet ссылок. Требует настройки Domain-Wide Delegation в Google Admin Console.</p>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Часовой пояс по умолчанию</label>
-          <select defaultValue={cfg.timeZone || 'Asia/Almaty'}
-            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
-            onChange={e => handleSave('googleMeet', { timeZone: e.target.value })}>
-            <option value="Asia/Almaty">Asia/Almaty (UTC+5)</option>
-            <option value="Asia/Astana">Asia/Astana (UTC+5)</option>
-            <option value="Europe/Moscow">Europe/Moscow (UTC+3)</option>
-          </select>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Папка для файлов</label>
+          <input type="text" defaultValue={cfg.folderPath || '/Nobilis'} placeholder="/Nobilis"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-red-400 focus:border-transparent"
+            onBlur={e => handleSave('yandexDisk', { folderPath: e.target.value })} />
+          <p className="text-xs text-gray-400 mt-1">Путь к корневой папке на Яндекс Диске</p>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
-            <input type="checkbox" defaultChecked={cfg.autoCreateForSchedule !== false}
-              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
-              onChange={e => handleSave('googleMeet', { autoCreateForSchedule: e.target.checked })} />
-            <span className="text-sm">Авто-создание для расписания</span>
+            <input type="checkbox" defaultChecked={cfg.autoUploadContracts !== false}
+              className="rounded border-gray-300 text-red-500 focus:ring-red-400"
+              onChange={e => handleSave('yandexDisk', { autoUploadContracts: e.target.checked })} />
+            <span className="text-sm">Авто-загрузка договоров</span>
           </label>
           <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
-            <input type="checkbox" defaultChecked={cfg.autoCreateForBitrix !== false}
-              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
-              onChange={e => handleSave('googleMeet', { autoCreateForBitrix: e.target.checked })} />
-            <span className="text-sm">Авто-создание для CRM встреч</span>
+            <input type="checkbox" defaultChecked={cfg.autoUploadReports !== false}
+              className="rounded border-gray-300 text-red-500 focus:ring-red-400"
+              onChange={e => handleSave('yandexDisk', { autoUploadReports: e.target.checked })} />
+            <span className="text-sm">Авто-загрузка отчётов</span>
           </label>
         </div>
 
-        {/* Connection flow diagram */}
-        <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-xl p-4">
-          <h4 className="font-medium text-sm mb-3 text-gray-800">Схема автоматизации</h4>
-          <div className="flex items-center justify-center gap-2 text-sm">
-            <div className="bg-white px-3 py-2 rounded-lg border shadow-sm text-center">
-              <div className="font-medium">Битрикс24</div>
-              <div className="text-xs text-gray-400">Создание встречи</div>
-            </div>
-            <svg className="w-6 h-6 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-            <div className="bg-white px-3 py-2 rounded-lg border shadow-sm text-center">
-              <div className="font-medium">Google Meet</div>
-              <div className="text-xs text-gray-400">Генерация ссылки</div>
-            </div>
-            <svg className="w-6 h-6 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-            <div className="bg-white px-3 py-2 rounded-lg border shadow-sm text-center">
-              <div className="font-medium">CRM + Клиент</div>
-              <div className="text-xs text-gray-400">Получают ссылку</div>
-            </div>
+        {/* Test detail message */}
+        {yandexDiskTestDetail && (
+          <div className={`text-sm rounded-xl p-3 ${testStatus.yandexDisk === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
+            {yandexDiskTestDetail}
           </div>
+        )}
+
+        <div className="bg-gray-50 rounded-xl p-4">
+          <h4 className="font-medium text-sm mb-2">Структура папок</h4>
+          <p className="text-xs text-gray-500">Автоматически создаются подпапки: /Договоры, /Отчёты, /Клиенты. Документы сортируются по дате и клиенту.</p>
         </div>
       </div>
     );
@@ -473,56 +449,6 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
     );
   };
 
-  const renderGoogleDrive = () => {
-    const cfg = integrations.googleDrive || {};
-    return (
-      <div className="space-y-4">
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
-          <strong>Как подключить:</strong>
-          <ol className="mt-2 space-y-1 list-decimal list-inside">
-            <li>Создайте проект в <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Cloud Console</a></li>
-            <li>Включите Google Drive API</li>
-            <li>Создайте Service Account и скачайте JSON-ключ</li>
-            <li>Предоставьте Service Account доступ к папке (через &laquo;Поделиться&raquo; по email Service Account)</li>
-            <li>Скопируйте ID папки из URL (после /folders/)</li>
-          </ol>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Service Account Key (JSON)</label>
-          <textarea defaultValue={cfg.serviceAccountKey || ''} rows={6}
-            placeholder='{"type": "service_account", "project_id": "...", "private_key": "...", ...}'
-            className="w-full px-4 py-2.5 border rounded-xl text-sm font-mono focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
-            onBlur={e => handleSave('googleDrive', { serviceAccountKey: e.target.value })} />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">ID папки Google Drive</label>
-          <input type="text" defaultValue={cfg.folderId || ''} placeholder="1ABcDeFgHiJkLmNoPqRsT"
-            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
-            onBlur={e => handleSave('googleDrive', { folderId: e.target.value })} />
-          <p className="text-xs text-gray-400 mt-1">Из URL папки: drive.google.com/drive/folders/<strong>ID_ЗДЕСЬ</strong></p>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
-            <input type="checkbox" defaultChecked={cfg.autoUploadContracts !== false}
-              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
-              onChange={e => handleSave('googleDrive', { autoUploadContracts: e.target.checked })} />
-            <span className="text-sm">Авто-загрузка договоров</span>
-          </label>
-          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
-            <input type="checkbox" defaultChecked={cfg.autoUploadReports !== false}
-              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
-              onChange={e => handleSave('googleDrive', { autoUploadReports: e.target.checked })} />
-            <span className="text-sm">Авто-загрузка отчётов</span>
-          </label>
-        </div>
-        <div className="bg-gray-50 rounded-xl p-4">
-          <h4 className="font-medium text-sm mb-2">Структура папок</h4>
-          <p className="text-xs text-gray-500">Бот автоматически создаёт подпапки: /Договоры, /Отчёты, /Клиенты. Документы сортируются по дате и клиенту.</p>
-        </div>
-      </div>
-    );
-  };
-
   const renderGoogleCalendar = () => {
     const cfg = integrations.googleCalendar || {};
     return (
@@ -593,19 +519,6 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             <span className="text-sm">Двусторонняя синхронизация</span>
           </label>
         </div>
-
-        {/* Связка с Google Meet */}
-        {integrations.googleMeet?.enabled && cfg.enabled && (
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-              <h4 className="font-medium text-sm text-green-800">Calendar + Meet связаны</h4>
-            </div>
-            <p className="text-xs text-green-700">
-              Встречи из календаря автоматически получают Google Meet ссылку.
-            </p>
-          </div>
-        )}
       </div>
     );
   };
@@ -727,9 +640,8 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
           <div className="p-6">
             {s.id === 'bitrix24' && renderBitrix24()}
             {s.id === 'telemost' && renderTelemost()}
-            {s.id === 'googleMeet' && renderGoogleMeet()}
+            {s.id === 'yandexDisk' && renderYandexDisk()}
             {s.id === 'telegram' && renderTelegram()}
-            {s.id === 'googleDrive' && renderGoogleDrive()}
             {s.id === 'googleCalendar' && renderGoogleCalendar()}
             {s.id === 'whatsapp' && renderWhatsApp()}
           </div>
@@ -748,10 +660,10 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
           ))}
         </div>
         {/* Auto-connect indicator */}
-        {integrations.bitrix24?.enabled && (integrations.telemost?.enabled || integrations.googleMeet?.enabled) && (
+        {integrations.bitrix24?.enabled && integrations.telemost?.enabled && (
           <div className="mt-4 pt-4 border-t border-white/10 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-xs text-white/60">Bitrix24 + {integrations.telemost?.enabled ? 'Телемост' : 'Google Meet'}: автоматическая связка активна</span>
+            <span className="text-xs text-white/60">Bitrix24 + Яндекс Телемост: автоматическая связка активна</span>
           </div>
         )}
       </div>

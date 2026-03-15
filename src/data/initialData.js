@@ -4373,7 +4373,7 @@ export const getInitialData = () => {
       { id: 'meet1', leadId: 'lead3', leadName: 'Сериков Дамир', managerId: 'sm1', managerName: 'Менеджер Алия', date: '2026-03-13', time: '14:00', type: 'offline', location: 'Офис Nobilis', status: 'scheduled', notes: 'Первая встреча, показать офис', result: '' },
       { id: 'meet2', leadId: 'lead4', leadName: 'Касымова Динара', managerId: 'sm1', managerName: 'Менеджер Алия', date: '2026-03-13', time: '16:00', type: 'online', location: 'Zoom', status: 'scheduled', notes: 'Обсуждение условий договора', result: '' },
       { id: 'meet3', leadId: 'lead5', leadName: 'Нуржанов Арман', managerId: 'sm1', managerName: 'Менеджер Алия', date: '2026-03-01', time: '11:00', type: 'offline', location: 'Офис Nobilis', status: 'completed', notes: 'Подписание договора', result: 'Договор подписан' },
-      { id: 'meet4', leadId: 'lead2', leadName: 'Бекова Айгерим', managerId: 'sm1', managerName: 'Менеджер Алия', date: '2026-03-14', time: '10:00', type: 'online', location: 'Google Meet', status: 'scheduled', notes: 'Презентация программы', result: '' },
+      { id: 'meet4', leadId: 'lead2', leadName: 'Бекова Айгерим', managerId: 'sm1', managerName: 'Менеджер Алия', date: '2026-03-14', time: '10:00', type: 'online', location: 'Яндекс Телемост', status: 'scheduled', notes: 'Презентация программы', result: '' },
     ],
     calls: [
       { id: 'call1', leadId: 'lead1', leadName: 'Асанов Тимур', operatorId: 'cc1', managerId: 'sm1', date: '2026-03-13T09:15:00', duration: 180, result: 'success', notes: 'Заинтересован, передан менеджеру' },
@@ -4392,7 +4392,7 @@ export const getInitialData = () => {
       bitrix24: { enabled: false, webhookUrl: '', apiToken: '', domain: 'nobilis.bitrix24.kz', syncLeads: true, syncCalls: true },
       telemost: { enabled: false, oauthToken: '', autoCreateForSchedule: true, autoCreateForBitrix: true },
       telegram: { enabled: false, botToken: '', chatIds: [], notifications: { newLead: true, dealClosed: true, dailyReport: true } },
-      googleDrive: { enabled: false, folderId: '', serviceAccountKey: '', autoUploadContracts: true, autoUploadReports: true },
+      yandexDisk: { enabled: false, oauthToken: '', folderPath: '/Nobilis', autoUploadContracts: true, autoUploadReports: true },
       googleCalendar: { enabled: false, calendarId: '', serviceAccountKey: '', timeZone: 'Asia/Almaty', syncLessons: true, syncMeetings: true },
       whatsapp: { enabled: false, apiUrl: '', token: '', phoneNumberId: '', automation: { welcomeMessage: true, appointmentReminder: true } },
     },

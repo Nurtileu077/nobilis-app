@@ -119,7 +119,7 @@ const MeetingsPanel = ({ data }) => {
           <div className="text-4xl mb-4">📹</div>
           <h3 className="font-semibold text-gray-800 mb-2">Настройте интеграции</h3>
           <p className="text-sm text-gray-600 max-w-md mx-auto">
-            Для автоматического создания встреч подключите Битрикс24 и Google Meet
+            Для автоматического создания встреч подключите Битрикс24 и Яндекс Телемост
             в разделе &quot;Интеграции&quot;.
           </p>
         </div>
@@ -155,7 +155,7 @@ const MeetingsPanel = ({ data }) => {
           automation.isMeetConfigured ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
         }`}>
           <span className={`w-1.5 h-1.5 rounded-full ${automation.isMeetConfigured ? 'bg-green-500' : 'bg-gray-400'}`} />
-          Google Meet
+          Яндекс Телемост
         </span>
         {automation.isFullyConfigured && (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
@@ -268,7 +268,7 @@ const MeetingsPanel = ({ data }) => {
 
             {automation.isFullyConfigured && (
               <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-xs text-green-700">
-                Google Meet ссылка будет создана автоматически и записана в сделку Bitrix24.
+                Яндекс Телемост ссылка будет создана автоматически и записана в сделку Bitrix24.
               </div>
             )}
           </form>
@@ -332,7 +332,7 @@ const MeetingsPanel = ({ data }) => {
         <div className="text-center py-12 text-gray-500">
           <div className="text-4xl mb-3">📅</div>
           <p>Нет предстоящих встреч</p>
-          <p className="text-xs text-gray-400 mt-1">Создайте встречу для автоматической генерации Google Meet ссылки</p>
+          <p className="text-xs text-gray-400 mt-1">Создайте встречу для автоматической генерации ссылки Яндекс Телемост</p>
         </div>
       )}
     </div>

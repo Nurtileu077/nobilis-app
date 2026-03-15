@@ -8,15 +8,12 @@ beforeEach(() => {
 });
 
 describe('MeetingAutomation', () => {
-  const bitrixConfig = { webhookUrl: 'https://test.bitrix24.kz/rest/1/abc123/' };
-  const meetConfig = {
-    serviceAccountKey: JSON.stringify({ type: 'service_account', client_email: 'test@test.iam.gserviceaccount.com', private_key: 'fake-key' }),
-    calendarId: 'primary',
-  };
+  const bitrixConfig = { enabled: true, webhookUrl: 'https://test.bitrix24.kz/rest/1/abc123/' };
+  const telemostConfig = { enabled: true, oauthToken: 'y0_test-token-123' };
 
   describe('constructor', () => {
     it('creates instance with both configs', () => {
-      const automation = new MeetingAutomation(bitrixConfig, meetConfig);
+      const automation = new MeetingAutomation(bitrixConfig, telemostConfig);
       expect(automation.isBitrixConfigured).toBe(true);
       expect(automation.isMeetConfigured).toBe(true);
       expect(automation.isFullyConfigured).toBe(true);
@@ -29,8 +26,8 @@ describe('MeetingAutomation', () => {
       expect(automation.isFullyConfigured).toBe(false);
     });
 
-    it('creates instance with only Meet config', () => {
-      const automation = new MeetingAutomation({}, meetConfig);
+    it('creates instance with only Telemost config', () => {
+      const automation = new MeetingAutomation({}, telemostConfig);
       expect(automation.isBitrixConfigured).toBe(false);
       expect(automation.isMeetConfigured).toBe(true);
       expect(automation.isFullyConfigured).toBe(false);
@@ -44,39 +41,43 @@ describe('MeetingAutomation', () => {
       expect(automation.errors).toEqual([]);
     });
 
-    it('records errors for invalid configs', () => {
+    it('does not create client when enabled is false', () => {
+      const automation = new MeetingAutomation(
+        { enabled: false, webhookUrl: 'https://test.bitrix24.kz/rest/1/abc/' },
+        { enabled: false, oauthToken: 'y0_token' }
+      );
+      expect(automation.isBitrixConfigured).toBe(false);
+      expect(automation.isMeetConfigured).toBe(false);
+    });
+
+    it('requires enabled flag to create clients', () => {
       const automation = new MeetingAutomation(
         { webhookUrl: 'https://test.bitrix24.kz/rest/1/abc/' },
-        { serviceAccountKey: 'not-valid-json', calendarId: 'x' }
+        { oauthToken: 'y0_token' }
       );
-      expect(automation.isBitrixConfigured).toBe(true);
+      expect(automation.isBitrixConfigured).toBe(false);
       expect(automation.isMeetConfigured).toBe(false);
-      expect(automation.errors.length).toBe(1);
+    });
+
+    it('returns telemost as video provider', () => {
+      const automation = new MeetingAutomation({}, telemostConfig);
+      expect(automation.videoProvider).toBe('telemost');
+    });
+
+    it('returns null video provider when not configured', () => {
+      const automation = new MeetingAutomation({}, {});
+      expect(automation.videoProvider).toBeNull();
     });
   });
 
   describe('createMeetingAutomation factory', () => {
-    it('creates automation from integrations object', () => {
+    it('creates automation from integrations object with telemost', () => {
       const integrations = {
-        bitrix24: { webhookUrl: 'https://test.bitrix24.kz/rest/1/abc/' },
-        googleMeet: {
-          serviceAccountKey: JSON.stringify({ type: 'service_account', client_email: 'a@b.com', private_key: 'k' }),
-          calendarId: 'primary',
-        },
+        bitrix24: { enabled: true, webhookUrl: 'https://test.bitrix24.kz/rest/1/abc/' },
+        telemost: { enabled: true, oauthToken: 'y0_test' },
       };
       const automation = createMeetingAutomation(integrations);
       expect(automation.isBitrixConfigured).toBe(true);
-      expect(automation.isMeetConfigured).toBe(true);
-    });
-
-    it('falls back to googleCalendar config', () => {
-      const integrations = {
-        googleCalendar: {
-          serviceAccountKey: JSON.stringify({ type: 'service_account', client_email: 'a@b.com', private_key: 'k' }),
-          calendarId: 'cal123',
-        },
-      };
-      const automation = createMeetingAutomation(integrations);
       expect(automation.isMeetConfigured).toBe(true);
     });
 
@@ -85,18 +86,28 @@ describe('MeetingAutomation', () => {
       expect(automation.isBitrixConfigured).toBe(false);
       expect(automation.isMeetConfigured).toBe(false);
     });
+
+    it('does not use disabled integrations', () => {
+      const integrations = {
+        bitrix24: { enabled: false, webhookUrl: 'https://test.bitrix24.kz/rest/1/abc/' },
+        telemost: { enabled: false, oauthToken: 'y0_test' },
+      };
+      const automation = createMeetingAutomation(integrations);
+      expect(automation.isBitrixConfigured).toBe(false);
+      expect(automation.isMeetConfigured).toBe(false);
+    });
   });
 
   describe('createMeetingWithMeet', () => {
-    it('creates meeting with both Bitrix and Meet', async () => {
-      // Mock Meet API response
+    it('creates meeting with both Bitrix and Telemost', async () => {
+      // Mock Telemost API response
       fetch
         .mockResolvedValueOnce({
           ok: true,
           json: () => Promise.resolve({
             success: true,
-            meetLink: 'https://meet.google.com/abc-defg-hij',
-            eventId: 'evt123',
+            joinUrl: 'https://telemost.yandex.ru/j/12345678901234',
+            conferenceId: 'conf123',
           }),
         })
         // Mock Bitrix create activity
@@ -110,7 +121,7 @@ describe('MeetingAutomation', () => {
           json: () => Promise.resolve({ result: true }),
         });
 
-      const automation = new MeetingAutomation(bitrixConfig, meetConfig);
+      const automation = new MeetingAutomation(bitrixConfig, telemostConfig);
       const result = await automation.createMeetingWithMeet({
         subject: 'Тест встречи',
         startTime: '2026-03-20T10:00:00',
@@ -119,38 +130,29 @@ describe('MeetingAutomation', () => {
         contactEmails: ['client@test.com'],
       });
 
-      expect(result.meetLink).toBe('https://meet.google.com/abc-defg-hij');
+      expect(result.meetLink).toBe('https://telemost.yandex.ru/j/12345678901234');
+      expect(result.provider).toBe('telemost');
       expect(result.bitrixActivityId).toBe(12345);
       expect(result.errors).toEqual([]);
       expect(fetch).toHaveBeenCalledTimes(3);
     });
 
-    it('handles Meet creation failure gracefully', async () => {
-      fetch
-        .mockResolvedValueOnce({
-          ok: false,
-          json: () => Promise.resolve({ error: 'Auth failed' }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve({ result: 999 }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve({ result: true }),
-        });
+    it('handles Telemost creation failure gracefully', async () => {
+      fetch.mockResolvedValueOnce({
+        ok: false,
+        json: () => Promise.resolve({ error: 'Auth failed' }),
+      });
 
-      const automation = new MeetingAutomation(bitrixConfig, meetConfig);
+      const automation = new MeetingAutomation(bitrixConfig, telemostConfig);
       const result = await automation.createMeetingWithMeet({
         subject: 'Тест',
         startTime: '2026-03-20T10:00:00',
         duration: 30,
-        dealId: 1,
       });
 
       expect(result.meetLink).toBeNull();
       expect(result.errors.length).toBe(1);
-      expect(result.errors[0]).toContain('Google Meet');
+      expect(result.errors[0]).toContain('Телемост');
     });
 
     it('works without dealId (no Bitrix activity created)', async () => {
@@ -158,19 +160,19 @@ describe('MeetingAutomation', () => {
         ok: true,
         json: () => Promise.resolve({
           success: true,
-          meetLink: 'https://meet.google.com/xyz',
-          eventId: 'e1',
+          joinUrl: 'https://telemost.yandex.ru/j/99999',
+          conferenceId: 'c1',
         }),
       });
 
-      const automation = new MeetingAutomation(bitrixConfig, meetConfig);
+      const automation = new MeetingAutomation(bitrixConfig, telemostConfig);
       const result = await automation.createMeetingWithMeet({
-        subject: 'Только Meet',
+        subject: 'Только Телемост',
         startTime: '2026-03-20T10:00:00',
         duration: 30,
       });
 
-      expect(result.meetLink).toBe('https://meet.google.com/xyz');
+      expect(result.meetLink).toBe('https://telemost.yandex.ru/j/99999');
       expect(result.bitrixActivityId).toBeNull();
       expect(fetch).toHaveBeenCalledTimes(1);
     });
@@ -193,6 +195,32 @@ describe('MeetingAutomation', () => {
       const automation = new MeetingAutomation({}, {});
       const result = await automation.testBitrixConnection();
       expect(result.success).toBe(false);
+    });
+  });
+
+  describe('testMeetConnection', () => {
+    it('returns success when Telemost responds', async () => {
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve({
+          success: true,
+          joinUrl: 'https://telemost.yandex.ru/j/test123',
+          conferenceId: 'tc1',
+        }),
+      });
+
+      const automation = new MeetingAutomation({}, telemostConfig);
+      const result = await automation.testMeetConnection();
+      expect(result.success).toBe(true);
+      expect(result.provider).toBe('telemost');
+      expect(result.meetLink).toBe('https://telemost.yandex.ru/j/test123');
+    });
+
+    it('returns error when not configured', async () => {
+      const automation = new MeetingAutomation({}, {});
+      const result = await automation.testMeetConnection();
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Телемост');
     });
   });
 
