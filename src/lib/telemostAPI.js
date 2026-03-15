@@ -61,14 +61,28 @@ export async function createTelemostLink({ oauthToken, cohostEmails = [] }) {
 
 // Тест подключения
 export async function testTelemostConnection(oauthToken) {
-  if (!oauthToken) return { success: false, error: 'Не указан OAuth токен' };
+  if (!oauthToken) return { success: false, error: 'Не указан OAuth токен. Вставьте токен от Яндекс ID.' };
 
   try {
     const client = new TelemostClient(oauthToken);
     const result = await client.createMeeting();
     return { success: true, joinUrl: result.joinUrl };
   } catch (e) {
-    return { success: false, error: e.message };
+    // Improve error messages for common failures
+    const msg = e.message || '';
+    if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('fetch')) {
+      return { success: false, error: 'Ошибка сети: не удалось подключиться к /api/yandex-telemost. Если запущено локально — API доступен только на Vercel. Разверните проект на Vercel и попробуйте снова.' };
+    }
+    if (msg.includes('401') || msg.includes('Unauthorized')) {
+      return { success: false, error: 'Токен недействителен или истёк. Получите новый OAuth-токен на oauth.yandex.ru.' };
+    }
+    if (msg.includes('403') || msg.includes('Forbidden')) {
+      return { success: false, error: 'Нет доступа. Убедитесь, что у токена есть право telemost-api:conferences.create и подключён Яндекс 360 для бизнеса.' };
+    }
+    if (msg.includes('404')) {
+      return { success: false, error: 'API endpoint не найден (/api/yandex-telemost). Убедитесь, что проект развёрнут на Vercel.' };
+    }
+    return { success: false, error: msg };
   }
 }
 

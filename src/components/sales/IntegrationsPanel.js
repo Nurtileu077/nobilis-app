@@ -15,6 +15,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
   const [telegramChats, setTelegramChats] = useState(null);
   const [telegramChatsLoading, setTelegramChatsLoading] = useState(false);
   const [telegramTestDetail, setTelegramTestDetail] = useState(null);
+  const [telemostTestDetail, setTelemostTestDetail] = useState(null);
 
   const services = [
     { id: 'bitrix24', name: 'Битрикс24', desc: 'CRM, лиды, телефония, записи звонков', icon: '🔗', color: '#2FC6F6' },
@@ -101,10 +102,19 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
         const cfg = integrations.telemost || {};
         const result = await testTelemostConnection(cfg.oauthToken);
         setTestStatus(prev => ({ ...prev, telemost: result.success ? 'success' : 'error' }));
-      } catch {
+        if (result.success) {
+          setTelemostTestDetail(`Подключено! Тестовая ссылка: ${result.joinUrl}`);
+        } else {
+          setTelemostTestDetail(result.error || 'Неизвестная ошибка');
+        }
+      } catch (e) {
         setTestStatus(prev => ({ ...prev, telemost: 'error' }));
+        setTelemostTestDetail(e.message || 'Ошибка сети. Проверьте, что приложение развёрнуто на Vercel (локально /api недоступен).');
       }
-      setTimeout(() => setTestStatus(prev => ({ ...prev, telemost: null })), 4000);
+      setTimeout(() => {
+        setTestStatus(prev => ({ ...prev, telemost: null }));
+        setTelemostTestDetail(null);
+      }, 8000);
       return;
     }
 
@@ -243,6 +253,13 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             <span className="text-sm">Авто-создание для CRM встреч</span>
           </label>
         </div>
+
+        {/* Test detail message */}
+        {telemostTestDetail && (
+          <div className={`text-sm rounded-xl p-3 ${testStatus.telemost === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
+            {telemostTestDetail}
+          </div>
+        )}
 
         {/* Connection flow diagram */}
         <div className="bg-gradient-to-r from-red-50 to-blue-50 border border-red-200 rounded-xl p-4">
@@ -688,7 +705,7 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             <div className="flex items-center gap-3">
               {testStatus[s.id] === 'testing' && <span className="text-sm text-blue-600 animate-pulse">Проверка...</span>}
               {testStatus[s.id] === 'success' && <span className="text-sm text-green-600">Подключено!</span>}
-              {testStatus[s.id] === 'error' && <span className="text-sm text-red-600">Ошибка</span>}
+              {testStatus[s.id] === 'error' && <span className="text-sm text-red-600" title={s.id === 'telemost' ? telemostTestDetail : ''}>Ошибка</span>}
               <button onClick={() => handleTest(s.id)}
                 className="px-4 py-2 text-sm border rounded-xl hover:bg-gray-50 transition-colors"
                 aria-label={`Тестировать подключение ${s.name}`}>
