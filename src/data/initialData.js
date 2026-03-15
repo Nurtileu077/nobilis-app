@@ -4391,9 +4391,9 @@ export const getInitialData = () => {
     integrations: {
       bitrix24: { enabled: false, webhookUrl: '', apiToken: '', domain: 'nobilis.bitrix24.kz', syncLeads: true, syncCalls: true },
       telegram: { enabled: false, botToken: '', chatIds: [], notifications: { newLead: true, dealClosed: true, dailyReport: true } },
-      googleDrive: { enabled: false, folderId: '', serviceAccountKey: '' },
-      googleCalendar: { enabled: false, calendarId: '' },
-      whatsapp: { enabled: false, apiUrl: '', token: '' },
+      googleDrive: { enabled: false, folderId: '', serviceAccountKey: '', autoUploadContracts: true, autoUploadReports: true },
+      googleCalendar: { enabled: false, calendarId: '', serviceAccountKey: '', timeZone: 'Asia/Almaty', syncLessons: true, syncMeetings: true },
+      whatsapp: { enabled: false, apiUrl: '', token: '', phoneNumberId: '', automation: { welcomeMessage: true, appointmentReminder: true } },
     },
   };
 };

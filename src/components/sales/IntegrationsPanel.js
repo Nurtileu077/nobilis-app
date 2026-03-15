@@ -3,6 +3,9 @@ import React, { useState, useCallback } from 'react';
 import I from '../common/Icons';
 import { createMeetingAutomation } from '../../lib/meetingAutomation';
 import { testTelegramConnection, sendTestMessage, fetchChatIds } from '../../lib/telegramAPI';
+import { testGoogleDriveConnection } from '../../lib/googleDriveAPI';
+import { testGoogleCalendarConnection } from '../../lib/googleCalendarAPI';
+import { testWhatsAppConnection } from '../../lib/whatsappAPI';
 
 const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
   const integrations = data?.integrations || {};
@@ -77,11 +80,44 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
       return;
     }
 
-    // Mock test for others
-    setTimeout(() => {
-      setTestStatus(prev => ({ ...prev, [serviceId]: integrations[serviceId]?.enabled ? 'success' : 'error' }));
-      setTimeout(() => setTestStatus(prev => ({ ...prev, [serviceId]: null })), 3000);
-    }, 1500);
+    // Real Google Drive test
+    if (serviceId === 'googleDrive') {
+      try {
+        const cfg = integrations.googleDrive || {};
+        const result = await testGoogleDriveConnection(cfg.serviceAccountKey, cfg.folderId);
+        setTestStatus(prev => ({ ...prev, googleDrive: result.success ? 'success' : 'error' }));
+      } catch {
+        setTestStatus(prev => ({ ...prev, googleDrive: 'error' }));
+      }
+      setTimeout(() => setTestStatus(prev => ({ ...prev, googleDrive: null })), 4000);
+      return;
+    }
+
+    // Real Google Calendar test
+    if (serviceId === 'googleCalendar') {
+      try {
+        const cfg = integrations.googleCalendar || {};
+        const result = await testGoogleCalendarConnection(cfg.serviceAccountKey, cfg.calendarId, cfg.timeZone);
+        setTestStatus(prev => ({ ...prev, googleCalendar: result.success ? 'success' : 'error' }));
+      } catch {
+        setTestStatus(prev => ({ ...prev, googleCalendar: 'error' }));
+      }
+      setTimeout(() => setTestStatus(prev => ({ ...prev, googleCalendar: null })), 4000);
+      return;
+    }
+
+    // Real WhatsApp test
+    if (serviceId === 'whatsapp') {
+      try {
+        const cfg = integrations.whatsapp || {};
+        const result = await testWhatsAppConnection(cfg.token, cfg.phoneNumberId, cfg.apiUrl);
+        setTestStatus(prev => ({ ...prev, whatsapp: result.success ? 'success' : 'error' }));
+      } catch {
+        setTestStatus(prev => ({ ...prev, whatsapp: 'error' }));
+      }
+      setTimeout(() => setTestStatus(prev => ({ ...prev, whatsapp: null })), 4000);
+      return;
+    }
   }, [integrations]);
 
   const renderBitrix24 = () => {
@@ -338,42 +374,190 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
     );
   };
 
-  const renderGenericIntegration = (serviceId) => {
-    const cfg = integrations[serviceId] || {};
-    const fields = {
-      googleDrive: [
-        { key: 'folderId', label: 'ID папки Google Drive', placeholder: '1ABcDeFgHiJkLmNoPqRsT' },
-        { key: 'serviceAccountKey', label: 'Service Account Key (JSON)', placeholder: '{"type": "service_account", ...}', multiline: true },
-      ],
-      googleCalendar: [
-        { key: 'calendarId', label: 'Calendar ID', placeholder: 'primary или abc@group.calendar.google.com' },
-        { key: 'serviceAccountKey', label: 'Service Account Key (JSON)', placeholder: '{"type": "service_account", ...}', multiline: true },
-      ],
-      whatsapp: [
-        { key: 'apiUrl', label: 'API URL (WABA)', placeholder: 'https://graph.facebook.com/v17.0/' },
-        { key: 'token', label: 'Access Token', placeholder: 'Токен WhatsApp Business API', secret: true },
-      ],
-    };
-
+  const renderGoogleDrive = () => {
+    const cfg = integrations.googleDrive || {};
     return (
       <div className="space-y-4">
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-          Интеграция будет доступна после настройки API ключей. Обратитесь к разработчику для активации.
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+          <strong>Как подключить:</strong>
+          <ol className="mt-2 space-y-1 list-decimal list-inside">
+            <li>Создайте проект в <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Cloud Console</a></li>
+            <li>Включите Google Drive API</li>
+            <li>Создайте Service Account и скачайте JSON-ключ</li>
+            <li>Предоставьте Service Account доступ к папке (через &laquo;Поделиться&raquo; по email Service Account)</li>
+            <li>Скопируйте ID папки из URL (после /folders/)</li>
+          </ol>
         </div>
-        {(fields[serviceId] || []).map(field => (
-          <div key={field.key}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
-            {field.multiline ? (
-              <textarea defaultValue={cfg[field.key] || ''} placeholder={field.placeholder} rows={4}
-                className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
-                onBlur={e => handleSave(serviceId, { [field.key]: e.target.value })} />
-            ) : (
-              <input type={field.secret ? 'password' : 'text'} defaultValue={cfg[field.key] || ''} placeholder={field.placeholder}
-                className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
-                onBlur={e => handleSave(serviceId, { [field.key]: e.target.value })} />
-            )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Service Account Key (JSON)</label>
+          <textarea defaultValue={cfg.serviceAccountKey || ''} rows={6}
+            placeholder='{"type": "service_account", "project_id": "...", "private_key": "...", ...}'
+            className="w-full px-4 py-2.5 border rounded-xl text-sm font-mono focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('googleDrive', { serviceAccountKey: e.target.value })} />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">ID папки Google Drive</label>
+          <input type="text" defaultValue={cfg.folderId || ''} placeholder="1ABcDeFgHiJkLmNoPqRsT"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('googleDrive', { folderId: e.target.value })} />
+          <p className="text-xs text-gray-400 mt-1">Из URL папки: drive.google.com/drive/folders/<strong>ID_ЗДЕСЬ</strong></p>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.autoUploadContracts !== false}
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+              onChange={e => handleSave('googleDrive', { autoUploadContracts: e.target.checked })} />
+            <span className="text-sm">Авто-загрузка договоров</span>
+          </label>
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.autoUploadReports !== false}
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+              onChange={e => handleSave('googleDrive', { autoUploadReports: e.target.checked })} />
+            <span className="text-sm">Авто-загрузка отчётов</span>
+          </label>
+        </div>
+        <div className="bg-gray-50 rounded-xl p-4">
+          <h4 className="font-medium text-sm mb-2">Структура папок</h4>
+          <p className="text-xs text-gray-500">Бот автоматически создаёт подпапки: /Договоры, /Отчёты, /Клиенты. Документы сортируются по дате и клиенту.</p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderGoogleCalendar = () => {
+    const cfg = integrations.googleCalendar || {};
+    return (
+      <div className="space-y-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+          <strong>Как подключить:</strong>
+          <ol className="mt-2 space-y-1 list-decimal list-inside">
+            <li>Создайте проект в <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Cloud Console</a></li>
+            <li>Включите Google Calendar API</li>
+            <li>Создайте Service Account и скачайте JSON-ключ</li>
+            <li>Добавьте email Service Account в настройки доступа календаря</li>
+          </ol>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Service Account Key (JSON)</label>
+          <textarea defaultValue={cfg.serviceAccountKey || ''} rows={6}
+            placeholder='{"type": "service_account", "project_id": "...", "private_key": "...", ...}'
+            className="w-full px-4 py-2.5 border rounded-xl text-sm font-mono focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('googleCalendar', { serviceAccountKey: e.target.value })} />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Calendar ID</label>
+          <input type="text" defaultValue={cfg.calendarId || ''} placeholder="primary или abc@group.calendar.google.com"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('googleCalendar', { calendarId: e.target.value })} />
+          <p className="text-xs text-gray-400 mt-1">Найти в Google Calendar → Настройки → Интеграция → ID календаря</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Часовой пояс</label>
+          <select defaultValue={cfg.timeZone || 'Asia/Almaty'}
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onChange={e => handleSave('googleCalendar', { timeZone: e.target.value })}>
+            <option value="Asia/Almaty">Asia/Almaty (UTC+5)</option>
+            <option value="Asia/Astana">Asia/Astana (UTC+5)</option>
+            <option value="Europe/Moscow">Europe/Moscow (UTC+3)</option>
+          </select>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.syncLessons !== false}
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+              onChange={e => handleSave('googleCalendar', { syncLessons: e.target.checked })} />
+            <span className="text-sm">Синхронизировать уроки</span>
+          </label>
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.syncMeetings !== false}
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+              onChange={e => handleSave('googleCalendar', { syncMeetings: e.target.checked })} />
+            <span className="text-sm">Синхронизировать встречи</span>
+          </label>
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.sendReminders !== false}
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+              onChange={e => handleSave('googleCalendar', { sendReminders: e.target.checked })} />
+            <span className="text-sm">Напоминания по email</span>
+          </label>
+          <label className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+            <input type="checkbox" defaultChecked={cfg.twoWaySync !== false}
+              className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+              onChange={e => handleSave('googleCalendar', { twoWaySync: e.target.checked })} />
+            <span className="text-sm">Двусторонняя синхронизация</span>
+          </label>
+        </div>
+
+        {/* Связка с Google Meet */}
+        {integrations.googleMeet?.enabled && cfg.enabled && (
+          <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+              <h4 className="font-medium text-sm text-green-800">Calendar + Meet связаны</h4>
+            </div>
+            <p className="text-xs text-green-700">
+              Встречи из календаря автоматически получают Google Meet ссылку.
+            </p>
           </div>
-        ))}
+        )}
+      </div>
+    );
+  };
+
+  const renderWhatsApp = () => {
+    const cfg = integrations.whatsapp || {};
+    return (
+      <div className="space-y-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+          <strong>Как подключить:</strong>
+          <ol className="mt-2 space-y-1 list-decimal list-inside">
+            <li>Зарегистрируйтесь в <a href="https://business.facebook.com" target="_blank" rel="noopener noreferrer" className="underline">Meta Business Suite</a></li>
+            <li>Подключите WhatsApp Business API (Cloud API)</li>
+            <li>Создайте System User и сгенерируйте Permanent Token</li>
+            <li>Скопируйте Phone Number ID из настроек WhatsApp</li>
+          </ol>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Access Token</label>
+          <input type="password" defaultValue={cfg.token || ''} placeholder="EAAGx..."
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('whatsapp', { token: e.target.value })} />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number ID</label>
+          <input type="text" defaultValue={cfg.phoneNumberId || ''} placeholder="123456789012345"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('whatsapp', { phoneNumberId: e.target.value })} />
+          <p className="text-xs text-gray-400 mt-1">Meta Business Suite → WhatsApp → Настройки API → Phone Number ID</p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">API URL (необязательно)</label>
+          <input type="text" defaultValue={cfg.apiUrl || ''} placeholder="https://graph.facebook.com/v21.0"
+            className="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-nobilis-green focus:border-transparent"
+            onBlur={e => handleSave('whatsapp', { apiUrl: e.target.value })} />
+          <p className="text-xs text-gray-400 mt-1">Оставьте пустым для стандартного Cloud API</p>
+        </div>
+        <div className="space-y-2">
+          <h4 className="font-medium text-sm">Автоматизация:</h4>
+          {[
+            { key: 'welcomeMessage', label: 'Приветственное сообщение новым лидам' },
+            { key: 'appointmentReminder', label: 'Напоминание о встрече за 1 час' },
+            { key: 'paymentReminder', label: 'Напоминание об оплате' },
+            { key: 'lessonReminder', label: 'Напоминание об уроке' },
+            { key: 'feedbackRequest', label: 'Запрос обратной связи после урока' },
+          ].map(item => (
+            <label key={item.key} className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl cursor-pointer">
+              <input type="checkbox" defaultChecked={cfg.automation?.[item.key] !== false}
+                className="rounded border-gray-300 text-nobilis-green focus:ring-nobilis-green"
+                onChange={e => handleSave('whatsapp', { automation: { ...(cfg.automation || {}), [item.key]: e.target.checked } })} />
+              <span className="text-sm">{item.label}</span>
+            </label>
+          ))}
+        </div>
+        <div className="bg-gray-50 rounded-xl p-4">
+          <h4 className="font-medium text-sm mb-2">Шаблоны сообщений</h4>
+          <p className="text-xs text-gray-500">Шаблоны нужно предварительно одобрить в Meta Business Suite. Без одобренных шаблонов можно отправлять только ответы в течение 24 часов после сообщения клиента.</p>
+        </div>
       </div>
     );
   };
@@ -438,7 +622,9 @@ const IntegrationsPanel = ({ data, onUpdateIntegration }) => {
             {s.id === 'bitrix24' && renderBitrix24()}
             {s.id === 'googleMeet' && renderGoogleMeet()}
             {s.id === 'telegram' && renderTelegram()}
-            {!['bitrix24', 'googleMeet', 'telegram'].includes(s.id) && renderGenericIntegration(s.id)}
+            {s.id === 'googleDrive' && renderGoogleDrive()}
+            {s.id === 'googleCalendar' && renderGoogleCalendar()}
+            {s.id === 'whatsapp' && renderWhatsApp()}
           </div>
         </div>
       ))}
