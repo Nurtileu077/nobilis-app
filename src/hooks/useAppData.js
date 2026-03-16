@@ -569,6 +569,55 @@ export default function useAppData() {
   };
   const delSalesTeamMember = (id) => upd('salesTeam', (data.salesTeam || []).filter(m => m.id !== id));
 
+  // ---- CHAT / MESSAGES ----
+  const sendMessage = useCallback((chatId, text, fromUser) => {
+    const messages = { ...(data.chatMessages || {}) };
+    const chatMsgs = [...(messages[chatId] || [])];
+    chatMsgs.push({
+      id: genId(),
+      from: fromUser.id,
+      fromName: fromUser.name,
+      text,
+      timestamp: new Date().toISOString(),
+      read: false,
+    });
+    messages[chatId] = chatMsgs;
+    upd('chatMessages', messages);
+  }, [data.chatMessages, upd]);
+
+  const markChatRead = useCallback((chatId, userId) => {
+    const messages = { ...(data.chatMessages || {}) };
+    const chatMsgs = (messages[chatId] || []).map(m =>
+      m.from !== userId ? { ...m, read: true } : m
+    );
+    messages[chatId] = chatMsgs;
+    upd('chatMessages', messages);
+  }, [data.chatMessages, upd]);
+
+  // ---- PAYMENTS ----
+  const addPayment = useCallback((studentId, payment) => {
+    const payments = { ...(data.payments || {}) };
+    const studentPayments = [...(payments[studentId] || [])];
+    studentPayments.push({ id: genId(), ...payment, date: payment.date || new Date().toISOString().split('T')[0] });
+    payments[studentId] = studentPayments;
+    upd('payments', payments);
+    // Update student paidAmount
+    const totalPaid = studentPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+    updStudent(studentId, { paidAmount: totalPaid });
+    addHistory(studentId, `Платёж: ${(payment.amount || 0).toLocaleString()} ₸ (${payment.method || 'Kaspi'})`);
+  }, [data.payments, upd, updStudent, addHistory]);
+
+  // ---- DEADLINE UPDATE ----
+  const updateDeadline = useCallback((student, key, value) => {
+    const deadlines = { ...(student.deadlines || {}) };
+    if (value === null) {
+      delete deadlines[key];
+    } else {
+      deadlines[key] = value;
+    }
+    updStudent(student.id, { deadlines });
+  }, [updStudent]);
+
   // ---- GENERIC DATA UPDATE (for inline editing in dashboards) ----
   const updateData = (key, value) => upd(key, value);
 
@@ -617,6 +666,12 @@ export default function useAppData() {
     updateIntegration,
     // Generic update
     updateData,
+    // Chat
+    sendMessage, markChatRead,
+    // Payments
+    addPayment,
+    // Deadlines
+    updateDeadline,
     // Helpers
     generateLogin, generatePassword,
   };

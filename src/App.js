@@ -13,6 +13,7 @@ import Modal from './components/common/Modal';
 import I from './components/common/Icons';
 import UniPhoto from './components/UniPhoto';
 import PwaInstallBanner from './components/common/PwaInstallBanner';
+import BottomNav from './components/common/BottomNav';
 import GoogleSheetsSync from './components/common/GoogleSheetsSync';
 
 // Lazy-loaded role-specific views (code splitting per role)
@@ -54,6 +55,12 @@ const SalesManagerDashboard = lazy(() => import('./components/sales/SalesManager
 const CallcenterDashboard = lazy(() => import('./components/sales/CallcenterDashboard'));
 const IntegrationsPanel = lazy(() => import('./components/sales/IntegrationsPanel'));
 
+// New feature components
+const StudentAnalytics = lazy(() => import('./components/student/StudentAnalytics'));
+const Chat = lazy(() => import('./components/common/Chat'));
+const DeadlineReminders = lazy(() => import('./components/common/DeadlineReminders'));
+const PaymentTracker = lazy(() => import('./components/common/PaymentTracker'));
+
 // Loading fallback for Suspense
 const ViewLoader = () => (
   <div className="flex items-center justify-center py-20">
@@ -78,6 +85,9 @@ const getNavItems = (role) => {
     { id: 'letters', label: 'Письма', icon: I.Letters },
     { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
     { id: 'documents', label: 'Документы', icon: I.Documents },
+    { id: 'analytics', label: 'Прогресс', icon: I.Analytics },
+    { id: 'chat', label: 'Чат', icon: I.Chat },
+    { id: 'payments', label: 'Оплата', icon: I.Payment },
   ];
   if (role === 'director') return [
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
@@ -94,6 +104,9 @@ const getNavItems = (role) => {
     { id: 'matching', label: 'Подбор ВУЗов', icon: I.Results },
     { id: 'support', label: 'Поддержка', icon: I.Support },
     { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
+    { id: 'chat', label: 'Чат', icon: I.Chat },
+    { id: 'deadlines', label: 'Дедлайны', icon: I.Deadline },
+    { id: 'payments', label: 'Оплаты', icon: I.Payment },
     { id: 'notifications', label: 'Уведомления', icon: I.Bell },
   ];
   if (role === 'academic_director') return [
@@ -108,6 +121,8 @@ const getNavItems = (role) => {
     { id: 'retakes', label: 'Пересдачи', icon: I.Test },
     { id: 'matching', label: 'Подбор ВУЗов', icon: I.Results },
     { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
+    { id: 'chat', label: 'Чат', icon: I.Chat },
+    { id: 'deadlines', label: 'Дедлайны', icon: I.Deadline },
     { id: 'notifications', label: 'Уведомления', icon: I.Bell },
   ];
   if (role === 'curator') return [
@@ -122,6 +137,8 @@ const getNavItems = (role) => {
     { id: 'salary', label: 'Зарплаты', icon: I.Money },
     { id: 'retakes', label: 'Пересдачи', icon: I.Test },
     { id: 'matching', label: 'Подбор ВУЗов', icon: I.Results },
+    { id: 'chat', label: 'Чат', icon: I.Chat },
+    { id: 'deadlines', label: 'Дедлайны', icon: I.Deadline },
     { id: 'notifications', label: 'Уведомления', icon: I.Bell },
     { id: 'support', label: 'Поддержка', icon: I.Support },
     { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
@@ -207,6 +224,7 @@ export default function NobilisAcademy() {
     addCall, updCall,
     addSalesTeamMember, updSalesTeamMember, delSalesTeamMember,
     updateIntegration, updateData,
+    sendMessage, markChatRead, addPayment, updateDeadline,
     generateLogin: genLogin, generatePassword: genPassword,
   } = app;
   const [detailTab, setDetailTab] = useState('info');
@@ -248,6 +266,9 @@ export default function NobilisAcademy() {
         case 'letters': return <StudentLetters student={s} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} />;
         case 'internships': return <StudentInternships student={s} internships={data.internships} onSetSelected={setSelected} onSetModal={setModal} />;
         case 'documents': return <StudentDocuments student={s} onSetSelected={setSelected} onSetModal={setModal} />;
+        case 'analytics': return <StudentAnalytics student={s} />;
+        case 'chat': return <Chat user={user} students={[]} messages={data.chatMessages || {}} onSendMessage={(chatId, text) => sendMessage(chatId, text, user)} onMarkRead={(chatId) => markChatRead(chatId, user.id)} />;
+        case 'payments': return <PaymentTracker student={s} payments={(data.payments || {})[s.id] || []} onAddPayment={(p) => addPayment(s.id, p)} isAdmin={false} />;
         default: break;
       }
     }
@@ -271,6 +292,8 @@ export default function NobilisAcademy() {
         case 'support': return <CuratorSupport tickets={data.supportTickets} onResolveTicket={resolveTicket} />;
         case 'countries': return <CountriesView students={data.students} />;
         case 'retakes': return <RetakeModeration students={data.students} onApprove={approveRetake} onDeny={denyRetake} />;
+        case 'chat': return <Chat user={user} students={data.students} messages={data.chatMessages || {}} onSendMessage={(chatId, text) => sendMessage(chatId, text, user)} onMarkRead={(chatId) => markChatRead(chatId, user.id)} />;
+        case 'deadlines': return <DeadlineReminders students={data.students} onUpdateDeadline={updateDeadline} />;
         case 'notifications': return <NotificationsView />;
         case 'matching': return <MatchmakingView students={data.students} />;
         case 'internships': return <CuratorInternships internships={data.internships} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelInternship={delInternship} />;
@@ -312,6 +335,9 @@ export default function NobilisAcademy() {
         case 'matching': return <MatchmakingView students={data.students} />;
         case 'support': return <CuratorSupport tickets={data.supportTickets} onResolveTicket={resolveTicket} />;
         case 'internships': return <CuratorInternships internships={data.internships} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelInternship={delInternship} />;
+        case 'chat': return <Chat user={user} students={data.students} messages={data.chatMessages || {}} onSendMessage={(chatId, text) => sendMessage(chatId, text, user)} onMarkRead={(chatId) => markChatRead(chatId, user.id)} />;
+        case 'deadlines': return <DeadlineReminders students={data.students} onUpdateDeadline={updateDeadline} />;
+        case 'payments': return <PaymentTracker student={null} payments={data.payments || {}} onAddPayment={addPayment} isAdmin={true} />;
         case 'notifications': return <NotificationsView />;
         default: break;
       }
@@ -335,6 +361,8 @@ export default function NobilisAcademy() {
         case 'retakes': return <RetakeModeration students={data.students} onApprove={approveRetake} onDeny={denyRetake} />;
         case 'matching': return <MatchmakingView students={data.students} />;
         case 'internships': return <CuratorInternships internships={data.internships} onSetModal={setModal} onSetForm={setForm} onSetSelected={setSelected} onDelInternship={delInternship} />;
+        case 'chat': return <Chat user={user} students={data.students} messages={data.chatMessages || {}} onSendMessage={(chatId, text) => sendMessage(chatId, text, user)} onMarkRead={(chatId) => markChatRead(chatId, user.id)} />;
+        case 'deadlines': return <DeadlineReminders students={data.students} onUpdateDeadline={updateDeadline} />;
         case 'notifications': return <NotificationsView />;
         default: break;
       }
@@ -2172,7 +2200,7 @@ export default function NobilisAcademy() {
             );
           })()}
         </header>
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-4 pb-20 md:pb-6 md:p-6 lg:p-8">
           <PwaInstallBanner />
           <PushSubscribeBanner />
           {(user.role === 'director' || user.role === 'academic_director') && view === 'dashboard' && (
@@ -2182,6 +2210,7 @@ export default function NobilisAcademy() {
             {renderContent()}
           </Suspense>
         </main>
+        <BottomNav navItems={navItems} currentView={view} onNavigate={(v) => { setView(v); setStudentPage(null); }} />
       </div>
       {renderModal()}
       {/* PWA update banner */}
