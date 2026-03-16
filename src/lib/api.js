@@ -37,7 +37,7 @@ export const authAPI = {
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
-      .eq('auth_id', user.id)
+      .eq('id', user.id)
       .single();
     return { ...user, profile };
   },

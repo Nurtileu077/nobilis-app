@@ -407,14 +407,13 @@ export default function useAppData() {
       const { data: profile, error: profileErr } = await supabase
         .from('profiles')
         .upsert({
-          auth_id: authData.user.id,
+          id: authData.user.id,
           login,
           name: d.name,
           email: d.email || `${login}@nobilis.kz`,
           phone: d.phone || null,
           role: 'student',
-          is_active: true,
-        }, { onConflict: 'auth_id' })
+        }, { onConflict: 'id' })
         .select()
         .single();
       if (profileErr) throw profileErr;
@@ -689,14 +688,12 @@ export default function useAppData() {
       const { data: profile } = await supabase
         .from('profiles')
         .upsert({
-          auth_id: authData.user.id,
+          id: authData.user.id,
           login, name: d.name,
           email: d.email || `${login}@nobilis.kz`,
           phone: d.phone || null,
           role: 'teacher',
-          department: d.department || d.subject || null,
-          is_active: true,
-        }, { onConflict: 'auth_id' })
+        }, { onConflict: 'id' })
         .select()
         .single();
 

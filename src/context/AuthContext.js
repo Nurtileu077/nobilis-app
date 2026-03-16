@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
-      .eq('auth_id', authUser.id)
+      .eq('id', authUser.id)
       .single();
 
     if (profileError || !profile) {
@@ -47,9 +47,6 @@ export function AuthProvider({ children }) {
       email: profile.email || authUser.email,
       phone: profile.phone,
       role: profile.role,
-      department: profile.department,
-      avatar: profile.avatar,
-      isActive: profile.is_active,
       // Student-specific
       studentId: studentData?.id || null,
       studentData,
@@ -118,7 +115,6 @@ export function AuthProvider({ children }) {
       .from('profiles')
       .select('email')
       .eq('login', login)
-      .eq('is_active', true)
       .single();
 
     if (profileError || !profile?.email) {
@@ -157,15 +153,13 @@ export function AuthProvider({ children }) {
     const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .upsert({
-        auth_id: authData.user.id,
+        id: authData.user.id,
         login,
         name,
         email,
         phone: phone || null,
         role,
-        department: department || null,
-        is_active: true,
-      }, { onConflict: 'auth_id' })
+      }, { onConflict: 'id' })
       .select()
       .single();
 
