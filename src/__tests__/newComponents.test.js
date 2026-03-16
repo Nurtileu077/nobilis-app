@@ -152,7 +152,7 @@ const mockStudent = {
 };
 
 const mockPayments = [
-  { id: 'p1', amount: 200000, date: '2026-01-15', method: 'kaspi' },
+  { id: 'p1', amount: 200000, date: '2026-01-15', method: 'freedom_pay' },
   { id: 'p2', amount: 200000, date: '2026-02-15', method: 'cash' },
 ];
 
@@ -167,7 +167,7 @@ describe('PaymentTracker', () => {
   it('shows payment history', () => {
     render(<PaymentTracker student={mockStudent} payments={mockPayments} onAddPayment={() => {}} isAdmin={false} />);
     expect(screen.getByText('История платежей')).toBeInTheDocument();
-    expect(screen.getByText('Kaspi')).toBeInTheDocument();
+    expect(screen.getByText('Freedom Pay')).toBeInTheDocument();
     expect(screen.getByText('Наличные')).toBeInTheDocument();
   });
 
@@ -189,9 +189,9 @@ describe('PaymentTracker', () => {
     expect(screen.getAllByText('Оплачено').length).toBeGreaterThan(0);
   });
 
-  it('shows Kaspi QR section', () => {
+  it('shows Freedom Pay section', () => {
     render(<PaymentTracker student={mockStudent} payments={mockPayments} onAddPayment={() => {}} isAdmin={false} />);
-    expect(screen.getByText('Оплата через Kaspi QR')).toBeInTheDocument();
+    expect(screen.getByText('Оплата онлайн')).toBeInTheDocument();
   });
 
   it('shows empty payment history gracefully', () => {

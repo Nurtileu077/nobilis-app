@@ -12,15 +12,17 @@ const formatDate = (dateStr) => {
 };
 
 const methodLabels = {
-  kaspi: 'Kaspi',
+  freedom_pay: 'Freedom Pay',
   cash: 'Наличные',
   transfer: 'Перевод',
+  card: 'Карта',
 };
 
 const methodColors = {
-  kaspi: 'bg-red-50 text-red-700',
+  freedom_pay: 'bg-blue-50 text-blue-700',
   cash: 'bg-green-50 text-green-700',
-  transfer: 'bg-blue-50 text-blue-700',
+  transfer: 'bg-purple-50 text-purple-700',
+  card: 'bg-indigo-50 text-indigo-700',
 };
 
 function ProgressBar({ paid, total }) {
@@ -165,7 +167,7 @@ function PaymentHistory({ payments }) {
 function AddPaymentForm({ onAddPayment }) {
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [method, setMethod] = useState('kaspi');
+  const [method, setMethod] = useState('freedom_pay');
   const [receipt, setReceipt] = useState(null);
   const [note, setNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -235,7 +237,8 @@ function AddPaymentForm({ onAddPayment }) {
               onChange={(e) => setMethod(e.target.value)}
               className="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-nobilis-green/30 focus:border-nobilis-green transition-colors bg-white"
             >
-              <option value="kaspi">Kaspi</option>
+              <option value="freedom_pay">Freedom Pay</option>
+              <option value="card">Карта</option>
               <option value="cash">Наличные</option>
               <option value="transfer">Перевод</option>
             </select>
@@ -353,29 +356,124 @@ function PaymentSchedule({ student }) {
   );
 }
 
-function KaspiQR({ student }) {
+function FreedomPayButton({ student }) {
+  const [payAmount, setPayAmount] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const remaining = Math.max((student?.totalContractSum || 0) - (student?.paidAmount || 0), 0);
+
+  const handlePay = async () => {
+    const amount = Number(payAmount);
+    if (!amount || amount <= 0) {
+      setError('Введите сумму');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/freedom-pay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId: student?.id,
+          amount,
+          description: `Оплата обучения — ${student?.name || 'Студент'}`,
+        }),
+      });
+      const data = await res.json();
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
+      } else {
+        setError(data.error || 'Ошибка создания платежа');
+      }
+    } catch (err) {
+      setError('Ошибка соединения');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-fadeIn">
       <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
-        Оплата через Kaspi QR
+        Оплата онлайн
       </h3>
-      <div className="flex flex-col items-center py-6">
-        <div className="w-40 h-40 bg-gray-100 rounded-2xl flex items-center justify-center mb-4 border-2 border-dashed border-gray-200">
-          <div className="text-center">
-            <svg className="w-10 h-10 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-            </svg>
-            <span className="text-[10px] text-gray-300">QR-код</span>
-          </div>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-blue-50">
+          <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span className="text-xs text-blue-700">Безопасная оплата через Freedom Pay</span>
         </div>
-        <p className="text-xs text-gray-400 text-center max-w-[200px]">
-          Отсканируйте QR-код в приложении Kaspi для оплаты
-        </p>
-        {student?.name && (
-          <p className="text-[11px] text-gray-300 mt-2">
-            Получатель: Nobilis Academy
+
+        {remaining > 0 && (
+          <p className="text-xs text-gray-400">
+            Остаток к оплате: <span className="font-semibold text-gray-700">{remaining.toLocaleString()} ₸</span>
           </p>
         )}
+
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">Сумма оплаты (₸)</label>
+          <input
+            type="number"
+            min="100"
+            step="1000"
+            value={payAmount}
+            onChange={(e) => { setPayAmount(e.target.value); setError(''); }}
+            placeholder={remaining > 0 ? String(remaining) : '100000'}
+            className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-colors"
+          />
+        </div>
+
+        {/* Quick amount buttons */}
+        <div className="flex gap-2 flex-wrap">
+          {[50000, 100000, 200000].filter(v => v <= remaining || remaining === 0).map(v => (
+            <button
+              key={v}
+              onClick={() => setPayAmount(String(v))}
+              className="px-3 py-1 text-xs rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+            >
+              {(v / 1000)}k ₸
+            </button>
+          ))}
+          {remaining > 0 && (
+            <button
+              onClick={() => setPayAmount(String(remaining))}
+              className="px-3 py-1 text-xs rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-700 transition-colors"
+            >
+              Всё ({(remaining / 1000).toFixed(0)}k ₸)
+            </button>
+          )}
+        </div>
+
+        {error && (
+          <p className="text-xs text-red-500 bg-red-50 p-2 rounded-lg">{error}</p>
+        )}
+
+        <button
+          onClick={handlePay}
+          disabled={loading || !payAmount}
+          className="w-full py-3 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+        >
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Создаём платёж...
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              Оплатить через Freedom Pay
+            </>
+          )}
+        </button>
+
+        <p className="text-[10px] text-gray-300 text-center">
+          Вы будете перенаправлены на страницу оплаты Freedom Pay
+        </p>
       </div>
     </div>
   );
@@ -396,7 +494,7 @@ export default function PaymentTracker({ student, payments, onAddPayment, isAdmi
 
           <PaymentSchedule student={student} />
 
-          <KaspiQR student={student} />
+          <FreedomPayButton student={student} />
         </div>
       </div>
     </div>

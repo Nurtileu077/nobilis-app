@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS payments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID REFERENCES students(id) ON DELETE CASCADE,
   amount NUMERIC(12,2) NOT NULL,
-  method TEXT DEFAULT 'kaspi',
+  method TEXT DEFAULT 'freedom_pay',
   receipt_url TEXT,
   note TEXT,
   date DATE DEFAULT CURRENT_DATE,

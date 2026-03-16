@@ -638,13 +638,15 @@ export const paymentsAPI = {
     return data;
   },
 
-  // Verify Kaspi payment
-  async verifyKaspi(txnId) {
-    const { data, error } = await supabase.functions.invoke('verify-kaspi-payment', {
-      body: { txnId },
+  // Check Freedom Pay payment status
+  async checkFreedomPayStatus(orderId) {
+    const res = await fetch('/api/freedom-pay?action=status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId }),
     });
-    if (error) throw error;
-    return data;
+    if (!res.ok) throw new Error('Failed to check payment status');
+    return res.json();
   },
 };
 

@@ -1310,14 +1310,14 @@ export default function useAppData() {
 
     const totalPaid = studentPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
     updStudent(studentId, { paidAmount: totalPaid });
-    addHistory(studentId, `Платёж: ${(payment.amount || 0).toLocaleString()} ₸ (${payment.method || 'Kaspi'})`);
+    addHistory(studentId, `Платёж: ${(payment.amount || 0).toLocaleString()} ₸ (${payment.method || 'Freedom Pay'})`);
 
     if (!USE_LOCAL) {
       try {
         await paymentsAPI.create({
           student_id: studentId,
           amount: payment.amount,
-          method: payment.method || 'kaspi',
+          method: payment.method || 'freedom_pay',
           receipt_url: payment.receiptUrl || null,
           note: payment.note || null,
           date: newPayment.date,
