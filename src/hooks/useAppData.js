@@ -219,9 +219,21 @@ export default function useAppData() {
       initialLoadDone.current = true;
       return;
     }
-    // Only load from Supabase when we have a user (session exists)
+    // Only load from Supabase when we have a user AND a valid Supabase session
     if (user) {
-      loadAllData();
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          loadAllData();
+        } else {
+          // No Supabase session (local fallback login) — use initial data
+          if (data.students.length === 0 && data.teachers.length === 0) {
+            const initial = getInitialData();
+            setData(prev => ({ ...prev, students: initial.students, teachers: initial.teachers, schedule: initial.schedule, mockTests: initial.mockTests, internships: initial.internships, attendance: initial.attendance, chatMessages: initial.chatMessages, payments: initial.payments, globalTasks: initial.globalTasks, leads: initial.leads }));
+          }
+          setSyncStatus('synced');
+          initialLoadDone.current = true;
+        }
+      });
     }
   }, [loadAllData, user]);
 
@@ -302,20 +314,29 @@ export default function useAppData() {
     { login: 'rop', password: 'rop2024', role: 'rop', id: 'rop1', name: 'Мадияр' },
   ];
 
+  const ensureLocalData = () => {
+    // Load initial data if arrays are empty (Supabase configured but DB not seeded)
+    if (data.students.length === 0 && data.teachers.length === 0) {
+      const initial = getInitialData();
+      setData(prev => ({ ...prev, students: initial.students, teachers: initial.teachers, schedule: initial.schedule, mockTests: initial.mockTests, internships: initial.internships, attendance: initial.attendance, chatMessages: initial.chatMessages, payments: initial.payments, globalTasks: initial.globalTasks, leads: initial.leads }));
+      setSyncStatus('synced');
+      return initial;
+    }
+    return data;
+  };
+
   const handleLocalLogin = (login, password) => {
     const staff = STAFF_ACCOUNTS.find(a => a.login === login && a.password === password);
-    if (staff) { setUser({ role: staff.role, id: staff.id, name: staff.name }); return null; }
-
-    // Use current data, or load initial data if arrays are empty (Supabase configured but DB not seeded)
-    let students = data.students;
-    let teachers = data.teachers;
-    if (students.length === 0 && teachers.length === 0) {
-      const initial = getInitialData();
-      students = initial.students;
-      teachers = initial.teachers;
-      // Also populate app data so the user has data after login
-      setData(prev => ({ ...prev, students: initial.students, teachers: initial.teachers, schedule: initial.schedule, mockTests: initial.mockTests, internships: initial.internships, attendance: initial.attendance, chatMessages: initial.chatMessages, payments: initial.payments, globalTasks: initial.globalTasks, leads: initial.leads }));
+    if (staff) {
+      ensureLocalData();
+      setUser({ role: staff.role, id: staff.id, name: staff.name });
+      return null;
     }
+
+    // Use current data, or load initial data if arrays are empty
+    const localData = ensureLocalData();
+    let students = localData.students;
+    let teachers = localData.teachers;
 
     const s = students.find(x => x.login === login && x.password === password);
     if (s) { setUser({ role: 'student', ...s }); return null; }
