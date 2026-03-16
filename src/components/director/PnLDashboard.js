@@ -6,11 +6,15 @@ let STATIC_PNL_DATA = null;
 let STATIC_EXPENSES_DETAIL = null;
 let STATIC_EXPENSE_CATEGORIES = null;
 let STATIC_COMPANY_DEBTS = null;
+let STATIC_PNL_CITIES = null;
+let STATIC_PNL_DATA_BY_CITY = null;
 try {
   const pnlModule = require('../../data/pnlData');
   STATIC_PNL_DATA = pnlModule.PNL_DATA;
   STATIC_EXPENSES_DETAIL = pnlModule.EXPENSES_DETAIL;
   STATIC_EXPENSE_CATEGORIES = pnlModule.EXPENSE_CATEGORIES;
+  STATIC_PNL_CITIES = pnlModule.PNL_CITIES;
+  STATIC_PNL_DATA_BY_CITY = pnlModule.PNL_DATA_BY_CITY;
 } catch (e) {}
 try {
   const salaryModule = require('../../data/salaryData');
@@ -135,10 +139,17 @@ function exportExcel(rows, fileName) {
 // eslint-disable-next-line no-unused-vars
 export default function PnLDashboard({ onUpdateData } = {}) {
   const sheets = useSheets();
-  const PNL_DATA = sheets?.pnlData || STATIC_PNL_DATA;
+  const PNL_DATA_ALL = sheets?.pnlData || STATIC_PNL_DATA;
+  const PNL_DATA_BY_CITY = sheets?.pnlDataByCity || STATIC_PNL_DATA_BY_CITY;
+  const PNL_CITIES = sheets?.pnlCities || STATIC_PNL_CITIES || [];
   const EXPENSES_DETAIL = sheets?.expensesDetail || STATIC_EXPENSES_DETAIL;
   const EXPENSE_CATEGORIES = sheets?.expenseCategories || STATIC_EXPENSE_CATEGORIES;
   const COMPANY_DEBTS = sheets?.companyDebts || STATIC_COMPANY_DEBTS;
+
+  const [selectedCity, setSelectedCity] = useState('');
+  const PNL_DATA = selectedCity && PNL_DATA_BY_CITY?.[selectedCity]
+    ? PNL_DATA_BY_CITY[selectedCity]
+    : PNL_DATA_ALL;
   const raw = PNL_DATA || FALLBACK;
 
   // Build a clean row array for each month
@@ -271,13 +282,21 @@ export default function PnLDashboard({ onUpdateData } = {}) {
 
   const months = tableData.map((d) => d.month);
 
+  // ── Reset table data when city filter changes ────────────────────────
+  useEffect(() => {
+    setTableData(derived.map((d) => ({ ...d })));
+    setEditedCells({});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCity]);
+
   // ── Persist edits to localStorage on each change ───────────────────────
   useEffect(() => {
     try {
-      localStorage.setItem(LS_KEY, JSON.stringify(tableData));
-      localStorage.setItem(LS_KEY + '_hash', derivedHash);
+      const storageKey = selectedCity ? `${LS_KEY}_${selectedCity}` : LS_KEY;
+      localStorage.setItem(storageKey, JSON.stringify(tableData));
+      localStorage.setItem(storageKey + '_hash', derivedHash);
     } catch (e) {}
-  }, [tableData, derivedHash]);
+  }, [tableData, derivedHash, selectedCity]);
 
   // ── Cell editing ──────────────────────────────────────────────────────────
   const handleCellDoubleClick = (rowKey, colIdx) => {
@@ -389,12 +408,33 @@ export default function PnLDashboard({ onUpdateData } = {}) {
           <div>
             <h1 className="text-xl md:text-2xl font-extrabold text-gray-900 leading-tight">
               P&L — <span style={{ color: '#1a3a32' }}>{sel.month}</span>
+              {selectedCity && <span className="text-base font-bold text-gray-500"> · {selectedCity}</span>}
             </h1>
-            <p className="text-xs text-gray-400">Отчёт о прибылях и убытках · Nobilis</p>
+            <p className="text-xs text-gray-400">
+              Отчёт о прибылях и убытках · Nobilis
+              {selectedCity ? ` · ${selectedCity}` : ' · Все города'}
+            </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {/* City selector */}
+          {PNL_CITIES.length > 0 && (
+            <div className="relative">
+              <select
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="appearance-none pl-3 pr-8 py-2 text-sm border border-gray-200 rounded-xl bg-white shadow-sm focus:outline-none cursor-pointer"
+              >
+                <option value="">Все города</option>
+                {PNL_CITIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <I.ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            </div>
+          )}
+
           {/* Month selector */}
           <div className="relative">
             <select
