@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import NobilisLogo from './NobilisLogo';
 
-// Demo accounts loaded from environment — keeps credentials out of the client bundle in production
+// Demo accounts loaded from environment
 const DEMO_ACCOUNTS = process.env.REACT_APP_DEMO_MODE === 'true' ? [
   { login: 'nurtileu', password: 'Nobilis2024!', label: 'Директор', icon: 'D' },
   { login: 'sultan.curator', password: 'Nob2024sc!', label: 'Куратор', icon: 'C' },
@@ -14,6 +14,7 @@ const DEMO_ACCOUNTS = process.env.REACT_APP_DEMO_MODE === 'true' ? [
 const LoginScreen = ({ onLogin }) => {
   const [loginForm, setLoginForm] = useState({ login: '', password: '' });
   const [loginError, setLoginError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const loginInputRef = useRef(null);
   const errorRef = useRef(null);
 
@@ -23,27 +24,32 @@ const LoginScreen = ({ onLogin }) => {
     }
   }, [loginError]);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!loginForm.login.trim() || !loginForm.password.trim()) {
       setLoginError('Введите логин и пароль');
       return;
     }
-    const error = onLogin(loginForm.login, loginForm.password);
-    if (error) setLoginError(error);
+    setIsLoading(true);
+    setLoginError('');
+    try {
+      const error = await onLogin(loginForm.login, loginForm.password);
+      if (error) setLoginError(error);
+    } catch (err) {
+      setLoginError(err.message || 'Ошибка авторизации');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex relative overflow-hidden">
       {/* Left side - decorative background */}
       <div className="hidden lg:flex lg:w-1/2 relative login-bg-left" aria-hidden="true">
-        {/* Geometric patterns */}
         <div className="absolute inset-0 overflow-hidden">
-          {/* Large circle */}
           <div className="absolute -top-20 -left-20 w-96 h-96 border-2 border-nobilis-gold/15 rounded-full animate-float" />
           <div className="absolute top-1/4 right-10 w-64 h-64 border border-nobilis-gold/10 rounded-full animate-float" style={{ animationDelay: '1s' }} />
           <div className="absolute bottom-20 left-20 w-48 h-48 border border-nobilis-gold/20 rounded-full animate-float" style={{ animationDelay: '2s' }} />
 
-          {/* Grid dots */}
           {Array.from({ length: 40 }).map((_, i) => (
             <div key={i}
               className="absolute w-1 h-1 bg-nobilis-gold/20 rounded-full"
@@ -51,7 +57,6 @@ const LoginScreen = ({ onLogin }) => {
             />
           ))}
 
-          {/* Diagonal lines */}
           <div className="absolute top-0 right-0 w-full h-full">
             <svg className="w-full h-full opacity-5" viewBox="0 0 100 100" preserveAspectRatio="none">
               <line x1="0" y1="100" x2="100" y2="0" stroke="#c9a227" strokeWidth="0.3" />
@@ -61,7 +66,6 @@ const LoginScreen = ({ onLogin }) => {
           </div>
         </div>
 
-        {/* Content on left side */}
         <div className="relative z-10 flex flex-col justify-center items-center w-full px-12">
           <div className="animate-fadeIn">
             <NobilisLogo size={240} />
@@ -73,7 +77,6 @@ const LoginScreen = ({ onLogin }) => {
             Образовательная платформа нового поколения для подготовки к IELTS, SAT и поступлению в лучшие университеты мира
           </p>
 
-          {/* Feature highlights */}
           <div className="mt-12 space-y-4 w-full max-w-sm">
             {[
               { label: 'IELTS & SAT подготовка', desc: 'Индивидуальные программы' },
@@ -98,7 +101,6 @@ const LoginScreen = ({ onLogin }) => {
 
       {/* Right side - login form */}
       <div className="flex-1 flex items-center justify-center p-6 login-bg-right relative">
-        {/* Mobile background patterns */}
         <div className="absolute inset-0 overflow-hidden lg:hidden" aria-hidden="true">
           <div className="absolute top-10 left-10 w-72 h-72 border border-nobilis-gold/10 rounded-full animate-float" />
           <div className="absolute bottom-10 right-10 w-48 h-48 border border-nobilis-gold/15 rounded-full animate-float" style={{ animationDelay: '1s' }} />
@@ -133,6 +135,7 @@ const LoginScreen = ({ onLogin }) => {
                   className="w-full p-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-nobilis-gold focus:bg-white/10 transition-all"
                   placeholder="Введите логин"
                   autoComplete="username"
+                  disabled={isLoading}
                   aria-invalid={loginError ? 'true' : undefined}
                   aria-describedby={loginError ? 'login-error' : undefined}
                 />
@@ -147,6 +150,7 @@ const LoginScreen = ({ onLogin }) => {
                   className="w-full p-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-nobilis-gold focus:bg-white/10 transition-all"
                   placeholder="Введите пароль"
                   autoComplete="current-password"
+                  disabled={isLoading}
                   aria-invalid={loginError ? 'true' : undefined}
                   aria-describedby={loginError ? 'login-error' : undefined}
                 />
@@ -164,12 +168,23 @@ const LoginScreen = ({ onLogin }) => {
                 </div>
               )}
 
-              <button type="submit" className="w-full py-4 rounded-xl font-semibold text-nobilis-green text-lg btn-gold mt-2">
-                Войти в систему
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-4 rounded-xl font-semibold text-nobilis-green text-lg btn-gold mt-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-nobilis-green border-t-transparent rounded-full animate-spin" />
+                    Вход...
+                  </>
+                ) : (
+                  'Войти в систему'
+                )}
               </button>
             </form>
 
-            {/* Demo access — only shown when REACT_APP_DEMO_MODE=true */}
+            {/* Demo access */}
             {DEMO_ACCOUNTS.length > 0 && <div className="mt-8 pt-6 border-t border-white/10">
               <p className="text-xs text-white/40 text-center mb-4">Демо-доступ</p>
               <div className="grid grid-cols-3 gap-2">
@@ -179,6 +194,7 @@ const LoginScreen = ({ onLogin }) => {
                     onClick={() => setLoginForm({ login: acc.login, password: acc.password })}
                     className="p-3 bg-white/5 hover:bg-white/10 border border-white/15 rounded-xl text-white/70 transition-all hover:scale-105 hover:border-nobilis-gold/50"
                     aria-label={`Войти как ${acc.label}`}
+                    disabled={isLoading}
                   >
                     <div className="w-8 h-8 mx-auto mb-1.5 rounded-full bg-nobilis-gold/20 flex items-center justify-center text-nobilis-gold text-sm font-bold" aria-hidden="true">
                       {acc.icon}

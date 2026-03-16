@@ -121,8 +121,8 @@ describe('LoginScreen', () => {
     expect(screen.getByPlaceholderText('Введите пароль')).toHaveValue('Nob2024sc!');
   });
 
-  it('calls onLogin with credentials and shows error', () => {
-    const onLogin = jest.fn(() => 'Неверный логин или пароль');
+  it('calls onLogin with credentials and shows error', async () => {
+    const onLogin = jest.fn(() => Promise.resolve('Неверный логин или пароль'));
     render(<LoginScreen onLogin={onLogin} />);
 
     fireEvent.change(screen.getByPlaceholderText('Введите логин'), { target: { value: 'bad' } });
@@ -130,11 +130,12 @@ describe('LoginScreen', () => {
     fireEvent.click(screen.getByText('Войти в систему'));
 
     expect(onLogin).toHaveBeenCalledWith('bad', 'wrong');
-    expect(screen.getByText('Неверный логин или пароль')).toBeInTheDocument();
+    const { findByText } = screen;
+    expect(await findByText('Неверный логин или пароль')).toBeInTheDocument();
   });
 
-  it('does not show error on successful login', () => {
-    const onLogin = jest.fn(() => null);
+  it('does not show error on successful login', async () => {
+    const onLogin = jest.fn(() => Promise.resolve(null));
     render(<LoginScreen onLogin={onLogin} />);
 
     fireEvent.change(screen.getByPlaceholderText('Введите логин'), { target: { value: 'curator' } });
@@ -142,11 +143,13 @@ describe('LoginScreen', () => {
     fireEvent.click(screen.getByText('Войти в систему'));
 
     expect(onLogin).toHaveBeenCalledWith('curator', 'curator2024');
+    // Wait for async to complete
+    await new Promise(r => setTimeout(r, 50));
     expect(screen.queryByText('Неверный логин или пароль')).not.toBeInTheDocument();
   });
 
   it('supports Enter key to login via form submit', () => {
-    const onLogin = jest.fn(() => null);
+    const onLogin = jest.fn(() => Promise.resolve(null));
     render(<LoginScreen onLogin={onLogin} />);
 
     fireEvent.change(screen.getByPlaceholderText('Введите логин'), { target: { value: 'test' } });

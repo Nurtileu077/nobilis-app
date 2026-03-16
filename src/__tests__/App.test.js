@@ -1,5 +1,17 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+
+// Mock supabase to disable real connections in tests
+jest.mock('../lib/supabase', () => ({
+  SUPABASE_CONFIGURED: false,
+  supabase: {
+    auth: { signInWithPassword: jest.fn(), signOut: jest.fn(), getSession: jest.fn(() => Promise.resolve({ data: { session: null } })), onAuthStateChange: jest.fn(() => ({ data: { subscription: { unsubscribe: jest.fn() } } })) },
+    from: jest.fn(() => ({ select: jest.fn(() => ({ eq: jest.fn(() => ({ single: jest.fn(() => Promise.resolve({ data: null, error: null })) })) })) })),
+    channel: jest.fn(() => ({ on: jest.fn().mockReturnThis(), subscribe: jest.fn() })),
+  },
+  subscribeToTables: jest.fn(() => jest.fn()),
+}));
+
 import NobilisAcademy from '../App';
 
 // Enable demo mode for tests
@@ -62,13 +74,15 @@ describe('NobilisAcademy App', () => {
     });
   });
 
-  it('shows error for wrong credentials', () => {
+  it('shows error for wrong credentials', async () => {
     render(<NobilisAcademy />);
     fireEvent.change(screen.getByPlaceholderText('Введите логин'), { target: { value: 'wrong' } });
     fireEvent.change(screen.getByPlaceholderText('Введите пароль'), { target: { value: 'wrong' } });
     fireEvent.click(screen.getByText('Войти в систему'));
 
-    expect(screen.getByText('Неверный логин или пароль')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Неверный логин или пароль')).toBeInTheDocument();
+    });
   });
 
   it('navigates between views as curator', async () => {
