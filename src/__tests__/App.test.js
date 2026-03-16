@@ -36,8 +36,8 @@ describe('NobilisAcademy App', () => {
     fireEvent.click(screen.getByText('Войти в систему'));
 
     await waitFor(() => {
-      expect(screen.getByText('Главная')).toBeInTheDocument();
-      expect(screen.getByText('Студенты')).toBeInTheDocument();
+      expect(screen.getAllByText('Главная').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Студенты').length).toBeGreaterThan(0);
     });
   });
 
@@ -47,7 +47,7 @@ describe('NobilisAcademy App', () => {
     fireEvent.click(screen.getByText('Войти в систему'));
 
     await waitFor(() => {
-      expect(screen.getByText('Расписание')).toBeInTheDocument();
+      expect(screen.getAllByText('Расписание').length).toBeGreaterThan(0);
     });
   });
 
@@ -57,8 +57,8 @@ describe('NobilisAcademy App', () => {
     fireEvent.click(screen.getByText('Войти в систему'));
 
     await waitFor(() => {
-      expect(screen.getByText('Силлабус')).toBeInTheDocument();
-      expect(screen.getByText('Уроки')).toBeInTheDocument();
+      expect(screen.getAllByText('Силлабус').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Уроки').length).toBeGreaterThan(0);
     });
   });
 
@@ -77,11 +77,11 @@ describe('NobilisAcademy App', () => {
     fireEvent.click(screen.getByText('Войти в систему'));
 
     await waitFor(() => {
-      expect(screen.getByText('Студенты')).toBeInTheDocument();
+      expect(screen.getAllByText('Студенты').length).toBeGreaterThan(0);
     });
 
-    // Navigate to students
-    fireEvent.click(screen.getByText('Студенты'));
+    // Navigate to students (click the sidebar one)
+    fireEvent.click(screen.getAllByText('Студенты')[0]);
     await waitFor(() => {
       expect(screen.getByText('Жакупбекова Дарина')).toBeInTheDocument();
     }, { timeout: 5000 });
