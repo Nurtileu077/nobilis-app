@@ -280,46 +280,7 @@ export default function useAppData() {
   // AUTH
   // =============================================
 
-  const handleLogin = useCallback(async (login, password) => {
-    if (USE_LOCAL) {
-      // Fallback local auth for demo
-      return handleLocalLogin(login, password);
-    }
-
-    try {
-      // Find email by login
-      const { data: profile, error: profileErr } = await supabase
-        .from('profiles')
-        .select('email, id, name, role, login')
-        .eq('login', login)
-        .eq('is_active', true)
-        .single();
-
-      if (profileErr || !profile?.email) {
-        return 'Пользователь не найден';
-      }
-
-      const { error: authErr } = await supabase.auth.signInWithPassword({
-        email: profile.email,
-        password,
-      });
-
-      if (authErr) {
-        return 'Неверный логин или пароль';
-      }
-
-      setUser({ role: profile.role, id: profile.id, name: profile.name, login: profile.login });
-
-      // Reload data for the new session (RLS will filter by user)
-      loadAllData();
-
-      return null;
-    } catch (err) {
-      return err.message || 'Ошибка авторизации';
-    }
-  }, [loadAllData]);
-
-  // Local fallback login (when Supabase not configured)
+  // Local fallback login (when Supabase not configured or DB not seeded)
   const STAFF_ACCOUNTS = [
     { login: 'aruzhan', password: 'Nob2024ar!', role: 'director', id: 'dir0', name: 'Аружан' },
     { login: 'nurtileu', password: 'Nobilis2024!', role: 'director', id: 'dir1', name: 'Нуртилеу' },
@@ -344,6 +305,47 @@ export default function useAppData() {
     if (t) { setUser({ role: 'teacher', ...t }); return null; }
     return 'Неверный логин или пароль';
   };
+
+  const handleLogin = useCallback(async (login, password) => {
+    if (USE_LOCAL) {
+      // Fallback local auth for demo
+      return handleLocalLogin(login, password);
+    }
+
+    try {
+      // Find email by login
+      const { data: profile, error: profileErr } = await supabase
+        .from('profiles')
+        .select('email, id, name, role, login')
+        .eq('login', login)
+        .eq('is_active', true)
+        .single();
+
+      if (profileErr || !profile?.email) {
+        // Supabase DB not seeded — fall back to local auth
+        return handleLocalLogin(login, password);
+      }
+
+      const { error: authErr } = await supabase.auth.signInWithPassword({
+        email: profile.email,
+        password,
+      });
+
+      if (authErr) {
+        return 'Неверный логин или пароль';
+      }
+
+      setUser({ role: profile.role, id: profile.id, name: profile.name, login: profile.login });
+
+      // Reload data for the new session (RLS will filter by user)
+      loadAllData();
+
+      return null;
+    } catch (err) {
+      // Network or other error — fall back to local auth
+      return handleLocalLogin(login, password);
+    }
+  }, [loadAllData]);
 
   const logout = useCallback(async () => {
     if (!USE_LOCAL) {
