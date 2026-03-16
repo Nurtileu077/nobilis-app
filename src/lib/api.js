@@ -22,7 +22,7 @@ export const authAPI = {
       .select('email')
       .eq('login', login)
       .single();
-    if (profileError || !profile) throw new Error('Пользователь не найден');
+    if (profileError || !profile) throw new Error('Неверный логин или пароль');
     return this.signIn(profile.email, password);
   },
 

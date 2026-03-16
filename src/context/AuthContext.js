@@ -118,7 +118,7 @@ export function AuthProvider({ children }) {
       .single();
 
     if (profileError || !profile?.email) {
-      const msg = 'Пользователь не найден';
+      const msg = 'Неверный логин или пароль';
       setError(msg);
       return { error: msg };
     }

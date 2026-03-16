@@ -325,16 +325,40 @@ export default function useAppData() {
     }
 
     try {
-      // Find email by login
+      // Find email by login (without is_active filter — it may be null for valid users)
       const { data: profile, error: profileErr } = await supabase
         .from('profiles')
-        .select('email, id, name, role, login')
+        .select('email, id, name, role, login, phone')
         .eq('login', login)
-        .eq('is_active', true)
         .single();
 
       if (profileErr || !profile?.email) {
-        // Supabase DB not seeded — fall back to local auth
+        // Try signing in directly with login as email (in case login IS the email)
+        const { data: directAuth, error: directErr } = await supabase.auth.signInWithPassword({
+          email: login,
+          password,
+        });
+
+        if (!directErr && directAuth?.user) {
+          // Fetch profile by auth user id
+          const { data: authProfile } = await supabase
+            .from('profiles')
+            .select('id, name, role, login, phone, email')
+            .eq('id', directAuth.user.id)
+            .single();
+
+          if (authProfile) {
+            setUser({ role: authProfile.role, id: authProfile.id, name: authProfile.name, login: authProfile.login || login, email: authProfile.email });
+            loadAllData();
+            return null;
+          }
+
+          setUser({ role: 'student', id: directAuth.user.id, name: directAuth.user.email, login, email: directAuth.user.email });
+          loadAllData();
+          return null;
+        }
+
+        // Supabase DB not seeded or RLS blocking — fall back to local auth
         return handleLocalLogin(login, password);
       }
 
@@ -347,7 +371,7 @@ export default function useAppData() {
         return 'Неверный логин или пароль';
       }
 
-      setUser({ role: profile.role, id: profile.id, name: profile.name, login: profile.login });
+      setUser({ role: profile.role, id: profile.id, name: profile.name, login: profile.login, email: profile.email, phone: profile.phone });
 
       // Reload data for the new session (RLS will filter by user)
       loadAllData();
