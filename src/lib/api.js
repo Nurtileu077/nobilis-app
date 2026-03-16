@@ -62,7 +62,7 @@ export const profilesAPI = {
       .from('profiles')
       .select('*')
       .eq('role', role)
-      .eq('is_active', true)
+      .or('is_active.eq.true,is_active.is.null')
       .order('name');
     if (error) throw error;
     return data;

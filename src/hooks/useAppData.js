@@ -213,11 +213,17 @@ export default function useAppData() {
     }
   }, []);
 
-  // Load data on mount
+  // Load data on mount (if user already logged in from localStorage) or after login
   useEffect(() => {
-    if (!USE_LOCAL) loadAllData();
-    else initialLoadDone.current = true;
-  }, [loadAllData]);
+    if (USE_LOCAL) {
+      initialLoadDone.current = true;
+      return;
+    }
+    // Only load from Supabase when we have a user (session exists)
+    if (user) {
+      loadAllData();
+    }
+  }, [loadAllData, user]);
 
   // =============================================
   // REALTIME SUBSCRIPTIONS
