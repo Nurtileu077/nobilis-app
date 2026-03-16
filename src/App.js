@@ -642,7 +642,7 @@ export default function NobilisAcademy() {
               <div><label className="block text-sm text-gray-600 mb-1">Класс</label><input type="text" value={form.grade || ''} onChange={e => setForm(p => ({ ...p, grade: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="10 класс" /></div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div><label className="block text-sm text-gray-600 mb-1">Город</label><input type="text" value={form.city || ''} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Алматы" /></div>
+              <div><label className="block text-sm text-gray-600 mb-1">Город</label><input type="text" value={form.city || ''} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="Астана" /></div>
               <div><label className="block text-sm text-gray-600 mb-1">Год выпуска</label><input type="number" value={form.graduationYear || ''} onChange={e => setForm(p => ({ ...p, graduationYear: e.target.value }))} className="w-full p-3 border rounded-xl input-focus" placeholder="2026" /></div>
             </div>
             <div className="grid grid-cols-2 gap-4">

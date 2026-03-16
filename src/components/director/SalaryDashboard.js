@@ -287,6 +287,13 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
   }); // { 'name|month|field': value }
   const [savedNotice, setSavedNotice] = useState(false);
 
+  // Sync selectedMonth when months data loads/changes
+  useEffect(() => {
+    if (months.length > 0 && (!selectedMonth || !months.includes(selectedMonth))) {
+      setSelectedMonth(months[months.length - 1]);
+    }
+  }, [months.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Persist salary edits
   useEffect(() => {
     try {

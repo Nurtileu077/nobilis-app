@@ -67,7 +67,7 @@ describe('Chat', () => {
     );
     expect(screen.getByText('Ученик Петров')).toBeInTheDocument();
     expect(screen.getByText('Ученик Сидорова')).toBeInTheDocument();
-    expect(screen.getByText('Messages')).toBeInTheDocument();
+    expect(screen.getByText('Сообщения')).toBeInTheDocument();
   });
 
   it('opens chat when clicking on a conversation', () => {
@@ -88,7 +88,7 @@ describe('Chat', () => {
     // Open a chat
     fireEvent.click(screen.getByText('Ученик Петров'));
     // Type and send
-    const textarea = screen.getByPlaceholderText('Write a message...');
+    const textarea = screen.getByPlaceholderText('Написать сообщение...');
     fireEvent.change(textarea, { target: { value: 'Тестовое сообщение' } });
     fireEvent.click(screen.getByLabelText('Send message'));
     expect(onSendMessage).toHaveBeenCalledWith('s1', 'Тестовое сообщение');
@@ -107,7 +107,7 @@ describe('Chat', () => {
     render(
       <Chat user={mockUser} students={[]} messages={{}} onSendMessage={() => {}} onMarkRead={() => {}} />
     );
-    expect(screen.getByText('No conversations')).toBeInTheDocument();
+    expect(screen.getByText('Нет диалогов')).toBeInTheDocument();
   });
 
   it('sends message on Enter key', () => {
@@ -116,7 +116,7 @@ describe('Chat', () => {
       <Chat user={mockUser} students={mockStudents} messages={mockMessages} onSendMessage={onSendMessage} onMarkRead={() => {}} />
     );
     fireEvent.click(screen.getByText('Ученик Петров'));
-    const textarea = screen.getByPlaceholderText('Write a message...');
+    const textarea = screen.getByPlaceholderText('Написать сообщение...');
     fireEvent.change(textarea, { target: { value: 'Enter test' } });
     fireEvent.keyDown(textarea, { key: 'Enter', shiftKey: false });
     expect(onSendMessage).toHaveBeenCalledWith('s1', 'Enter test');
@@ -128,7 +128,7 @@ describe('Chat', () => {
       <Chat user={mockUser} students={mockStudents} messages={mockMessages} onSendMessage={onSendMessage} onMarkRead={() => {}} />
     );
     fireEvent.click(screen.getByText('Ученик Петров'));
-    const textarea = screen.getByPlaceholderText('Write a message...');
+    const textarea = screen.getByPlaceholderText('Написать сообщение...');
     fireEvent.change(textarea, { target: { value: '   ' } });
     fireEvent.click(screen.getByLabelText('Send message'));
     expect(onSendMessage).not.toHaveBeenCalled();

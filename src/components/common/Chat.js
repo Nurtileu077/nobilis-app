@@ -162,7 +162,7 @@ function ChatInput({ onSend }) {
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Write a message..."
+        placeholder="Написать сообщение..."
         rows={1}
         className="flex-1 resize-none rounded-2xl border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-nobilis-green/30 focus:border-nobilis-green placeholder:text-gray-400"
       />
@@ -205,9 +205,9 @@ function EmptyMessages() {
           />
         </svg>
       </div>
-      <h3 className="text-lg font-medium text-gray-500 mb-1">No messages yet</h3>
+      <h3 className="text-lg font-medium text-gray-500 mb-1">Пока нет сообщений</h3>
       <p className="text-sm text-gray-400 max-w-sm">
-        Start the conversation by sending a message below.
+        Начните общение, отправив сообщение ниже.
       </p>
     </div>
   );
@@ -358,7 +358,7 @@ export default function Chat({ user, students, messages, onSendMessage, onMarkRe
     <div className="flex flex-col h-full bg-white rounded-2xl shadow-sm border animate-fadeIn">
       {/* Header */}
       <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold text-gray-900">Messages</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Сообщения</h2>
       </div>
 
       {/* Conversation list */}
@@ -381,11 +381,11 @@ export default function Chat({ user, students, messages, onSendMessage, onMarkRe
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-500 mb-1">No conversations</h3>
+            <h3 className="text-lg font-medium text-gray-500 mb-1">Нет диалогов</h3>
             <p className="text-sm text-gray-400 max-w-sm">
               {isCurator
-                ? 'Your student conversations will appear here.'
-                : 'Your chat with your curator will appear here.'}
+                ? 'Здесь будут диалоги с вашими студентами.'
+                : 'Здесь будет чат с вашим куратором.'}
             </p>
           </div>
         ) : (

@@ -480,12 +480,39 @@ function FreedomPayButton({ student }) {
 }
 
 export default function PaymentTracker({ student, payments, onAddPayment, isAdmin }) {
+  // When isAdmin and no specific student, payments is an object {studentId: [...]}
+  // Flatten all payments for admin overview
+  const allPayments = useMemo(() => {
+    if (Array.isArray(payments)) return payments;
+    if (payments && typeof payments === 'object') {
+      return Object.values(payments).flat();
+    }
+    return [];
+  }, [payments]);
+
+  if (!student) {
+    // Admin overview — show payment history for all students
+    return (
+      <div className="space-y-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 animate-fadeIn">
+          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            Все оплаты
+          </h3>
+          <p className="text-2xl font-bold text-gray-800">
+            {allPayments.length} {allPayments.length === 1 ? 'платёж' : 'платежей'}
+          </p>
+        </div>
+        <PaymentHistory payments={allPayments} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <OverviewCard student={student} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <PaymentHistory payments={payments} />
+        <PaymentHistory payments={allPayments} />
 
         <div className="space-y-4">
           {isAdmin && onAddPayment && (

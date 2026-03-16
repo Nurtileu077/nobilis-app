@@ -62,6 +62,13 @@ const ExpensesDashboard = ({ onUpdateData } = {}) => {
   const [selectedMonth, setSelectedMonth] = useState(months[months.length - 1] || '');
   const [showAddForm, setShowAddForm] = useState(false);
   const [customExpenses, setCustomExpenses] = useState(() => loadJSON(LS_CUSTOM_EXPENSES, []));
+
+  // Sync selectedMonth when months data loads/changes
+  useEffect(() => {
+    if (months.length > 0 && (!selectedMonth || !months.includes(selectedMonth))) {
+      setSelectedMonth(months[months.length - 1]);
+    }
+  }, [months.length]); // eslint-disable-line react-hooks/exhaustive-deps
   const [plannedExpenses, setPlannedExpenses] = useState(() => loadJSON(LS_PLANNED_EXPENSES, DEFAULT_PLANNED));
   const [showAddPlanned, setShowAddPlanned] = useState(false);
   const [newPlannedName, setNewPlannedName] = useState('');
