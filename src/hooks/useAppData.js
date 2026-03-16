@@ -299,9 +299,21 @@ export default function useAppData() {
   const handleLocalLogin = (login, password) => {
     const staff = STAFF_ACCOUNTS.find(a => a.login === login && a.password === password);
     if (staff) { setUser({ role: staff.role, id: staff.id, name: staff.name }); return null; }
-    const s = data.students.find(x => x.login === login && x.password === password);
+
+    // Use current data, or load initial data if arrays are empty (Supabase configured but DB not seeded)
+    let students = data.students;
+    let teachers = data.teachers;
+    if (students.length === 0 && teachers.length === 0) {
+      const initial = getInitialData();
+      students = initial.students;
+      teachers = initial.teachers;
+      // Also populate app data so the user has data after login
+      setData(prev => ({ ...prev, students: initial.students, teachers: initial.teachers, schedule: initial.schedule, mockTests: initial.mockTests, internships: initial.internships, attendance: initial.attendance, chatMessages: initial.chatMessages, payments: initial.payments, globalTasks: initial.globalTasks, leads: initial.leads }));
+    }
+
+    const s = students.find(x => x.login === login && x.password === password);
     if (s) { setUser({ role: 'student', ...s }); return null; }
-    const t = data.teachers.find(x => x.login === login && x.password === password);
+    const t = teachers.find(x => x.login === login && x.password === password);
     if (t) { setUser({ role: 'teacher', ...t }); return null; }
     return 'Неверный логин или пароль';
   };
