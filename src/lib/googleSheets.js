@@ -201,7 +201,13 @@ export async function fetchSalaryMonthly() {
     }
   }
 
-  return { employees: Object.values(employees) };
+  const allMonths = new Set();
+  Object.values(employees).forEach(emp => {
+    Object.keys(emp.salaries).forEach(m => allMonths.add(m));
+  });
+  const months = [...allMonths].sort(monthSortKey);
+
+  return { employees: Object.values(employees), months };
 }
 
 async function parseSalarySingleSheet(tabName) {
@@ -238,7 +244,13 @@ async function parseSalarySingleSheet(tabName) {
     }
   }
 
-  return { employees: Object.values(employees) };
+  const allMonths = new Set();
+  Object.values(employees).forEach(emp => {
+    Object.keys(emp.salaries).forEach(m => allMonths.add(m));
+  });
+  const months = [...allMonths].sort(monthSortKey);
+
+  return { employees: Object.values(employees), months };
 }
 
 // ─── Sales OP salary parser ─────────────────────────────────────────────────

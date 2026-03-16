@@ -97,7 +97,12 @@ export function useGoogleSheets() {
   const pnlData = sheetsData?.pnl || STATIC_PNL;
 
   const salaryData = sheetsData?.salaryMonthly
-    ? sheetsData.salaryMonthly
+    ? {
+        ...sheetsData.salaryMonthly,
+        months: sheetsData.salaryMonthly.months?.length
+          ? sheetsData.salaryMonthly.months
+          : STATIC_SALARY?.months || [],
+      }
     : STATIC_SALARY;
 
   const salesData = sheetsData?.salaryOP

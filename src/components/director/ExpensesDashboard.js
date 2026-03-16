@@ -52,9 +52,9 @@ const ExpensesDashboard = ({ onUpdateData } = {}) => {
   const sheets = useSheets();
   const EXPENSE_CATEGORIES = sheets?.expenseCategories || STATIC_EXPENSE_CATEGORIES;
   const EXPENSES_DETAIL = sheets?.expensesDetail || STATIC_EXPENSES_DETAIL;
-  const months = EXPENSE_CATEGORIES?.months || [
-    'Январь 2026', 'Февраль 2026', 'Март 2026',
-  ];
+  const months = EXPENSE_CATEGORIES?.months?.length
+    ? EXPENSE_CATEGORIES.months
+    : ['Январь 2026', 'Февраль 2026', 'Март 2026'];
   const categories = EXPENSE_CATEGORIES?.categories || [];
   const amounts = EXPENSE_CATEGORIES?.amounts || [];
   const details = EXPENSES_DETAIL || [];

@@ -268,8 +268,16 @@ const SalaryDashboard = ({ teachers, onConfirmLesson, onUpdateTeacher, onUpdateD
   const SALARY_DATA = sheets?.salaryData || STATIC_SALARY_DATA;
   const SALES_DATA = sheets?.salesData || STATIC_SALES_DATA;
   const COMPANY_DEBTS = sheets?.companyDebts || STATIC_COMPANY_DEBTS;
-  const months = SALARY_DATA?.months || [];
   const employees = SALARY_DATA?.employees || [];
+  const months = SALARY_DATA?.months?.length
+    ? SALARY_DATA.months
+    : (() => {
+        const allMonths = new Set();
+        employees.forEach(emp => {
+          Object.keys(emp.salaries || {}).forEach(m => allMonths.add(m));
+        });
+        return [...allMonths].sort();
+      })();
   const salesManagers = SALES_DATA?.managers || [];
 
   const [selectedMonth, setSelectedMonth] = useState(months[months.length - 1] || '');
