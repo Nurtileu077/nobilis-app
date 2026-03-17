@@ -1,7 +1,8 @@
 import React from 'react';
 import I from '../common/Icons';
-import { getInitials, getAttendancePercent, getPackageProgress, daysUntil } from '../../data/utils';
+import { getInitials, getPackageProgress, daysUntil } from '../../data/utils';
 import { STUDENT_STATUSES, PACKAGE_TYPES, SUPPORT_STAGES } from '../../data/constants';
+import { exportStudents } from '../../utils/exportData';
 
 const CuratorStudents = ({
   students, search, onSetSearch, onSetModal, onSetForm, onSetSelected,
@@ -36,12 +37,18 @@ const CuratorStudents = ({
     <div className="space-y-6 animate-fadeIn">
       <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
         <h1 className="text-2xl font-bold text-gray-800">Студенты ({filtered.length})</h1>
-        <button onClick={() => {
-          onSetForm({ name: '', email: '', phone: '', age: '', grade: '', parentName: '', parentPhone: '', targetIelts: '', targetSat: '', city: '', status: 'active', graduationYear: '', packages: [] });
-          onSetModal('addStudent');
-        }} className="px-4 py-2 btn-primary text-white rounded-xl flex items-center gap-2 self-start">
-          <I.Plus /><span>Добавить</span>
-        </button>
+        <div className="flex gap-2 self-start">
+          <button onClick={() => exportStudents(filtered)}
+            className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm">
+            <I.Download /><span>Экспорт</span>
+          </button>
+          <button onClick={() => {
+            onSetForm({ name: '', email: '', phone: '', age: '', grade: '', parentName: '', parentPhone: '', targetIelts: '', targetSat: '', city: '', status: 'active', graduationYear: '', packages: [] });
+            onSetModal('addStudent');
+          }} className="px-4 py-2 btn-primary text-white rounded-xl flex items-center gap-2">
+            <I.Plus /><span>Добавить</span>
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

@@ -128,7 +128,6 @@ const AcademicDirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected 
           {teachers.length > 0 ? (
             <div className="space-y-3">
               {teachers.map(teacher => {
-                const earnings = (teacher.hoursWorked || 0) * (teacher.hourlyRate || 0);
                 return (
                   <div
                     key={teacher.id}

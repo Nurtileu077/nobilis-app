@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import NobilisLogo from './NobilisLogo';
 
-// Demo accounts loaded from environment
-const DEMO_ACCOUNTS = process.env.REACT_APP_DEMO_MODE === 'true' ? [
-  { login: 'nurtileu', password: 'Nobilis2024!', label: 'Директор', icon: 'D' },
-  { login: 'sultan.curator', password: 'Nob2024sc!', label: 'Куратор', icon: 'C' },
-  { login: 'zhakupbekova.dar61', password: '2d937fUSHbm!', label: 'Студент', icon: 'S' },
-  { login: 'alua', password: 'Nob2024al!', label: 'Препод', icon: 'T' },
-  { login: 'madiyar', password: 'Nobilis2024#', label: 'РОП', icon: 'R' },
-  { login: 'darina', password: 'Nob2024dk!', label: 'Менеджер', icon: 'M' },
+// Demo accounts — only show role buttons (no credentials in client code)
+// Credentials are validated server-side via Supabase or local fallback
+const DEMO_ROLES = process.env.REACT_APP_DEMO_MODE === 'true' ? [
+  { role: 'director', label: 'Директор', icon: 'D' },
+  { role: 'curator', label: 'Куратор', icon: 'C' },
+  { role: 'student', label: 'Студент', icon: 'S' },
+  { role: 'teacher', label: 'Препод', icon: 'T' },
+  { role: 'rop', label: 'РОП', icon: 'R' },
+  { role: 'sales_manager', label: 'Менеджер', icon: 'M' },
 ] : [];
 
 const LoginScreen = ({ onLogin }) => {
@@ -184,23 +185,20 @@ const LoginScreen = ({ onLogin }) => {
               </button>
             </form>
 
-            {/* Demo access */}
-            {DEMO_ACCOUNTS.length > 0 && <div className="mt-8 pt-6 border-t border-white/10">
-              <p className="text-xs text-white/40 text-center mb-4">Демо-доступ</p>
+            {/* Demo role hints */}
+            {DEMO_ROLES.length > 0 && <div className="mt-8 pt-6 border-t border-white/10">
+              <p className="text-xs text-white/40 text-center mb-4">Доступные роли</p>
               <div className="grid grid-cols-3 gap-2">
-                {DEMO_ACCOUNTS.map(acc => (
-                  <button
-                    key={acc.login}
-                    onClick={() => setLoginForm({ login: acc.login, password: acc.password })}
-                    className="p-3 bg-white/5 hover:bg-white/10 border border-white/15 rounded-xl text-white/70 transition-all hover:scale-105 hover:border-nobilis-gold/50"
-                    aria-label={`Войти как ${acc.label}`}
-                    disabled={isLoading}
+                {DEMO_ROLES.map(acc => (
+                  <div
+                    key={acc.role}
+                    className="p-3 bg-white/5 border border-white/10 rounded-xl text-white/50 text-center"
                   >
                     <div className="w-8 h-8 mx-auto mb-1.5 rounded-full bg-nobilis-gold/20 flex items-center justify-center text-nobilis-gold text-sm font-bold" aria-hidden="true">
                       {acc.icon}
                     </div>
                     <div className="text-xs font-medium">{acc.label}</div>
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>}

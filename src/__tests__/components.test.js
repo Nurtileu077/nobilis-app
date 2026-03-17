@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '../context/ThemeContext';
 
 // Enable demo mode before importing LoginScreen
 process.env.REACT_APP_DEMO_MODE = 'true';
@@ -8,6 +9,9 @@ import LoginScreen from '../components/common/LoginScreen';
 import Modal from '../components/common/Modal';
 import Sidebar from '../components/common/Sidebar';
 import NobilisLogo from '../components/common/NobilisLogo';
+
+// Helper to render with ThemeProvider
+const renderWithTheme = (ui) => render(<ThemeProvider>{ui}</ThemeProvider>);
 import I from '../components/common/Icons';
 
 // ---- NobilisLogo ----
@@ -107,18 +111,12 @@ describe('LoginScreen', () => {
     expect(screen.getByText('Войти в систему')).toBeInTheDocument();
   });
 
-  it('renders demo account buttons', () => {
+  it('renders demo role hints', () => {
     render(<LoginScreen onLogin={() => {}} />);
     expect(screen.getByText('Куратор')).toBeInTheDocument();
     expect(screen.getByText('Студент')).toBeInTheDocument();
     expect(screen.getByText('Препод')).toBeInTheDocument();
-  });
-
-  it('fills form when demo account is clicked', () => {
-    render(<LoginScreen onLogin={() => {}} />);
-    fireEvent.click(screen.getByText('Куратор'));
-    expect(screen.getByPlaceholderText('Введите логин')).toHaveValue('sultan.curator');
-    expect(screen.getByPlaceholderText('Введите пароль')).toHaveValue('Nob2024sc!');
+    expect(screen.getByText('Доступные роли')).toBeInTheDocument();
   });
 
   it('calls onLogin with credentials and shows error', async () => {
@@ -175,7 +173,7 @@ describe('Sidebar', () => {
   const mockUser = { name: 'Тест Юзер', role: 'student' };
 
   it('renders user name and role', () => {
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"
@@ -189,7 +187,7 @@ describe('Sidebar', () => {
   });
 
   it('renders nav items', () => {
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"
@@ -204,7 +202,7 @@ describe('Sidebar', () => {
 
   it('calls onNavigate when nav item is clicked', () => {
     const onNavigate = jest.fn();
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"
@@ -219,7 +217,7 @@ describe('Sidebar', () => {
 
   it('calls onLogout when logout button is clicked', () => {
     const onLogout = jest.fn();
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"
@@ -233,7 +231,7 @@ describe('Sidebar', () => {
   });
 
   it('shows NOBILIS branding in sidebar', () => {
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"
@@ -247,7 +245,7 @@ describe('Sidebar', () => {
   });
 
   it('shows user initials', () => {
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"

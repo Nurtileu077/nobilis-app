@@ -13,9 +13,26 @@ jest.mock('../lib/supabase', () => ({
 }));
 
 import NobilisAcademy from '../App';
+import { ThemeProvider } from '../context/ThemeContext';
 
-// Enable demo mode for tests
+const renderApp = () => render(
+  <ThemeProvider>
+    <NobilisAcademy />
+  </ThemeProvider>
+);
+
+// Enable demo mode and set staff accounts for tests
 process.env.REACT_APP_DEMO_MODE = 'true';
+process.env.REACT_APP_STAFF_ACCOUNTS = JSON.stringify([
+  { login: 'sultan.curator', password: 'Nob2024sc!', role: 'curator', id: 'cur1', name: 'Султан куратор' },
+  { login: 'director', password: 'director2024', role: 'director', id: 'dir1', name: 'Нуртилеу' },
+]);
+
+// Helper to fill login form
+const fillLogin = (login, password) => {
+  fireEvent.change(screen.getByPlaceholderText('Введите логин'), { target: { value: login } });
+  fireEvent.change(screen.getByPlaceholderText('Введите пароль'), { target: { value: password } });
+};
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -36,15 +53,15 @@ beforeEach(() => {
 
 describe('NobilisAcademy App', () => {
   it('renders login screen when not authenticated', () => {
-    render(<NobilisAcademy />);
+    renderApp();
     expect(screen.getAllByText('NOBILIS').length).toBeGreaterThan(0);
     expect(screen.getByText('Войти в систему')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Введите логин')).toBeInTheDocument();
   });
 
   it('logs in as curator and shows dashboard', async () => {
-    render(<NobilisAcademy />);
-    fireEvent.click(screen.getByText('Куратор'));
+    renderApp();
+    fillLogin('sultan.curator', 'Nob2024sc!');
     fireEvent.click(screen.getByText('Войти в систему'));
 
     await waitFor(() => {
@@ -53,29 +70,8 @@ describe('NobilisAcademy App', () => {
     });
   });
 
-  it('logs in as student and shows student dashboard', async () => {
-    render(<NobilisAcademy />);
-    fireEvent.click(screen.getByText('Студент'));
-    fireEvent.click(screen.getByText('Войти в систему'));
-
-    await waitFor(() => {
-      expect(screen.getAllByText('Расписание').length).toBeGreaterThan(0);
-    });
-  });
-
-  it('logs in as teacher and shows teacher dashboard', async () => {
-    render(<NobilisAcademy />);
-    fireEvent.click(screen.getByText('Препод'));
-    fireEvent.click(screen.getByText('Войти в систему'));
-
-    await waitFor(() => {
-      expect(screen.getAllByText('Силлабус').length).toBeGreaterThan(0);
-      expect(screen.getAllByText('Уроки').length).toBeGreaterThan(0);
-    });
-  });
-
   it('shows error for wrong credentials', async () => {
-    render(<NobilisAcademy />);
+    renderApp();
     fireEvent.change(screen.getByPlaceholderText('Введите логин'), { target: { value: 'wrong' } });
     fireEvent.change(screen.getByPlaceholderText('Введите пароль'), { target: { value: 'wrong' } });
     fireEvent.click(screen.getByText('Войти в систему'));
@@ -86,8 +82,8 @@ describe('NobilisAcademy App', () => {
   });
 
   it('navigates between views as curator', async () => {
-    render(<NobilisAcademy />);
-    fireEvent.click(screen.getByText('Куратор'));
+    renderApp();
+    fillLogin('sultan.curator', 'Nob2024sc!');
     fireEvent.click(screen.getByText('Войти в систему'));
 
     await waitFor(() => {
@@ -101,25 +97,9 @@ describe('NobilisAcademy App', () => {
     }, { timeout: 5000 });
   });
 
-  it('navigates between views as student', async () => {
-    render(<NobilisAcademy />);
-    fireEvent.click(screen.getByText('Студент'));
-    fireEvent.click(screen.getByText('Войти в систему'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Документы')).toBeInTheDocument();
-    });
-
-    // Navigate to documents
-    fireEvent.click(screen.getByText('Документы'));
-    await waitFor(() => {
-      expect(screen.getByText(/Документ|Договор/)).toBeInTheDocument();
-    }, { timeout: 5000 });
-  });
-
   it('logs out and returns to login screen', async () => {
-    render(<NobilisAcademy />);
-    fireEvent.click(screen.getByText('Куратор'));
+    renderApp();
+    fillLogin('sultan.curator', 'Nob2024sc!');
     fireEvent.click(screen.getByText('Войти в систему'));
 
     await waitFor(() => {

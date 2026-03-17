@@ -282,7 +282,8 @@ export default function StudentAnalytics({ student }) {
       }
     });
     return { totalLessons, completed, missed, remaining: totalLessons - completed - missed };
-  }, [packages]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [student.packages]);
 
   return (
     <div className="space-y-6 animate-fadeIn">

@@ -5,6 +5,10 @@ import { subscribeToPush } from './utils/pushSubscription';
 import { DOCUMENT_TYPES, PACKAGE_TYPES, SUPPORT_STAGES, COUNTRIES, STUDENT_STATUSES } from './data/constants';
 import { UNIVERSITIES_DB, COUNTRY_INFO } from './data/universities';
 import { formatDate, formatDateTime, daysUntil, getPackageProgress, getInitials, getAttendancePercent } from './data/utils';
+import useSessionTimeout from './hooks/useSessionTimeout';
+import { logAction, ACTIONS } from './utils/auditLog';
+import { validateStudentForm } from './utils/validation';
+import { exportStudents, exportLeads, exportTasks } from './utils/exportData';
 
 // Common components (always loaded)
 import LoginScreen from './components/common/LoginScreen';
@@ -15,6 +19,9 @@ import UniPhoto from './components/UniPhoto';
 import PwaInstallBanner from './components/common/PwaInstallBanner';
 import BottomNav from './components/common/BottomNav';
 import GoogleSheetsSync from './components/common/GoogleSheetsSync';
+import ViewErrorBoundary from './components/common/ViewErrorBoundary';
+import ThemeToggle from './components/common/ThemeToggle';
+import NotificationBell from './components/common/NotificationBell';
 
 // Lazy-loaded role-specific views (code splitting per role)
 const StudentDashboard = lazy(() => import('./components/student/StudentDashboard'));
@@ -229,6 +236,19 @@ export default function NobilisAcademy() {
   } = app;
   const [detailTab, setDetailTab] = useState('info');
   const [swUpdate, setSwUpdate] = useState(null);
+  const [sessionWarning, setSessionWarning] = useState(false);
+
+  // Session timeout — auto-logout after 30 min of inactivity
+  useSessionTimeout(
+    useCallback(() => {
+      logAction(ACTIONS.LOGOUT, user, { reason: 'session_timeout' });
+      logout();
+    }, [logout, user]),
+    useCallback((minutesLeft) => {
+      setSessionWarning(true);
+      setTimeout(() => setSessionWarning(false), 30000);
+    }, []),
+  );
 
   // Listen for service worker updates
   useEffect(() => {
@@ -682,10 +702,12 @@ export default function NobilisAcademy() {
               {formPkgs.length === 0 && <p className="text-sm text-gray-400">Нажмите "+ Добавить пакет" чтобы выбрать IELTS, SAT или Сопровождение</p>}
             </div>
             <button onClick={() => {
-              if (!form.name) { alert('Введите ФИО'); return; }
+              const { valid, errors } = validateStudentForm(form);
+              if (!valid) { alert(Object.values(errors).join('\n')); return; }
               const login = genLogin(form.name);
               const password = genPassword();
               addStudent({ ...form, login, password, age: parseInt(form.age) || 0, packages: formPkgs });
+              logAction(ACTIONS.STUDENT_CREATE, user, { studentName: form.name });
               alert(`Студент создан!\nЛогин: ${login}\nПароль: ${password}`);
               setModal(null); setForm({});
             }} className="w-full py-3 btn-primary text-white rounded-xl">Создать студента</button>
@@ -2181,7 +2203,7 @@ export default function NobilisAcademy() {
   // ============================================================
   return (
     <GoogleSheetsProvider>
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar user={{...user, avatar: user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : user.role === 'teacher' ? (data.teachers.find(x => x.id === user.id)?.avatar) : data.curatorAvatar}} view={view} navItems={navItems} onNavigate={(v) => { setView(v); setStudentPage(null); }} onLogout={logout} isOpen={sidebarOpen} onToggle={() => setSidebarOpen(false)} onAvatarClick={() => { setForm({ avatarTargetRole: user.role, avatarTargetId: user.id, avatarPreview: user.role === 'curator' ? data.curatorAvatar : null }); setModal('avatarUpload'); }} taskCount={(data.globalTasks || []).filter(t => !t.done).length} />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile header */}
@@ -2190,6 +2212,9 @@ export default function NobilisAcademy() {
             <I.Menu aria-hidden="true" />
           </button>
           <div className="font-serif font-bold text-nobilis-green">NOBILIS</div>
+          <div className="flex items-center gap-1">
+            <NotificationBell data={data} user={user} />
+            <ThemeToggle />
           {(() => {
             const mobileAvatar = user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : user.role === 'teacher' ? (data.teachers.find(x => x.id === user.id)?.avatar) : data.curatorAvatar;
             return (
@@ -2199,6 +2224,7 @@ export default function NobilisAcademy() {
               </div>
             );
           })()}
+          </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 pb-20 md:pb-6 md:p-6 lg:p-8">
           <PwaInstallBanner />
@@ -2206,9 +2232,11 @@ export default function NobilisAcademy() {
           {(user.role === 'director' || user.role === 'academic_director') && view === 'dashboard' && (
             <div className="mb-4"><GoogleSheetsSync /></div>
           )}
-          <Suspense fallback={<ViewLoader />}>
-            {renderContent()}
-          </Suspense>
+          <ViewErrorBoundary viewName={view} onNavigateHome={() => setView('dashboard')} key={view}>
+            <Suspense fallback={<ViewLoader />}>
+              {renderContent()}
+            </Suspense>
+          </ViewErrorBoundary>
         </main>
         <BottomNav navItems={navItems} currentView={view} onNavigate={(v) => { setView(v); setStudentPage(null); }} />
       </div>
@@ -2221,6 +2249,18 @@ export default function NobilisAcademy() {
             <span className="text-sm">Доступно обновление</span>
             <button onClick={handleAppUpdate} className="px-4 py-1.5 bg-nobilis-gold text-nobilis-green rounded-lg text-sm font-bold hover:bg-nobilis-gold-light transition-colors">
               Обновить
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Session timeout warning */}
+      {sessionWarning && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] animate-fadeIn">
+          <div className="bg-yellow-500 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span className="text-sm font-medium">Сеанс скоро завершится. Продолжайте работу для продления.</span>
+            <button onClick={() => setSessionWarning(false)} className="text-white/80 hover:text-white">
+              <I.Close />
             </button>
           </div>
         </div>

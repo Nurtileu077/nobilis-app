@@ -466,7 +466,6 @@ const ReportTab = ({ leads, meetings, salesTeam }) => {
   const periodMeetings = filterByPeriod(meetings, 'datetime');
 
   const closedWon  = periodLeads.filter((l) => l.status === 'closed_won');
-  const closedLost = periodLeads.filter((l) => l.status === 'closed_lost');
   const totalRevenue = closedWon.reduce((s, l) => s + (Number(l.budget) || 0), 0);
   const callsMade  = periodLeads.reduce((s, l) => s + (Number(l.callsCount) || 0), 0);
 

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-const BottomNav = ({ navItems, currentView, onNavigate }) => {
+const BottomNav = memo(({ navItems, currentView, onNavigate }) => {
   // Show max 5 items in bottom nav (most important ones)
   const priorityIds = ['dashboard', 'schedule', 'chat', 'students', 'analytics', 'tasks', 'leads'];
   const bottomItems = navItems
@@ -42,6 +42,6 @@ const BottomNav = ({ navItems, currentView, onNavigate }) => {
       </div>
     </nav>
   );
-};
+});
 
 export default BottomNav;

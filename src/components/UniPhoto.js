@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { getWikiPhoto } from '../utils/wikiPhoto';
 
-export default function UniPhoto({ name, flag, height = 'h-32', textSize = 'text-4xl' }) {
+const UniPhoto = memo(function UniPhoto({ name, flag, height = 'h-32', textSize = 'text-4xl' }) {
   const [photoUrl, setPhotoUrl] = useState(null);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -32,4 +32,6 @@ export default function UniPhoto({ name, flag, height = 'h-32', textSize = 'text
       )}
     </div>
   );
-}
+});
+
+export default UniPhoto;

@@ -57,8 +57,6 @@ const ExpensesDashboard = ({ onUpdateData } = {}) => {
     : ['Январь 2026', 'Февраль 2026', 'Март 2026'];
   const categories = EXPENSE_CATEGORIES?.categories || [];
   const amounts = EXPENSE_CATEGORIES?.amounts || [];
-  const details = EXPENSES_DETAIL || [];
-
   const [selectedMonth, setSelectedMonth] = useState(months[months.length - 1] || '');
   const [showAddForm, setShowAddForm] = useState(false);
   const [customExpenses, setCustomExpenses] = useState(() => loadJSON(LS_CUSTOM_EXPENSES, []));

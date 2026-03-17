@@ -1,6 +1,4 @@
 import React, { useState, useCallback } from 'react';
-// eslint-disable-next-line no-unused-vars
-import I from '../common/Icons';
 import { createMeetingAutomation } from '../../lib/meetingAutomation';
 import { testTelegramConnection, sendTestMessage, fetchChatIds } from '../../lib/telegramAPI';
 import { testYandexDiskConnection } from '../../lib/yandexDiskAPI';

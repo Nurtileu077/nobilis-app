@@ -9,6 +9,7 @@ import {
 import { getInitialData } from '../data/initialData';
 import { STORAGE_KEY, USER_KEY, DOCUMENT_TYPES, HOLLAND_QUESTIONS, HOLLAND_PROFILES } from '../data/constants';
 import { generateLogin, generatePassword, calculateTestResult, genId } from '../data/utils';
+import { logAction, ACTIONS } from '../utils/auditLog';
 
 // Fallback mode when Supabase is not configured
 const USE_LOCAL = !SUPABASE_CONFIGURED;
@@ -299,20 +300,16 @@ export default function useAppData() {
   // =============================================
 
   // Local fallback login (when Supabase not configured or DB not seeded)
-  const STAFF_ACCOUNTS = [
-    { login: 'aruzhan', password: 'Nob2024ar!', role: 'director', id: 'dir0', name: 'Аружан' },
-    { login: 'nurtileu', password: 'Nobilis2024!', role: 'director', id: 'dir1', name: 'Нуртилеу' },
-    { login: 'saltanat', password: 'Nobilis2024@', role: 'academic_director', id: 'ad1', name: 'Салтанат' },
-    { login: 'sultan.curator', password: 'Nob2024sc!', role: 'curator', id: 'cur1', name: 'Султан куратор' },
-    { login: 'dias', password: 'Nob2024di!', role: 'coordinator', id: 'co1', name: 'Диас' },
-    { login: 'madiyar', password: 'Nobilis2024#', role: 'rop', id: 'rop1', name: 'Мадияр' },
-    { login: 'darina', password: 'Nob2024dk!', role: 'callcenter', id: 'cc1', name: 'Дарина КЦ' },
-    { login: 'erasyl', password: 'Nob2024er!', role: 'callcenter', id: 'cc2', name: 'Ерасыл Кц' },
-    { login: 'kamila', password: 'Nob2024km!', role: 'office_manager', id: 'om1', name: 'Камила' },
-    { login: 'gulzhakhan', password: 'Nob2024gz!', role: 'accountant', id: 'acc1', name: 'Гульжахан' },
-    { login: 'director', password: 'director2024', role: 'director', id: 'dir1', name: 'Нуртилеу' },
-    { login: 'rop', password: 'rop2024', role: 'rop', id: 'rop1', name: 'Мадияр' },
-  ];
+  // Staff accounts loaded from environment variable (JSON) for security
+  // Format: [{"login":"user","password":"pass","role":"director","id":"dir1","name":"Name"},...]
+  const STAFF_ACCOUNTS = (() => {
+    try {
+      const raw = process.env.REACT_APP_STAFF_ACCOUNTS;
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  })();
 
   const ensureLocalData = () => {
     // Load initial data if arrays are empty (Supabase configured but DB not seeded)
@@ -329,7 +326,9 @@ export default function useAppData() {
     const staff = STAFF_ACCOUNTS.find(a => a.login === login && a.password === password);
     if (staff) {
       ensureLocalData();
-      setUser({ role: staff.role, id: staff.id, name: staff.name });
+      const u = { role: staff.role, id: staff.id, name: staff.name };
+      setUser(u);
+      logAction(ACTIONS.LOGIN, u, { method: 'local' });
       return null;
     }
 
@@ -408,9 +407,11 @@ export default function useAppData() {
       // Network or other error — fall back to local auth
       return handleLocalLogin(login, password);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadAllData]);
 
   const logout = useCallback(async () => {
+    logAction(ACTIONS.LOGOUT, user, {});
     if (!USE_LOCAL) {
       await supabase.auth.signOut().catch(() => {});
     }
@@ -771,7 +772,10 @@ export default function useAppData() {
   }, [data.teachers, upd, loadAllData]);
 
   const updTeacher = useCallback(async (id, u) => {
-    upd('teachers', data.teachers.map(t => t.id === id ? { ...t, ...u } : t));
+    setData(p => ({
+      ...p,
+      teachers: p.teachers.map(t => t.id === id ? { ...t, ...u } : t),
+    }));
 
     if (!USE_LOCAL) {
       try {
@@ -784,7 +788,7 @@ export default function useAppData() {
         if (Object.keys(dbUpdates).length) await profilesAPI.update(id, dbUpdates);
       } catch (err) { console.error(err); }
     }
-  }, [data.teachers, upd]);
+  }, []);
 
   const delTeacher = useCallback(async (id) => {
     upd('teachers', data.teachers.filter(t => t.id !== id));

@@ -30,7 +30,7 @@ const StatCard = ({ icon: Icon, label, value, gradient, accent }) => (
 );
 
 const DirectorDashboard = ({ data, onSetModal, onSetForm, onSetSelected }) => {
-  const { students = [], teachers = [], schedule = [], mockTests = [], internships = [], supportTickets = [], globalTasks = [] } = data;
+  const { students = [], teachers = [], supportTickets = [], globalTasks = [] } = data;
 
   const activeEmployees = teachers.length; // 3 сотрудника
 

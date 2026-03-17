@@ -9,6 +9,74 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f8faf9;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode base styles */
+.dark body,
+html.dark body {
+  background-color: #111827;
+  color: #e5e7eb;
+}
+
+html.dark .bg-white {
+  background-color: #1f2937 !important;
+}
+
+html.dark .bg-gray-50 {
+  background-color: #1a2332 !important;
+}
+
+html.dark .border {
+  border-color: #374151 !important;
+}
+
+html.dark .text-gray-800 {
+  color: #e5e7eb !important;
+}
+
+html.dark .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+html.dark .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+html.dark .bg-gray-100 {
+  background-color: #374151 !important;
+}
+
+html.dark .border-r {
+  border-color: #374151;
+}
+
+html.dark .border-b {
+  border-color: #374151;
+}
+
+html.dark .border-t {
+  border-color: #374151;
+}
+
+html.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+html.dark .hover\:bg-gray-50:hover {
+  background-color: #2d3748 !important;
+}
+
+html.dark .hover\:bg-gray-100:hover {
+  background-color: #374151 !important;
 }
 
 /* Nobilis Brand Colors */
