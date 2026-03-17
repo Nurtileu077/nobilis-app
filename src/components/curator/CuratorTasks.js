@@ -5,9 +5,10 @@ import { formatDate } from '../../data/utils';
 const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDeleteGlobalTask }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [form, setForm] = useState({});
-  const [filterAssignee, setFilterAssignee] = useState('all');
+  const [filterAssignee, setFilterAssignee] = useState('mine');
   const [filterDate, setFilterDate] = useState('all');
   const [filterType, setFilterType] = useState('all');
+  const [quickFilter, setQuickFilter] = useState('mine');
   const [customDateFrom, setCustomDateFrom] = useState('');
   const [customDateTo, setCustomDateTo] = useState('');
   const [selectedTask, setSelectedTask] = useState(null);
@@ -50,11 +51,24 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
     };
   }, []);
 
+  // Determine current user's assignee ID
+  const myAssigneeId = useMemo(() => {
+    if (user?.role === 'curator') return 'curator';
+    if (user?.role === 'teacher' && user?.id) return `teacher_${user.id}`;
+    if (user?.role === 'student' && user?.id) return `student_${user.id}`;
+    // For director, rop, etc. — use 'curator' as fallback or match by name
+    const found = allPeople.find(p => p.name === user?.name);
+    return found?.id || 'curator';
+  }, [user, allPeople]);
+
+  // Apply quick filter to assignee
+  const effectiveAssignee = quickFilter === 'mine' ? myAssigneeId : filterAssignee;
+
   // Filtered tasks
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
       // Assignee filter
-      if (filterAssignee !== 'all' && task.assigneeId !== filterAssignee) return false;
+      if (effectiveAssignee !== 'all' && task.assigneeId !== effectiveAssignee) return false;
 
       // Type filter (role)
       if (filterType !== 'all') {
@@ -100,7 +114,7 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
       if (b.deadline) return 1;
       return new Date(b.created) - new Date(a.created);
     });
-  }, [tasks, filterAssignee, filterType, filterDate, customDateFrom, customDateTo, allPeople, todayStr, tomorrowStr, yesterdayStr, weekStart, weekEnd, todayDate]);
+  }, [tasks, effectiveAssignee, filterType, filterDate, customDateFrom, customDateTo, allPeople, todayStr, tomorrowStr, yesterdayStr, weekStart, weekEnd, todayDate]);
 
   // Task counts per person
   const taskCounts = useMemo(() => {
@@ -140,6 +154,24 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
         <button onClick={() => { setShowAddForm(true); setForm({}); }}
           className="px-4 py-2.5 btn-primary text-white rounded-xl flex items-center gap-2 text-sm">
           <I.Plus /> Новая задача
+        </button>
+      </div>
+
+      {/* Quick filter tabs: Mine / All */}
+      <div className="flex gap-2">
+        <button onClick={() => { setQuickFilter('mine'); setFilterAssignee('mine'); }}
+          className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            quickFilter === 'mine' ? 'bg-nobilis-green text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'
+          }`}>
+          Мои задачи
+          {(() => { const myCount = tasks.filter(t => !t.done && t.assigneeId === myAssigneeId).length; return myCount > 0 ? <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${quickFilter === 'mine' ? 'bg-white/20 text-white' : 'bg-red-100 text-red-600'}`}>{myCount}</span> : null; })()}
+        </button>
+        <button onClick={() => { setQuickFilter('all'); setFilterAssignee('all'); }}
+          className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            quickFilter === 'all' ? 'bg-nobilis-green text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'
+          }`}>
+          Все задачи
+          <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${quickFilter === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'}`}>{tasks.filter(t => !t.done).length}</span>
         </button>
       </div>
 
@@ -191,7 +223,7 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
           {/* Assignee filter */}
           <div>
             <label className="block text-xs text-gray-500 mb-1">Ответственный</label>
-            <select value={filterAssignee} onChange={e => setFilterAssignee(e.target.value)}
+            <select value={effectiveAssignee} onChange={e => { setQuickFilter(e.target.value === 'all' ? 'all' : 'person'); setFilterAssignee(e.target.value); }}
               className="p-2 border rounded-lg text-sm input-focus">
               <option value="all">Все</option>
               {allPeople.map(p => (
@@ -208,19 +240,19 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
           <div className="bg-white rounded-2xl shadow-sm border p-4 sticky top-4">
             <h3 className="text-sm font-semibold text-gray-700 mb-3">Ответственные</h3>
             <div className="space-y-1">
-              <button onClick={() => setFilterAssignee('all')}
+              <button onClick={() => { setQuickFilter('all'); setFilterAssignee('all'); }}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-all ${
-                  filterAssignee === 'all' ? 'bg-nobilis-green text-white' : 'hover:bg-gray-50 text-gray-700'
+                  quickFilter === 'all' && filterAssignee === 'all' ? 'bg-nobilis-green text-white' : 'hover:bg-gray-50 text-gray-700'
                 }`}>
                 <span>Все задачи</span>
                 <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                  filterAssignee === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
+                  quickFilter === 'all' && filterAssignee === 'all' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'
                 }`}>{tasks.filter(t => !t.done).length}</span>
               </button>
               {allPeople.filter(p => taskCounts[p.id]).map(p => (
-                <button key={p.id} onClick={() => setFilterAssignee(p.id)}
+                <button key={p.id} onClick={() => { setQuickFilter('person'); setFilterAssignee(p.id); }}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-all ${
-                    filterAssignee === p.id ? 'bg-nobilis-green text-white' : 'hover:bg-gray-50 text-gray-700'
+                    effectiveAssignee === p.id ? 'bg-nobilis-green text-white' : 'hover:bg-gray-50 text-gray-700'
                   }`}>
                   <div className="flex items-center gap-2 min-w-0">
                     <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
@@ -229,7 +261,7 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
                     <span className="truncate">{p.name.split(' ').slice(0, 2).join(' ')}</span>
                   </div>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${
-                    filterAssignee === p.id ? 'bg-white/20 text-white' : 'bg-red-100 text-red-600'
+                    effectiveAssignee === p.id ? 'bg-white/20 text-white' : 'bg-red-100 text-red-600'
                   }`}>{taskCounts[p.id]}</span>
                 </button>
               ))}
@@ -237,7 +269,7 @@ const CuratorTasks = ({ data, user, onAddGlobalTask, onToggleGlobalTask, onDelet
                 <div className="pt-2 border-t mt-2">
                   <div className="text-xs text-gray-400 px-3 mb-1">Без задач</div>
                   {allPeople.filter(p => !taskCounts[p.id]).map(p => (
-                    <button key={p.id} onClick={() => setFilterAssignee(p.id)}
+                    <button key={p.id} onClick={() => { setQuickFilter('person'); setFilterAssignee(p.id); }}
                       className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-gray-400 hover:bg-gray-50 transition-all">
                       <span className={`w-2 h-2 rounded-full ${
                         p.role === 'curator' ? 'bg-nobilis-gold' : p.role === 'teacher' ? 'bg-blue-500' : 'bg-green-500'

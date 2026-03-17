@@ -14,7 +14,7 @@ const BottomNav = memo(({ navItems, currentView, onNavigate }) => {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-lg md:hidden safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t dark:border-gray-700 shadow-lg md:hidden safe-area-bottom">
       <div className="flex justify-around items-center h-16 px-1">
         {bottomItems.map(item => {
           const isActive = currentView === item.id;

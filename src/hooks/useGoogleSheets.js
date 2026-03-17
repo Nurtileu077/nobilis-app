@@ -96,7 +96,7 @@ export function useGoogleSheets() {
 
   const pnlData = sheetsData?.pnl || STATIC_PNL;
 
-  const salaryData = sheetsData?.salaryMonthly
+  const salaryData = sheetsData?.salaryMonthly?.employees?.length
     ? {
         ...sheetsData.salaryMonthly,
         months: sheetsData.salaryMonthly.months?.length
@@ -105,11 +105,11 @@ export function useGoogleSheets() {
       }
     : STATIC_SALARY;
 
-  const salesData = sheetsData?.salaryOP
+  const salesData = sheetsData?.salaryOP?.managers?.length
     ? { months: STATIC_SALES?.months || [], managers: sheetsData.salaryOP.managers }
     : STATIC_SALES;
 
-  const expenseCategories = sheetsData?.expenses
+  const expenseCategories = sheetsData?.expenses?.categories?.length
     ? {
         months: sheetsData.expenses.months,
         categories: sheetsData.expenses.categories,
@@ -117,7 +117,7 @@ export function useGoogleSheets() {
       }
     : STATIC_EXPENSE_CATEGORIES;
 
-  const expensesDetail = sheetsData?.expenses?.details || STATIC_EXPENSES_DETAIL;
+  const expensesDetail = sheetsData?.expenses?.details?.length ? sheetsData.expenses.details : STATIC_EXPENSES_DETAIL;
 
   const companyDebts = STATIC_DEBTS; // Debts typically not in separate sheet
 

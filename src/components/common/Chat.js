@@ -217,12 +217,14 @@ function EmptyMessages() {
 
 export default function Chat({ user, students, messages, onSendMessage, onMarkRead }) {
   const [activeChatId, setActiveChatId] = useState(null);
+  const [showNewChat, setShowNewChat] = useState(false);
+  const [newChatSearch, setNewChatSearch] = useState('');
   const messagesEndRef = useRef(null);
   const messageContainerRef = useRef(null);
 
   // For a student, the chat partner is their curator (derived from messages keys).
   // For a curator, each student is a chat partner.
-  const isCurator = user.role === 'curator';
+  const isCurator = user.role === 'curator' || user.role === 'director' || user.role === 'academic_director';
 
   // Build conversation list
   const conversations = React.useMemo(() => {
@@ -357,9 +359,67 @@ export default function Chat({ user, students, messages, onSendMessage, onMarkRe
   return (
     <div className="flex flex-col h-full bg-white rounded-2xl shadow-sm border animate-fadeIn">
       {/* Header */}
-      <div className="p-4 border-b">
+      <div className="p-4 border-b flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">Сообщения</h2>
+        {isCurator && students && students.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowNewChat(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-nobilis-green text-white text-sm font-medium rounded-xl hover:bg-nobilis-green-light transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Новый чат
+          </button>
+        )}
       </div>
+
+      {/* New chat modal */}
+      {showNewChat && (
+        <div className="p-3 border-b bg-gray-50">
+          <input
+            type="text"
+            value={newChatSearch}
+            onChange={(e) => setNewChatSearch(e.target.value)}
+            placeholder="Поиск студента..."
+            className="w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-nobilis-green/30 mb-2"
+            autoFocus
+          />
+          <div className="max-h-48 overflow-y-auto space-y-1">
+            {students
+              .filter(s => {
+                const name = s.name || s.fullName || '';
+                return name.toLowerCase().includes(newChatSearch.toLowerCase());
+              })
+              .map(s => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => {
+                    handleSelectChat(s.id);
+                    setShowNewChat(false);
+                    setNewChatSearch('');
+                  }}
+                  className="w-full flex items-center gap-2 p-2 rounded-lg text-left hover:bg-nobilis-green/10 transition-colors"
+                >
+                  <div className="w-8 h-8 shrink-0 rounded-full bg-nobilis-green flex items-center justify-center text-white font-semibold text-xs">
+                    {(s.name || s.fullName || '?').charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-sm text-gray-700">{s.name || s.fullName}</span>
+                </button>
+              ))
+            }
+          </div>
+          <button
+            type="button"
+            onClick={() => { setShowNewChat(false); setNewChatSearch(''); }}
+            className="mt-2 w-full text-center text-sm text-gray-500 hover:text-gray-700 py-1"
+          >
+            Отмена
+          </button>
+        </div>
+      )}
 
       {/* Conversation list */}
       <div className="flex-1 overflow-y-auto p-2">

@@ -97,24 +97,30 @@ const getNavItems = (role) => {
     { id: 'payments', label: 'Оплата', icon: I.Payment },
   ];
   if (role === 'director') return [
+    // -- Финансы --
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
-    { id: 'pnl', label: 'P&L Финансы', icon: I.Money },
-    { id: 'salary', label: 'Зарплаты', icon: I.Money },
-    { id: 'expenses', label: 'Расходы', icon: I.Documents },
-    { id: 'sales', label: 'Продажи', icon: I.Results },
-    { id: 'employees', label: 'Сотрудники', icon: I.Users },
-    { id: 'students', label: 'Студенты', icon: I.Users },
-    { id: 'schedule', label: 'Расписание', icon: I.Calendar },
-    { id: 'tasks', label: 'Задачи', icon: I.Tasks },
-    { id: 'countries', label: 'Страны', icon: I.Globe },
-    { id: 'mockTests', label: 'Пробные тесты', icon: I.MockTest },
-    { id: 'matching', label: 'Подбор ВУЗов', icon: I.Results },
-    { id: 'support', label: 'Поддержка', icon: I.Support },
-    { id: 'internships', label: 'Стажировки', icon: I.Briefcase },
-    { id: 'chat', label: 'Чат', icon: I.Chat },
-    { id: 'deadlines', label: 'Дедлайны', icon: I.Deadline },
-    { id: 'payments', label: 'Оплаты', icon: I.Payment },
-    { id: 'notifications', label: 'Уведомления', icon: I.Bell },
+    { id: 'pnl', label: 'P&L Финансы', icon: I.Money, section: 'finance' },
+    { id: 'salary', label: 'Зарплаты', icon: I.Money, section: 'finance' },
+    { id: 'expenses', label: 'Расходы', icon: I.Documents, section: 'finance' },
+    { id: 'payments', label: 'Оплаты', icon: I.Payment, section: 'finance' },
+    // -- Продажи --
+    { id: 'sales', label: 'Продажи', icon: I.Results, section: 'sales' },
+    { id: 'integrations', label: 'Интеграции', icon: I.Globe, section: 'sales' },
+    // -- Команда --
+    { id: 'employees', label: 'Сотрудники', icon: I.Users, section: 'team' },
+    { id: 'students', label: 'Студенты', icon: I.Users, section: 'team' },
+    // -- Учёба --
+    { id: 'schedule', label: 'Расписание', icon: I.Calendar, section: 'academic' },
+    { id: 'countries', label: 'Страны', icon: I.Globe, section: 'academic' },
+    { id: 'mockTests', label: 'Пробные тесты', icon: I.MockTest, section: 'academic' },
+    { id: 'matching', label: 'Подбор ВУЗов', icon: I.Results, section: 'academic' },
+    // -- Другое --
+    { id: 'tasks', label: 'Задачи', icon: I.Tasks, section: 'other' },
+    { id: 'support', label: 'Поддержка', icon: I.Support, section: 'other' },
+    { id: 'internships', label: 'Стажировки', icon: I.Briefcase, section: 'other' },
+    { id: 'chat', label: 'Чат', icon: I.Chat, section: 'other' },
+    { id: 'deadlines', label: 'Дедлайны', icon: I.Deadline, section: 'other' },
+    { id: 'notifications', label: 'Уведомления', icon: I.Bell, section: 'other' },
   ];
   if (role === 'academic_director') return [
     { id: 'dashboard', label: 'Главная', icon: I.Dashboard },
@@ -157,7 +163,6 @@ const getNavItems = (role) => {
     { id: 'reports', label: 'Отчёты', icon: I.Results },
     { id: 'team', label: 'Команда', icon: I.Users },
     { id: 'tasks', label: 'Задачи', icon: I.Tasks },
-    { id: 'integrations', label: 'Интеграции', icon: I.Globe },
     { id: 'notifications', label: 'Уведомления', icon: I.Bell },
   ];
   if (role === 'sales_manager') return [
@@ -358,6 +363,7 @@ export default function NobilisAcademy() {
         case 'chat': return <Chat user={user} students={data.students} messages={data.chatMessages || {}} onSendMessage={(chatId, text) => sendMessage(chatId, text, user)} onMarkRead={(chatId) => markChatRead(chatId, user.id)} />;
         case 'deadlines': return <DeadlineReminders students={data.students} onUpdateDeadline={updateDeadline} />;
         case 'payments': return <PaymentTracker student={null} payments={data.payments || {}} onAddPayment={addPayment} isAdmin={true} />;
+        case 'integrations': return <IntegrationsPanel data={data} onUpdateIntegration={updateIntegration} />;
         case 'notifications': return <NotificationsView />;
         default: break;
       }
@@ -396,7 +402,6 @@ export default function NobilisAcademy() {
         case 'meetings': return <ROPDashboard data={data} user={user} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onDelLead={delLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onDelMeeting={delMeeting} onAddCall={addCall} initialTab="meetings" />;
         case 'reports': return <ROPDashboard data={data} user={user} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onDelLead={delLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onDelMeeting={delMeeting} onAddCall={addCall} initialTab="report" />;
         case 'team': return <ROPDashboard data={data} user={user} onSetModal={setModal} onSetForm={setForm} onSetView={setView} onUpdateData={updateData} onAddLead={addLead} onUpdLead={updLead} onDelLead={delLead} onAddLeadNote={addLeadNote} onAddMeeting={addMeeting} onUpdMeeting={updMeeting} onDelMeeting={delMeeting} onAddCall={addCall} initialTab="team" />;
-        case 'integrations': return <IntegrationsPanel data={data} onUpdateIntegration={updateIntegration} />;
         case 'tasks': return <CuratorTasks data={data} user={user} onAddGlobalTask={addGlobalTask} onToggleGlobalTask={toggleGlobalTask} onDeleteGlobalTask={deleteGlobalTask} />;
         case 'notifications': return <NotificationsView />;
         default: break;
@@ -1431,6 +1436,8 @@ export default function NobilisAcademy() {
     const [matchIelts, setMatchIelts] = useState('');
     const [matchCountries, setMatchCountries] = useState([]);
     const [uniSearchQuery, setUniSearchQuery] = useState('');
+    const [studentSearch, setStudentSearch] = useState('');
+    const [showStudentDropdown, setShowStudentDropdown] = useState(false);
 
     const selectStudent = (s) => {
       setMatchStudent(s);
@@ -1496,11 +1503,38 @@ export default function NobilisAcademy() {
         <h1 className="text-2xl font-bold text-gray-800">Подбор ВУЗов</h1>
         <div className="bg-white rounded-2xl p-6 shadow-sm border">
           <label className="block text-sm font-medium text-gray-700 mb-2">Выберите студента</label>
-          <select value={matchStudent?.id || ''} onChange={e => selectStudent(students.find(s => String(s.id) === e.target.value) || null)}
-            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-nobilis-green/20 focus:border-nobilis-green outline-none">
-            <option value="">— Выберите —</option>
-            {students.map(s => <option key={s.id} value={s.id}>{s.name} {s.testResult ? `(${s.testResult})` : ''}</option>)}
-          </select>
+          <div className="relative">
+            <input
+              type="text"
+              value={matchStudent ? (matchStudent.name || '') : studentSearch}
+              onChange={e => { setStudentSearch(e.target.value); setShowStudentDropdown(true); if (matchStudent) { selectStudent(null); } }}
+              onFocus={() => setShowStudentDropdown(true)}
+              placeholder="Поиск по имени студента..."
+              className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-nobilis-green/20 focus:border-nobilis-green outline-none"
+            />
+            {matchStudent && (
+              <button onClick={() => { selectStudent(null); setStudentSearch(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <I.Close />
+              </button>
+            )}
+            {showStudentDropdown && !matchStudent && (
+              <div className="absolute z-10 w-full mt-1 bg-white border rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                {students
+                  .filter(s => (s.name || '').toLowerCase().includes(studentSearch.toLowerCase()))
+                  .map(s => (
+                    <button key={s.id} onClick={() => { selectStudent(s); setStudentSearch(''); setShowStudentDropdown(false); }}
+                      className="w-full text-left px-4 py-2.5 hover:bg-nobilis-green/10 transition-colors text-sm border-b last:border-b-0">
+                      <span className="font-medium">{s.name}</span>
+                      {s.testResult && <span className="ml-2 text-gray-400">({s.testResult})</span>}
+                    </button>
+                  ))
+                }
+                {students.filter(s => (s.name || '').toLowerCase().includes(studentSearch.toLowerCase())).length === 0 && (
+                  <div className="px-4 py-3 text-sm text-gray-400 text-center">Студент не найден</div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
         {matchStudent && (
           <div className="bg-white rounded-2xl p-6 shadow-sm border">
@@ -2207,11 +2241,11 @@ export default function NobilisAcademy() {
       <Sidebar user={{...user, avatar: user.role === 'student' ? (data.students.find(x => x.id === user.id)?.avatar) : user.role === 'teacher' ? (data.teachers.find(x => x.id === user.id)?.avatar) : data.curatorAvatar}} view={view} navItems={navItems} onNavigate={(v) => { setView(v); setStudentPage(null); }} onLogout={logout} isOpen={sidebarOpen} onToggle={() => setSidebarOpen(false)} onAvatarClick={() => { setForm({ avatarTargetRole: user.role, avatarTargetId: user.id, avatarPreview: user.role === 'curator' ? data.curatorAvatar : null }); setModal('avatarUpload'); }} taskCount={(data.globalTasks || []).filter(t => !t.done).length} />
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile header */}
-        <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b shadow-sm">
-          <button onClick={() => { setSidebarOpen(true); }} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg" aria-label="Открыть меню">
+        <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 border-b dark:border-gray-700 shadow-sm">
+          <button onClick={() => { setSidebarOpen(true); }} className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" aria-label="Открыть меню">
             <I.Menu aria-hidden="true" />
           </button>
-          <div className="font-serif font-bold text-nobilis-green">NOBILIS</div>
+          <div className="font-serif font-bold text-nobilis-green dark:text-emerald-300">NOBILIS</div>
           <div className="flex items-center gap-1">
             <NotificationBell data={data} user={user} />
             <ThemeToggle />
@@ -2224,6 +2258,9 @@ export default function NobilisAcademy() {
               </div>
             );
           })()}
+            <button onClick={() => { logAction(ACTIONS.LOGOUT, user, {}); logout(); }} className="p-2 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors" aria-label="Выйти">
+              <I.Logout aria-hidden="true" />
+            </button>
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 pb-20 md:pb-6 md:p-6 lg:p-8">
