@@ -1,5 +1,4 @@
 import React from 'react';
-import I from '../common/Icons';
 
 const TeacherDashboard = ({ teacher, schedule, onSetSelected, onSetModal }) => {
   const mySchedule = schedule.filter(s => s.teacherId === teacher.id);
