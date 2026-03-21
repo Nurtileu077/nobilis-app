@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Clock, Heart, CheckCircle, X, Zap } from 'lucide-react';
@@ -55,6 +55,18 @@ export default function QuizPage() {
 
   const question = MOCK_QUESTIONS[currentQ];
 
+  const handleAnswer = useCallback((index: number) => {
+    if (showResult) return;
+    setSelectedAnswer(index);
+    setShowResult(true);
+
+    if (index === MOCK_QUESTIONS[currentQ]?.correctAnswer) {
+      setScore((s) => s + 1);
+    } else {
+      setLives((l) => l - 1);
+    }
+  }, [showResult, currentQ]);
+
   // Timer
   useEffect(() => {
     if (showResult || finished) return;
@@ -68,19 +80,7 @@ export default function QuizPage() {
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [currentQ, showResult, finished]);
-
-  const handleAnswer = (index: number) => {
-    if (showResult) return;
-    setSelectedAnswer(index);
-    setShowResult(true);
-
-    if (index === question.correctAnswer) {
-      setScore((s) => s + 1);
-    } else {
-      setLives((l) => l - 1);
-    }
-  };
+  }, [currentQ, showResult, finished, handleAnswer]);
 
   const nextQuestion = () => {
     if (currentQ + 1 >= MOCK_QUESTIONS.length || lives <= 0) {

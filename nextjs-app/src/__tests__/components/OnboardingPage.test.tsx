@@ -10,18 +10,20 @@ jest.mock('framer-motion', () => {
   return {
     ...actual,
     motion: {
-      div: React.forwardRef(({ children, ...props }: any, ref: any) => (
-        <div ref={ref} {...filterDOMProps(props)}>{children}</div>
-      )),
-      button: React.forwardRef(({ children, ...props }: any, ref: any) => (
-        <button ref={ref} {...filterDOMProps(props)}>{children}</button>
-      )),
-      path: React.forwardRef((props: any, ref: any) => <path ref={ref} {...filterDOMProps(props)} />),
-      p: React.forwardRef(({ children, ...props }: any, ref: any) => (
-        <p ref={ref} {...filterDOMProps(props)}>{children}</p>
-      )),
+      div: React.forwardRef(function MotionDiv({ children, ...props }: any, ref: any) {
+        return <div ref={ref} {...filterDOMProps(props)}>{children}</div>;
+      }),
+      button: React.forwardRef(function MotionButton({ children, ...props }: any, ref: any) {
+        return <button ref={ref} {...filterDOMProps(props)}>{children}</button>;
+      }),
+      path: React.forwardRef(function MotionPath(props: any, ref: any) {
+        return <path ref={ref} {...filterDOMProps(props)} />;
+      }),
+      p: React.forwardRef(function MotionP({ children, ...props }: any, ref: any) {
+        return <p ref={ref} {...filterDOMProps(props)}>{children}</p>;
+      }),
     },
-    AnimatePresence: ({ children }: any) => <>{children}</>,
+    AnimatePresence: function AnimatePresence({ children }: any) { return <>{children}</>; },
     useMotionValue: () => ({ get: () => 0, set: () => {} }),
     useTransform: () => ({ get: () => 0 }),
   };

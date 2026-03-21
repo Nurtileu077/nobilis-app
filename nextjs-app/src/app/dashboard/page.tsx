@@ -1,11 +1,12 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import {
-  FileText, FolderOpen, Clock, CheckCircle, AlertTriangle,
-  TrendingUp, BookOpen, Coins, Flame,
+  FileText, FolderOpen, BookOpen, Coins, Flame,
+  CheckCircle, TrendingUp,
 } from 'lucide-react';
 import Link from 'next/link';
+import StatCard from '@/components/dashboard/StatCard';
+import DeadlineAlert from '@/components/dashboard/DeadlineAlert';
 
 // Mock data — will be replaced with real API calls
 const MOCK_STATS = {
@@ -72,66 +73,14 @@ export default function DashboardPage() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <motion.div
-          className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <FileText size={20} className="text-primary-500 mb-2" />
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.applications}</div>
-          <div className="text-xs text-gray-500">Заявки</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-        >
-          <FolderOpen size={20} className="text-green-500 mb-2" />
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            {stats.documentsUploaded}/{stats.documentsTotal}
-          </div>
-          <div className="text-xs text-gray-500">Документы</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Flame size={20} className="text-orange-500 mb-2" />
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.streak}</div>
-          <div className="text-xs text-gray-500">Streak дней</div>
-        </motion.div>
-
-        <motion.div
-          className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-        >
-          <Coins size={20} className="text-nobilis-gold mb-2" />
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.coins}</div>
-          <div className="text-xs text-gray-500">Nobilis Coins</div>
-        </motion.div>
+        <StatCard icon={FileText} iconColor="text-primary-500" value={stats.applications} label="Заявки" />
+        <StatCard icon={FolderOpen} iconColor="text-green-500" value={`${stats.documentsUploaded}/${stats.documentsTotal}`} label="Документы" delay={0.05} />
+        <StatCard icon={Flame} iconColor="text-orange-500" value={stats.streak} label="Streak дней" delay={0.1} />
+        <StatCard icon={Coins} iconColor="text-nobilis-gold" value={stats.coins} label="Nobilis Coins" delay={0.15} />
       </div>
 
       {/* Deadline alert */}
-      {nearestDeadline <= 14 && (
-        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl p-4 flex items-center gap-3">
-          <AlertTriangle size={20} className="text-red-500 shrink-0" />
-          <div>
-            <p className="text-sm font-medium text-red-800 dark:text-red-400">
-              Ближайший дедлайн через {nearestDeadline} дней
-            </p>
-            <p className="text-xs text-red-600/60 dark:text-red-400/60">
-              University of Toronto — {stats.nextDeadline}
-            </p>
-          </div>
-        </div>
-      )}
+      <DeadlineAlert daysLeft={nearestDeadline} university="University of Toronto" date={stats.nextDeadline} />
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Applications */}

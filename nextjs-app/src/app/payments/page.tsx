@@ -1,40 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import {
-  CreditCard, FileText, Clock, CheckCircle, AlertTriangle,
-  Download, Coins, DollarSign,
-} from 'lucide-react';
+import { CreditCard, Coins, DollarSign } from 'lucide-react';
+import InvoiceCard, { InvoiceData, formatMoney } from '@/components/payments/InvoiceCard';
 
-interface Invoice {
-  id: string;
-  description: string;
-  amount: number;
-  currency: string;
-  status: 'PENDING' | 'PAID' | 'OVERDUE';
-  dueDate: string;
-  paidAt?: string;
-}
-
-const MOCK_INVOICES: Invoice[] = [
+const MOCK_INVOICES: InvoiceData[] = [
   { id: '1', description: 'Менторство — Март 2025', amount: 29900, currency: 'KZT', status: 'PENDING', dueDate: '2025-03-15' },
   { id: '2', description: 'Консультация — Февраль', amount: 15000, currency: 'KZT', status: 'PAID', dueDate: '2025-02-15', paidAt: '2025-02-14' },
   { id: '3', description: 'Менторство — Февраль 2025', amount: 29900, currency: 'KZT', status: 'PAID', dueDate: '2025-02-01', paidAt: '2025-01-30' },
   { id: '4', description: 'Подготовка документов', amount: 50000, currency: 'KZT', status: 'OVERDUE', dueDate: '2025-01-15' },
 ];
-
-const STATUS_CONFIG = {
-  PENDING: { label: 'Ожидает', color: 'text-yellow-600 bg-yellow-50 dark:text-yellow-400 dark:bg-yellow-500/10', icon: Clock },
-  PAID: { label: 'Оплачено', color: 'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-500/10', icon: CheckCircle },
-  OVERDUE: { label: 'Просрочен', color: 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-500/10', icon: AlertTriangle },
-};
-
-function formatMoney(amount: number, currency: string) {
-  if (currency === 'KZT') return `${amount.toLocaleString()} ₸`;
-  if (currency === 'USD') return `$${(amount / 100).toFixed(2)}`;
-  return `${amount} ${currency}`;
-}
 
 export default function PaymentsPage() {
   const [useCoins, setUseCoins] = useState(false);
@@ -114,37 +89,9 @@ export default function PaymentsPage() {
             История платежей
           </h3>
           <div className="space-y-2">
-            {MOCK_INVOICES.map((inv, i) => {
-              const config = STATUS_CONFIG[inv.status];
-              const Icon = config.icon;
-              return (
-                <motion.div
-                  key={inv.id}
-                  className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 p-4 flex items-center gap-3"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Icon size={18} className={config.color.split(' ')[0]} />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{inv.description}</p>
-                    <p className="text-xs text-gray-400">
-                      {inv.paidAt
-                        ? `Оплачено ${new Date(inv.paidAt).toLocaleDateString('ru-RU')}`
-                        : `До ${new Date(inv.dueDate).toLocaleDateString('ru-RU')}`}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">
-                      {formatMoney(inv.amount, inv.currency)}
-                    </p>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${config.color}`}>
-                      {config.label}
-                    </span>
-                  </div>
-                </motion.div>
-              );
-            })}
+            {MOCK_INVOICES.map((inv, i) => (
+              <InvoiceCard key={inv.id} invoice={inv} index={i} />
+            ))}
           </div>
         </div>
       </div>

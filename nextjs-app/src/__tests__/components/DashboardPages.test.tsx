@@ -10,20 +10,20 @@ jest.mock('framer-motion', () => {
   return {
     ...actual,
     motion: {
-      div: React.forwardRef(({ children, ...props }: any, ref: any) => {
+      div: React.forwardRef(function MotionDiv({ children, ...props }: any, ref: any) {
         const clean = filterProps(props);
         return <div ref={ref} {...clean}>{children}</div>;
       }),
-      button: React.forwardRef(({ children, ...props }: any, ref: any) => {
+      button: React.forwardRef(function MotionButton({ children, ...props }: any, ref: any) {
         const clean = filterProps(props);
         return <button ref={ref} {...clean}>{children}</button>;
       }),
-      tr: React.forwardRef(({ children, ...props }: any, ref: any) => {
+      tr: React.forwardRef(function MotionTr({ children, ...props }: any, ref: any) {
         const clean = filterProps(props);
         return <tr ref={ref} {...clean}>{children}</tr>;
       }),
     },
-    AnimatePresence: ({ children }: any) => <>{children}</>,
+    AnimatePresence: function AnimatePresence({ children }: any) { return <>{children}</>; },
     useMotionValue: () => ({ get: () => 0, set: () => {} }),
     useTransform: () => ({ get: () => 0 }),
   };
@@ -51,7 +51,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>;
+  return function MockLink({ children, href, ...props }: any) { return <a href={href} {...props}>{children}</a>; };
 });
 
 describe('Dashboard Page', () => {
