@@ -1,9 +1,24 @@
 import React from 'react';
-import { formatDate } from '../../data/utils';
+import { formatDate, daysUntil } from '../../data/utils';
+import { PACKAGE_TYPES } from '../../data/constants';
 
 const CuratorDashboard = ({ data, onResolveTicket, onSetModal, onSetForm }) => {
   const openTix = data.supportTickets.filter(t => t.status === 'open');
   const urgent = openTix.filter(t => new Date(t.deadline) <= new Date());
+
+  // Package expiry alerts
+  const expiringPackages = [];
+  data.students.forEach(s => {
+    (s.packages || []).forEach(pkg => {
+      if (pkg.frozen) return;
+      const dl = daysUntil(pkg.endDate);
+      if (dl > 0 && dl <= 14) {
+        const typeInfo = PACKAGE_TYPES[pkg.type] || {};
+        expiringPackages.push({ student: s, pkg, daysLeft: dl, typeName: typeInfo.name || pkg.type });
+      }
+    });
+  });
+  expiringPackages.sort((a, b) => a.daysLeft - b.daysLeft);
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -11,11 +26,11 @@ const CuratorDashboard = ({ data, onResolveTicket, onSetModal, onSetForm }) => {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
-          <div className="text-3xl font-bold text-[#1a3a32]">{data.students.length}</div>
+          <div className="text-3xl font-bold text-nobilis-green">{data.students.length}</div>
           <div className="text-sm text-gray-500">Студентов</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
-          <div className="text-3xl font-bold text-[#c9a227]">{data.teachers.length}</div>
+          <div className="text-3xl font-bold text-nobilis-gold">{data.teachers.length}</div>
           <div className="text-sm text-gray-500">Преподавателей</div>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border card-hover">
@@ -28,17 +43,44 @@ const CuratorDashboard = ({ data, onResolveTicket, onSetModal, onSetForm }) => {
         </div>
       </div>
 
+      {/* Package expiry alerts */}
+      {expiringPackages.length > 0 && (
+        <div className="bg-orange-50 border border-orange-200 rounded-2xl p-4">
+          <h3 className="font-semibold text-orange-700 mb-3 flex items-center gap-2">
+            <span className="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">!</span>
+            Скоро истекают пакеты ({expiringPackages.length})
+          </h3>
+          <div className="space-y-2">
+            {expiringPackages.slice(0, 5).map((item, i) => (
+              <div key={i} className="flex items-center justify-between p-3 bg-white rounded-xl">
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate">{item.student.name}</div>
+                  <div className="text-sm text-gray-500">{item.typeName}</div>
+                </div>
+                <span className={`text-sm font-semibold px-3 py-1 rounded-full flex-shrink-0 ${item.daysLeft <= 7 ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'}`}>
+                  {item.daysLeft} дн.
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Overdue tickets */}
       {urgent.length > 0 && (
         <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
-          <h3 className="font-semibold text-red-700 mb-3">\u26A0\uFE0F Просроченные заявки</h3>
+          <h3 className="font-semibold text-red-700 mb-3 flex items-center gap-2">
+            <span className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">!</span>
+            Просроченные заявки ({urgent.length})
+          </h3>
           <div className="space-y-2">
             {urgent.map(t => (
-              <div key={t.id} className="flex justify-between p-3 bg-white rounded-xl">
-                <div>
-                  <div className="font-medium">{t.studentName}</div>
-                  <div className="text-sm text-gray-500">{t.message}</div>
+              <div key={t.id} className="flex items-center justify-between p-3 bg-white rounded-xl gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate">{t.studentName}</div>
+                  <div className="text-sm text-gray-500 truncate">{t.message}</div>
                 </div>
-                <button onClick={() => onResolveTicket(t.id)} className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors">Решить</button>
+                <button onClick={() => onResolveTicket(t.id)} className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors flex-shrink-0">Решить</button>
               </div>
             ))}
           </div>

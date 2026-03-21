@@ -5,7 +5,7 @@ import { getInitials } from '../../data/utils';
 const CuratorTeachers = ({ teachers, onSetModal, onSetForm, onSetSelected, onDelTeacher }) => (
   <div className="space-y-6 animate-fadeIn">
     <div className="flex justify-between">
-      <h1 className="text-2xl font-bold text-gray-800">Преподаватели</h1>
+      <h1 className="text-2xl font-bold text-gray-800">Сотрудники</h1>
       <button onClick={() => { onSetForm({ name: '', email: '', phone: '', subject: '', hourlyRate: 2500 }); onSetModal('addTeacher'); }}
         className="px-4 py-2 btn-primary text-white rounded-xl flex items-center gap-2">
         <I.Plus /><span>Добавить</span>
@@ -15,7 +15,7 @@ const CuratorTeachers = ({ teachers, onSetModal, onSetForm, onSetSelected, onDel
     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
       {teachers.map(t => (
         <div key={t.id} className="flex items-center gap-4 p-4 border-b hover:bg-gray-50 transition-all">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c9a227] to-[#a68620] flex items-center justify-center text-white font-semibold">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-nobilis-gold to-nobilis-gold-dark flex items-center justify-center text-white font-semibold">
             {getInitials(t.name)}
           </div>
           <div className="flex-1">
@@ -23,7 +23,7 @@ const CuratorTeachers = ({ teachers, onSetModal, onSetForm, onSetSelected, onDel
             <div className="text-sm text-gray-500">{t.subject}</div>
           </div>
           <div className="text-right">
-            <div className="font-medium">{t.hourlyRate} \u20B8/час</div>
+            <div className="font-medium">{t.hourlyRate} тг/ч</div>
             <div className="text-sm text-gray-500">{t.hoursWorked} часов</div>
           </div>
           <div className="flex gap-2">

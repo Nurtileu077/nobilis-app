@@ -9,6 +9,134 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f8faf9;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode base styles */
+.dark body,
+html.dark body {
+  background-color: #111827;
+  color: #e5e7eb;
+}
+
+html.dark .bg-white {
+  background-color: #1f2937 !important;
+}
+
+html.dark .bg-gray-50 {
+  background-color: #1a2332 !important;
+}
+
+html.dark .border {
+  border-color: #374151 !important;
+}
+
+html.dark .text-gray-800 {
+  color: #e5e7eb !important;
+}
+
+html.dark .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+html.dark .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+html.dark .bg-gray-100 {
+  background-color: #374151 !important;
+}
+
+html.dark .border-r {
+  border-color: #374151;
+}
+
+html.dark .border-b {
+  border-color: #374151;
+}
+
+html.dark .border-t {
+  border-color: #374151;
+}
+
+html.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+html.dark .hover\:bg-gray-50:hover {
+  background-color: #2d3748 !important;
+}
+
+html.dark .hover\:bg-gray-100:hover {
+  background-color: #374151 !important;
+}
+
+/* Dark mode: fix green text visibility */
+html.dark .text-nobilis-green {
+  color: #6ee7b7 !important;
+}
+
+html.dark .text-nobilis-gold {
+  color: #fbbf24 !important;
+}
+
+html.dark .text-gray-900 {
+  color: #f3f4f6 !important;
+}
+
+html.dark .text-gray-800 {
+  color: #e5e7eb !important;
+}
+
+html.dark .text-gray-700 {
+  color: #d1d5db !important;
+}
+
+html.dark .bg-gray-50 {
+  background-color: #1a2332 !important;
+}
+
+html.dark .bg-gray-100 {
+  background-color: #374151 !important;
+}
+
+html.dark .border-gray-100 {
+  border-color: #374151 !important;
+}
+
+html.dark .border-gray-200 {
+  border-color: #4b5563 !important;
+}
+
+/* Dark mode sidebar */
+html.dark .font-serif.font-bold.text-nobilis-green {
+  color: #6ee7b7 !important;
+}
+
+/* Dark mode cards */
+html.dark .bg-white {
+  background-color: #1f2937 !important;
+}
+
+/* Dark mode scrollbar */
+html.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
 /* Nobilis Brand Colors */
@@ -49,46 +177,40 @@ body {
   }
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes pulse-slow {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
+/* Animations - keyframes defined in tailwind.config.js */
+/* Only shimmer stays here since it's used in CSS .login-bg class */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+/* Brand gradients */
+.bg-gradient-nobilis {
+  background: linear-gradient(135deg, #1a3a32 0%, #2d5a4a 100%);
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
+.bg-gradient-nobilis-deep {
+  background: linear-gradient(135deg, #1a3a32 0%, #2d6a56 100%);
 }
 
-.animate-slideIn {
-  animation: slideIn 0.3s ease-out;
+.bg-gradient-nobilis-rich {
+  background: linear-gradient(135deg, #1a3a32 0%, #2d6a56 60%, #3a8a6a 100%);
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 2s ease-in-out infinite;
+.bg-gradient-nobilis-dark {
+  background: linear-gradient(135deg, #0f2219 0%, #1a3a32 40%, #2d6a56 80%, #3a8a6a 100%);
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+.bg-gradient-danger {
+  background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%);
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, #14532d 0%, #16a34a 100%);
+}
+
+.bg-gradient-gold {
+  background: linear-gradient(135deg, #c9a227 0%, #a68620 100%);
 }
 
 /* Buttons */
@@ -156,16 +278,50 @@ body {
   box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.2);
 }
 
-/* Login background */
+/* Login backgrounds */
+.login-bg-left {
+  background: linear-gradient(160deg, #0f2a22 0%, #1a3a32 40%, #0f2a22 100%);
+}
+
+.login-bg-right {
+  background: linear-gradient(160deg, #162e28 0%, #0f2a22 50%, #1a3a32 100%);
+}
+
 .login-bg {
   background: linear-gradient(135deg, #1a3a32 0%, #0f2a22 50%, #1a3a32 100%);
   background-size: 200% 200%;
   animation: shimmer 15s ease infinite;
 }
 
-/* Focus styles */
+/* Focus styles - visible for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--nobilis-gold);
+  outline-offset: 2px;
+}
+
 input:focus, select:focus, textarea:focus {
   outline: none;
+  box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.3);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 767px) {
+  .btn-primary, .btn-gold, .btn-outline {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, a, input, select, textarea {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
 }
 
 /* Print styles */

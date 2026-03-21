@@ -1,6 +1,6 @@
 import { transliterate, generateLogin, generatePassword, formatDate, daysBetween, calculateTestResult, getInitials } from '../data/utils';
 import { getAttendancePercent } from '../data/utils';
-import { GALLUP_QUESTIONS, CAREER_PROFILES } from '../data/constants';
+import { HOLLAND_QUESTIONS, HOLLAND_PROFILES } from '../data/constants';
 
 describe('Utility Functions', () => {
   describe('transliterate', () => {
@@ -119,37 +119,42 @@ describe('Utility Functions', () => {
   });
 
   describe('calculateTestResult', () => {
-    it('returns an analytical profile for analytical answers', () => {
+    it('returns Realistic type for R answers', () => {
       const answers = {};
-      GALLUP_QUESTIONS.forEach(q => {
-        answers[q.id] = q.cat === 'analytical' || q.cat === 'research' ? 7 : 1;
+      HOLLAND_QUESTIONS.forEach(q => {
+        answers[q.id] = q.cat === 'R' ? 5 : 1;
       });
-      const result = calculateTestResult(answers, GALLUP_QUESTIONS, CAREER_PROFILES);
-      expect(result.profile).toBe('Аналитик-Исследователь');
+      const result = calculateTestResult(answers, HOLLAND_QUESTIONS, HOLLAND_PROFILES);
+      expect(result.profile).toBe('R');
+      expect(result.profileName).toBe('Реалистический');
       expect(result.scores).toBeDefined();
+      expect(result.riasecCode).toBeDefined();
     });
 
-    it('returns creative profile for creative answers', () => {
+    it('returns Artistic type for A answers', () => {
       const answers = {};
-      GALLUP_QUESTIONS.forEach(q => {
-        answers[q.id] = q.cat === 'creative' ? 7 : 1;
+      HOLLAND_QUESTIONS.forEach(q => {
+        answers[q.id] = q.cat === 'A' ? 5 : 1;
       });
-      const result = calculateTestResult(answers, GALLUP_QUESTIONS, CAREER_PROFILES);
-      expect(result.profile).toBe('Творческий Визионер');
+      const result = calculateTestResult(answers, HOLLAND_QUESTIONS, HOLLAND_PROFILES);
+      expect(result.profile).toBe('A');
+      expect(result.profileName).toBe('Артистический');
     });
 
-    it('returns social profile for social answers', () => {
+    it('returns Social type for S answers', () => {
       const answers = {};
-      GALLUP_QUESTIONS.forEach(q => {
-        answers[q.id] = q.cat === 'social' ? 7 : 1;
+      HOLLAND_QUESTIONS.forEach(q => {
+        answers[q.id] = q.cat === 'S' ? 5 : 1;
       });
-      const result = calculateTestResult(answers, GALLUP_QUESTIONS, CAREER_PROFILES);
-      expect(result.profile).toBe('Социальный Помощник');
+      const result = calculateTestResult(answers, HOLLAND_QUESTIONS, HOLLAND_PROFILES);
+      expect(result.profile).toBe('S');
+      expect(result.profileName).toBe('Социальный');
     });
 
-    it('handles empty answers', () => {
-      const result = calculateTestResult({}, GALLUP_QUESTIONS, CAREER_PROFILES);
-      expect(result.profile).toBeNull();
+    it('returns result with scores for empty answers', () => {
+      const result = calculateTestResult({}, HOLLAND_QUESTIONS, HOLLAND_PROFILES);
+      expect(result.profile).toBeDefined();
+      expect(result.scores).toBeDefined();
     });
   });
 });

@@ -1,5 +1,5 @@
 // =============================================
-// NOBILIS ACADEMY - UTILITIES
+// NOBILIS ACADEMY - UTILITIES v3
 // =============================================
 
 const TRANSLIT_MAP = {
@@ -7,7 +7,10 @@ const TRANSLIT_MAP = {
   'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
   'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
   'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
-  'ы': 'y', 'э': 'e', 'ю': 'yu', 'я': 'ya'
+  'ы': 'y', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+  // Kazakh letters
+  'ә': 'a', 'ғ': 'g', 'қ': 'q', 'ң': 'n', 'ө': 'o', 'ұ': 'u', 'ү': 'u',
+  'і': 'i', 'һ': 'h'
 };
 
 const PASSWORD_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
@@ -25,31 +28,60 @@ export const generateLogin = (name) => {
   return transliterate(parts[0]) + '.' + transliterate(parts[1] || '').slice(0, 3) + Math.floor(Math.random() * 100);
 };
 
+export const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
+
 export const formatDate = (d) => d ? new Date(d).toLocaleDateString('ru-RU') : '';
+
+export const formatDateTime = (d) => d ? new Date(d).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
 
 export const daysBetween = (d1, d2) =>
   Math.ceil((new Date(d2) - new Date(d1)) / 86400000);
 
-export const calculateTestResult = (testAnswers, gallupQuestions, careerProfiles) => {
-  const scores = {};
-  Object.entries(testAnswers).forEach(([q, v]) => {
-    const cat = gallupQuestions.find(x => x.id === +q)?.cat;
-    if (cat) scores[cat] = (scores[cat] || 0) + v;
+export const daysUntil = (d) => d ? Math.ceil((new Date(d) - new Date()) / 86400000) : 0;
+
+export const calculateTestResult = (testAnswers, questions, profiles) => {
+  const scores = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+  Object.entries(testAnswers).forEach(([qId, value]) => {
+    const q = questions.find(x => x.id === +qId);
+    if (q) scores[q.cat] = (scores[q.cat] || 0) + value;
   });
-  let best = null;
-  let bestScore = 0;
-  Object.entries(careerProfiles).forEach(([name, profile]) => {
-    const sc = profile.cats.reduce((s, c) => s + (scores[c] || 0), 0);
-    if (sc > bestScore) {
-      bestScore = sc;
-      best = name;
-    }
-  });
-  return { profile: best, scores };
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const primaryType = sorted[0][0];
+  const secondaryType = sorted[1][0];
+  const riasecCode = sorted.slice(0, 3).map(x => x[0]).join('');
+  const primary = profiles[primaryType] || {};
+  const secondary = profiles[secondaryType] || {};
+  const combinedCareers = [...new Set([...(primary.careers || []), ...(secondary.careers || [])])].slice(0, 5);
+  return {
+    profile: primaryType,
+    profileName: primary.name || primaryType,
+    riasecCode,
+    scores,
+    sorted,
+    primaryType,
+    secondaryType,
+    careers: combinedCareers,
+  };
 };
 
 export const getInitials = (name) =>
-  name.split(' ').map(n => n[0]).slice(0, 2).join('');
+  name ? name.split(' ').map(n => n[0]).slice(0, 2).join('') : '?';
 
 export const getAttendancePercent = (attendance) =>
   attendance?.total > 0 ? Math.round(attendance.attended / attendance.total * 100) : 0;
+
+// Package progress calculation
+export const getPackageProgress = (pkg, stages) => {
+  if (!pkg) return { percent: 0, text: '' };
+  const pkgType = pkg.type;
+  if (pkgType === 'support') {
+    const stage = stages?.find(s => s.id === pkg.currentStage) || stages?.[0];
+    return { percent: stage?.percent || 0, text: stage?.name || '', isStages: true };
+  }
+  const total = pkg.totalLessons || 1;
+  const done = pkg.completedLessons || 0;
+  const missed = pkg.missedLessons || 0;
+  const remaining = total - done - missed;
+  const pct = Math.round((done / total) * 100);
+  return { percent: pct, text: `\u2713${done} \u2717${missed} \u23F3${remaining}`, done, missed, remaining, total };
+};

@@ -1,28 +1,49 @@
 {
   "short_name": "Nobilis",
   "name": "Nobilis Academy",
-  "description": "Образовательная платформа профориентации",
+  "description": "Образовательная платформа для подготовки к IELTS, SAT и поступлению за рубеж",
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "32x32",
       "type": "image/x-icon"
     },
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "theme_color": "#1a3a32",
-  "background_color": "#ffffff",
+  "background_color": "#1a3a32",
   "orientation": "portrait-primary",
-  "lang": "ru"
+  "lang": "ru",
+  "categories": ["education"],
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Nobilis Academy - Образовательная платформа"
+    },
+    {
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Nobilis Academy - Панель управления"
+    }
+  ]
 }

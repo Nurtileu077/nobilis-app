@@ -1,0 +1,526 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================
+// 1. Users — роли: GUEST, STUDENT, MENTOR, PARENT, B2B_UNI, ADMIN
+// ============================================
+enum UserRole {
+  GUEST
+  STUDENT
+  MENTOR
+  PARENT
+  B2B_UNI
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  avatar    String?
+  role      UserRole @default(GUEST)
+  phone     String?
+  password  String?  // hashed, nullable for OAuth users
+
+  // Relations
+  profile           StudentProfile?
+  onboardingData    OnboardingData[]
+  consultationsAsStudent Consultation[] @relation("StudentConsultations")
+  consultationsAsMentor  Consultation[] @relation("MentorConsultations")
+  applications      Application[]
+  documents         Document[]
+  essays            Essay[]
+  progress          UserProgress?
+  coinTransactions  CoinTransaction[]
+  tasksAsMentor     Task[]    @relation("MentorTasks")
+  tasksAsStudent    Task[]    @relation("StudentTasks")
+  sentMessages      Message[] @relation("SentMessages")
+  receivedMessages  Message[] @relation("ReceivedMessages")
+  invoices          Invoice[]
+  roommateProfile   RoommateProfile?
+  likesGiven        RoommateLike[] @relation("LikesGiven")
+  likesReceived     RoommateLike[] @relation("LikesReceived")
+  sentChats         RoommateChat[] @relation("SentChats")
+  receivedChats     RoommateChat[] @relation("ReceivedChats")
+
+  // Parent-Student relations
+  parentRelationsAsParent  StudentParentRelation[] @relation("ParentRelations")
+  parentRelationsAsStudent StudentParentRelation[] @relation("StudentRelations")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+// ============================================
+// 2. StudentProfiles — GPA, english_level, budget, selectedCountries
+// ============================================
+enum EnglishLevel {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+model StudentProfile {
+  id                String       @id @default(cuid())
+  userId            String       @unique
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gpa               Float        @default(0)
+  englishLevel      EnglishLevel @default(A1)
+  ieltsScore        Float?
+  satScore          Int?
+  budget            Int          @default(0)
+  selectedCountries String[]     @default([])
+  dreamUniversities String[]     @default([])
+  targetYear        Int          @default(2025)
+  bio               String?
+  interests         String[]     @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("student_profiles")
+}
+
+// ============================================
+// 3. OnboardingData — данные из воронки до регистрации
+// ============================================
+model OnboardingData {
+  id                   String   @id @default(cuid())
+  sessionId            String
+  countries            String[] @default([])
+  gpa                  Float    @default(0)
+  englishLevel         EnglishLevel @default(A1)
+  budget               Int      @default(0)
+  calculatedChance     Float    @default(0)
+  matchedUniversities  String[] @default([])
+  userId               String?
+  user                 User?    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("onboarding_data")
+}
+
+// ============================================
+// 4. Consultations — бронирование видео-консультаций
+// ============================================
+enum ConsultationStatus {
+  BOOKED
+  COMPLETED
+  CANCELLED
+}
+
+model Consultation {
+  id          String             @id @default(cuid())
+  studentId   String
+  student     User               @relation("StudentConsultations", fields: [studentId], references: [id])
+  mentorId    String
+  mentor      User               @relation("MentorConsultations", fields: [mentorId], references: [id])
+  scheduledAt DateTime
+  duration    Int                @default(30) // minutes
+  status      ConsultationStatus @default(BOOKED)
+  meetingUrl  String?
+  notes       String?
+
+  createdAt DateTime @default(now())
+
+  @@map("consultations")
+}
+
+// ============================================
+// 5. Applications — заявки в вузы
+// ============================================
+enum ApplicationStatus {
+  GATHERING_DOCS
+  SUBMITTED
+  UNDER_REVIEW
+  INTERVIEW
+  OFFER_RECEIVED
+  ACCEPTED
+  REJECTED
+}
+
+model Application {
+  id              String            @id @default(cuid())
+  studentId       String
+  student         User              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  universityId    String
+  university      UniversityProfile @relation(fields: [universityId], references: [id])
+  program         String
+  status          ApplicationStatus @default(GATHERING_DOCS)
+  deadline        DateTime
+  submittedAt     DateTime?
+  responseAt      DateTime?
+  scholarshipAmt  Int?
+  notes           String?
+
+  documents Document[]
+  essays    Essay[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("applications")
+}
+
+// ============================================
+// 6. Documents — файлы с OCR-метаданными
+// ============================================
+enum DocumentType {
+  PASSPORT
+  IELTS
+  SAT
+  TRANSCRIPT
+  ESSAY
+  RECOMMENDATION
+  FINANCIAL
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING
+  UPLOADED
+  VERIFIED
+  WARNING
+  EXPIRED
+}
+
+model Document {
+  id            String         @id @default(cuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applicationId String?
+  application   Application?   @relation(fields: [applicationId], references: [id])
+  type          DocumentType
+  name          String
+  fileUrl       String
+  status        DocumentStatus @default(PENDING)
+  expiryDate    DateTime?
+  ocrData       Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("documents")
+}
+
+// ============================================
+// 7. Essays — черновики эссе (AI-generated + humanized)
+// ============================================
+enum EssayStatus {
+  DRAFT
+  AI_GENERATED
+  HUMANIZED
+  FINAL
+}
+
+model Essay {
+  id                String      @id @default(cuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applicationId     String?
+  application       Application? @relation(fields: [applicationId], references: [id])
+  title             String
+  prompt            String      @default("")
+  draftContent      String      @default("")
+  aiContent         String?
+  humanizedContent  String?
+  wordCount         Int         @default(0)
+  status            EssayStatus @default(DRAFT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("essays")
+}
+
+// ============================================
+// 8. QuizQuestions — банк вопросов IELTS/SAT
+// ============================================
+enum PrepSkill {
+  READING
+  LISTENING
+  WRITING
+  SPEAKING
+  MATH
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model QuizQuestion {
+  id            String     @id @default(cuid())
+  skill         PrepSkill
+  difficulty    Difficulty @default(MEDIUM)
+  question      String
+  options       String[]   @default([])
+  correctAnswer Int
+  explanation   String     @default("")
+  timeLimit     Int        @default(30) // seconds
+
+  createdAt DateTime @default(now())
+
+  @@map("quiz_questions")
+}
+
+// ============================================
+// 9. UserProgress — streak, lives, xp, last_activity
+// ============================================
+model UserProgress {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  streak        Int       @default(0)
+  lives         Int       @default(5)
+  xp            Int       @default(0)
+  level         Int       @default(1)
+  lastActivity  DateTime  @default(now())
+  skillProgress Json      @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_progress")
+}
+
+// ============================================
+// 10. CoinTransactions — лог начислений/списаний Nobilis Coins
+// ============================================
+enum CoinAction {
+  EARN
+  SPEND
+}
+
+model CoinTransaction {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action       CoinAction
+  amount       Int
+  reason       String
+  balanceAfter Int
+
+  createdAt DateTime @default(now())
+
+  @@map("coin_transactions")
+}
+
+// ============================================
+// 11. Tasks — задачи ментор → студент
+// ============================================
+model Task {
+  id                 String        @id @default(cuid())
+  mentorId           String
+  mentor             User          @relation("MentorTasks", fields: [mentorId], references: [id])
+  studentId          String
+  student            User          @relation("StudentTasks", fields: [studentId], references: [id])
+  title              String
+  description        String        @default("")
+  completed          Boolean       @default(false)
+  dueDate            DateTime?
+  linkedDocumentType DocumentType?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tasks")
+}
+
+// ============================================
+// 12. Messages — чат ментор ↔ студент
+// ============================================
+model Message {
+  id         String  @id @default(cuid())
+  senderId   String
+  sender     User    @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User    @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  content    String
+  read       Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([senderId, receiverId])
+  @@map("messages")
+}
+
+// ============================================
+// 13. StudentParentRelation — связь родитель-студент + invite token
+// ============================================
+model StudentParentRelation {
+  id          String  @id @default(cuid())
+  parentId    String
+  parent      User    @relation("ParentRelations", fields: [parentId], references: [id])
+  studentId   String
+  student     User    @relation("StudentRelations", fields: [studentId], references: [id])
+  inviteToken String  @unique
+  accepted    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@unique([parentId, studentId])
+  @@map("student_parent_relations")
+}
+
+// ============================================
+// 14. Invoices — финансовые документы + PDF
+// ============================================
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount          Int           // в центах
+  currency        String        @default("USD")
+  status          InvoiceStatus @default(PENDING)
+  description     String
+  pdfUrl          String?
+  stripeSessionId String?
+  paidAt          DateTime?
+  dueDate         DateTime
+
+  createdAt DateTime @default(now())
+
+  @@map("invoices")
+}
+
+// ============================================
+// 15. B2B_Transactions — CPA комиссии от вузов
+// ============================================
+model B2BTransaction {
+  id           String @id @default(cuid())
+  universityId String
+  university   UniversityProfile @relation(fields: [universityId], references: [id])
+  studentId    String
+  amount       Int
+  currency     String @default("USD")
+  status       String @default("PENDING")
+  description  String @default("")
+
+  createdAt DateTime @default(now())
+
+  @@map("b2b_transactions")
+}
+
+// ============================================
+// 16. RoommateLikes — свайпы для соседей
+// ============================================
+model RoommateLike {
+  id         String  @id @default(cuid())
+  fromUserId String
+  fromUser   User    @relation("LikesGiven", fields: [fromUserId], references: [id])
+  toUserId   String
+  toUser     User    @relation("LikesReceived", fields: [toUserId], references: [id])
+  liked      Boolean
+
+  createdAt DateTime @default(now())
+
+  @@unique([fromUserId, toUserId])
+  @@map("roommate_likes")
+}
+
+// ============================================
+// 17. RoommateChats — чаты мэтчей
+// ============================================
+model RoommateChat {
+  id         String @id @default(cuid())
+  fromUserId String
+  fromUser   User   @relation("SentChats", fields: [fromUserId], references: [id])
+  toUserId   String
+  toUser     User   @relation("ReceivedChats", fields: [toUserId], references: [id])
+  content    String
+
+  createdAt DateTime @default(now())
+
+  @@map("roommate_chats")
+}
+
+// ============================================
+// 18. UniversityProfiles — данные вузов для B2B
+// ============================================
+model UniversityProfile {
+  id                  String   @id @default(cuid())
+  name                String
+  country             String
+  city                String
+  ranking             Int?
+  tuitionMin          Int      @default(0)
+  tuitionMax          Int      @default(0)
+  gpaRequirement      Float    @default(0)
+  ieltsRequirement    Float    @default(0)
+  satRequirement      Int?
+  acceptanceRate      Float?
+  deadline            DateTime?
+  faculties           String[] @default([])
+  scholarshipAvailable Boolean @default(false)
+  photo               String?
+  description         String?
+
+  applications    Application[]
+  b2bTransactions B2BTransaction[]
+  scoutInvites    ScoutInvite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("university_profiles")
+}
+
+// ============================================
+// 19. ScoutInvites — приглашения от вузов студентам (B2B)
+// ============================================
+model ScoutInvite {
+  id           String @id @default(cuid())
+  universityId String
+  university   UniversityProfile @relation(fields: [universityId], references: [id])
+  studentId    String
+  status       String @default("PENDING") // PENDING, ACCEPTED, DECLINED
+  message      String @default("")
+
+  createdAt DateTime @default(now())
+
+  @@unique([universityId, studentId])
+  @@map("scout_invites")
+}
+
+// ============================================
+// 20. RoommateProfile — профиль для поиска соседей
+// ============================================
+model RoommateProfile {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  university String   @default("")
+  city       String   @default("")
+  bio        String   @default("")
+  habits     String[] @default([])
+  budget     Int      @default(0)
+  moveInDate DateTime?
+  photos     String[] @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("roommate_profiles")
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head><title>Сохранить логотип Nobilis</title></head>
+<body style="font-family: sans-serif; max-width: 600px; margin: 40px auto; text-align: center;">
+  <h2>Загрузите логотип Nobilis Academy</h2>
+  <p>Выберите файл логотипа (PNG, JPG, SVG)</p>
+  <input type="file" id="fileInput" accept="image/*" style="margin: 20px 0;">
+  <br>
+  <img id="preview" style="max-width: 200px; margin: 20px 0; display: none;">
+  <br>
+  <textarea id="output" rows="6" style="width: 100%; display: none; font-size: 11px;"></textarea>
+  <p id="instructions" style="display: none; color: green; font-weight: bold;"></p>
+  <script>
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const base64 = ev.target.result;
+        document.getElementById('preview').src = base64;
+        document.getElementById('preview').style.display = 'block';
+        document.getElementById('output').value = base64;
+        document.getElementById('output').style.display = 'block';
+        document.getElementById('instructions').textContent =
+          'Скопируйте всё содержимое текстового поля выше и отправьте мне в чат.';
+        document.getElementById('instructions').style.display = 'block';
+        // Also copy to clipboard
+        navigator.clipboard.writeText(base64).then(() => {
+          document.getElementById('instructions').textContent += ' (Уже скопировано в буфер обмена!)';
+        }).catch(() => {});
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>

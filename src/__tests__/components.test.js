@@ -1,24 +1,32 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from '../context/ThemeContext';
+
+// Enable demo mode before importing LoginScreen
+process.env.REACT_APP_DEMO_MODE = 'true';
+
 import LoginScreen from '../components/common/LoginScreen';
 import Modal from '../components/common/Modal';
 import Sidebar from '../components/common/Sidebar';
 import NobilisLogo from '../components/common/NobilisLogo';
+
+// Helper to render with ThemeProvider
+const renderWithTheme = (ui) => render(<ThemeProvider>{ui}</ThemeProvider>);
 import I from '../components/common/Icons';
 
 // ---- NobilisLogo ----
 describe('NobilisLogo', () => {
-  it('renders an SVG with default size', () => {
-    const { container } = render(<NobilisLogo />);
-    const svg = container.querySelector('svg');
-    expect(svg).toBeInTheDocument();
-    expect(svg).toHaveStyle({ width: '40px', height: '40px' });
+  it('renders an image with default size', () => {
+    render(<NobilisLogo />);
+    const img = screen.getByAltText('Nobilis Academy Logo');
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveStyle({ width: '40px', height: '40px' });
   });
 
   it('renders with custom size', () => {
-    const { container } = render(<NobilisLogo size={80} />);
-    const svg = container.querySelector('svg');
-    expect(svg).toHaveStyle({ width: '80px', height: '80px' });
+    render(<NobilisLogo size={80} />);
+    const img = screen.getByAltText('Nobilis Academy Logo');
+    expect(img).toHaveStyle({ width: '80px', height: '80px' });
   });
 });
 
@@ -103,22 +111,16 @@ describe('LoginScreen', () => {
     expect(screen.getByText('Войти в систему')).toBeInTheDocument();
   });
 
-  it('renders demo account buttons', () => {
+  it('renders demo role hints', () => {
     render(<LoginScreen onLogin={() => {}} />);
     expect(screen.getByText('Куратор')).toBeInTheDocument();
     expect(screen.getByText('Студент')).toBeInTheDocument();
     expect(screen.getByText('Препод')).toBeInTheDocument();
+    expect(screen.getByText('Доступные роли')).toBeInTheDocument();
   });
 
-  it('fills form when demo account is clicked', () => {
-    render(<LoginScreen onLogin={() => {}} />);
-    fireEvent.click(screen.getByText('Куратор'));
-    expect(screen.getByPlaceholderText('Введите логин')).toHaveValue('curator');
-    expect(screen.getByPlaceholderText('Введите пароль')).toHaveValue('curator2024');
-  });
-
-  it('calls onLogin with credentials and shows error', () => {
-    const onLogin = jest.fn(() => 'Неверный логин или пароль');
+  it('calls onLogin with credentials and shows error', async () => {
+    const onLogin = jest.fn(() => Promise.resolve('Неверный логин или пароль'));
     render(<LoginScreen onLogin={onLogin} />);
 
     fireEvent.change(screen.getByPlaceholderText('Введите логин'), { target: { value: 'bad' } });
@@ -126,11 +128,12 @@ describe('LoginScreen', () => {
     fireEvent.click(screen.getByText('Войти в систему'));
 
     expect(onLogin).toHaveBeenCalledWith('bad', 'wrong');
-    expect(screen.getByText('Неверный логин или пароль')).toBeInTheDocument();
+    const { findByText } = screen;
+    expect(await findByText('Неверный логин или пароль')).toBeInTheDocument();
   });
 
-  it('does not show error on successful login', () => {
-    const onLogin = jest.fn(() => null);
+  it('does not show error on successful login', async () => {
+    const onLogin = jest.fn(() => Promise.resolve(null));
     render(<LoginScreen onLogin={onLogin} />);
 
     fireEvent.change(screen.getByPlaceholderText('Введите логин'), { target: { value: 'curator' } });
@@ -138,25 +141,26 @@ describe('LoginScreen', () => {
     fireEvent.click(screen.getByText('Войти в систему'));
 
     expect(onLogin).toHaveBeenCalledWith('curator', 'curator2024');
+    // Wait for async to complete
+    await new Promise(r => setTimeout(r, 50));
     expect(screen.queryByText('Неверный логин или пароль')).not.toBeInTheDocument();
   });
 
-  it('supports Enter key to login', () => {
-    const onLogin = jest.fn(() => null);
+  it('supports Enter key to login via form submit', () => {
+    const onLogin = jest.fn(() => Promise.resolve(null));
     render(<LoginScreen onLogin={onLogin} />);
 
-    const loginInput = screen.getByPlaceholderText('Введите логин');
-    fireEvent.change(loginInput, { target: { value: 'curator' } });
-    fireEvent.change(screen.getByPlaceholderText('Введите пароль'), { target: { value: 'curator2024' } });
-    fireEvent.keyDown(loginInput, { key: 'Enter' });
+    fireEvent.change(screen.getByPlaceholderText('Введите логин'), { target: { value: 'test' } });
+    fireEvent.change(screen.getByPlaceholderText('Введите пароль'), { target: { value: 'test123' } });
+    fireEvent.submit(screen.getByText('Войти в систему').closest('form'));
 
-    expect(onLogin).toHaveBeenCalled();
+    expect(onLogin).toHaveBeenCalledWith('test', 'test123');
   });
 
   it('renders NOBILIS branding', () => {
     render(<LoginScreen onLogin={() => {}} />);
-    expect(screen.getByText('NOBILIS')).toBeInTheDocument();
-    expect(screen.getByText('ACADEMY')).toBeInTheDocument();
+    expect(screen.getAllByText('NOBILIS').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('ACADEMY').length).toBeGreaterThan(0);
   });
 });
 
@@ -169,7 +173,7 @@ describe('Sidebar', () => {
   const mockUser = { name: 'Тест Юзер', role: 'student' };
 
   it('renders user name and role', () => {
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"
@@ -183,7 +187,7 @@ describe('Sidebar', () => {
   });
 
   it('renders nav items', () => {
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"
@@ -198,7 +202,7 @@ describe('Sidebar', () => {
 
   it('calls onNavigate when nav item is clicked', () => {
     const onNavigate = jest.fn();
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"
@@ -213,7 +217,7 @@ describe('Sidebar', () => {
 
   it('calls onLogout when logout button is clicked', () => {
     const onLogout = jest.fn();
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"
@@ -227,7 +231,7 @@ describe('Sidebar', () => {
   });
 
   it('shows NOBILIS branding in sidebar', () => {
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"
@@ -236,12 +240,12 @@ describe('Sidebar', () => {
         onLogout={() => {}}
       />
     );
-    expect(screen.getByText('NOBILIS')).toBeInTheDocument();
-    expect(screen.getByText('ACADEMY')).toBeInTheDocument();
+    expect(screen.getAllByText('NOBILIS').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('ACADEMY').length).toBeGreaterThan(0);
   });
 
   it('shows user initials', () => {
-    render(
+    renderWithTheme(
       <Sidebar
         user={mockUser}
         view="dashboard"

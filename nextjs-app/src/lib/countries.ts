@@ -1,0 +1,133 @@
+export interface Country {
+  id: string;
+  name: string;
+  flag: string;
+  emoji: string;
+  universities: number;
+  avgTuition: string;
+  image: string;
+  description: string;
+}
+
+export const COUNTRIES: Country[] = [
+  {
+    id: 'usa',
+    name: 'США',
+    flag: '🇺🇸',
+    emoji: '🗽',
+    universities: 1500,
+    avgTuition: '$25,000 - $60,000',
+    image: '/countries/usa.jpg',
+    description: 'Ivy League, MIT, Stanford и 1500+ университетов',
+  },
+  {
+    id: 'uk',
+    name: 'Великобритания',
+    flag: '🇬🇧',
+    emoji: '🏰',
+    universities: 400,
+    avgTuition: '£12,000 - £40,000',
+    image: '/countries/uk.jpg',
+    description: 'Oxford, Cambridge и Russell Group',
+  },
+  {
+    id: 'canada',
+    name: 'Канада',
+    flag: '🇨🇦',
+    emoji: '🍁',
+    universities: 300,
+    avgTuition: 'CA$15,000 - $35,000',
+    image: '/countries/canada.jpg',
+    description: 'UofT, McGill, возможность иммиграции после учёбы',
+  },
+  {
+    id: 'germany',
+    name: 'Германия',
+    flag: '🇩🇪',
+    emoji: '🏛️',
+    universities: 400,
+    avgTuition: '€0 - €3,000',
+    image: '/countries/germany.jpg',
+    description: 'Бесплатное образование в гос. вузах, TU9',
+  },
+  {
+    id: 'czech',
+    name: 'Чехия',
+    flag: '🇨🇿',
+    emoji: '🏰',
+    universities: 70,
+    avgTuition: '€0 - €5,000',
+    image: '/countries/czech.jpg',
+    description: 'Бесплатное обучение на чешском, Прага',
+  },
+  {
+    id: 'turkey',
+    name: 'Турция',
+    flag: '🇹🇷',
+    emoji: '🕌',
+    universities: 200,
+    avgTuition: '$2,000 - $15,000',
+    image: '/countries/turkey.jpg',
+    description: 'Стипендии Turkiye Burslari, доступные цены',
+  },
+  {
+    id: 'uae',
+    name: 'ОАЭ',
+    flag: '🇦🇪',
+    emoji: '🏙️',
+    universities: 80,
+    avgTuition: '$10,000 - $30,000',
+    image: '/countries/uae.jpg',
+    description: 'Дубай, Абу-Даби — филиалы мировых вузов',
+  },
+  {
+    id: 'south_korea',
+    name: 'Южная Корея',
+    flag: '🇰🇷',
+    emoji: '🎌',
+    universities: 200,
+    avgTuition: '$5,000 - $15,000',
+    image: '/countries/korea.jpg',
+    description: 'KAIST, SNU, K-стипендии',
+  },
+  {
+    id: 'japan',
+    name: 'Япония',
+    flag: '🇯🇵',
+    emoji: '⛩️',
+    universities: 150,
+    avgTuition: '$5,000 - $12,000',
+    image: '/countries/japan.jpg',
+    description: 'University of Tokyo, MEXT стипендии',
+  },
+  {
+    id: 'australia',
+    name: 'Австралия',
+    flag: '🇦🇺',
+    emoji: '🦘',
+    universities: 200,
+    avgTuition: 'A$20,000 - $45,000',
+    image: '/countries/australia.jpg',
+    description: 'Group of Eight, возможность остаться после учёбы',
+  },
+  {
+    id: 'china',
+    name: 'Китай',
+    flag: '🇨🇳',
+    emoji: '🏯',
+    universities: 500,
+    avgTuition: '$3,000 - $10,000',
+    image: '/countries/china.jpg',
+    description: 'Tsinghua, Peking, CSC стипендии',
+  },
+  {
+    id: 'malaysia',
+    name: 'Малайзия',
+    flag: '🇲🇾',
+    emoji: '🌴',
+    universities: 100,
+    avgTuition: '$3,000 - $8,000',
+    image: '/countries/malaysia.jpg',
+    description: 'Доступные цены, английская программа',
+  },
+];
